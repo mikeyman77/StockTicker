@@ -49,15 +49,22 @@
     <target name="test" description="Runs all the JUnit tests and generates the test results report" depends="compile">
 
         <junit printsummary="yes" haltonfailure="false" showoutput="true" failureproperty="test_failure">
-            <classpath refid="project.classpath"/>
+            <classpath refid="project.classpath">
+                <pathelement location="${build.dir}"/>
+                <pathelement path="${java.class.path}"/>
+            </classpath>
 
-            <formatter type="xml"/>
+            <formatter type="plain"/>
+
+            <test name="StockTicker.test.TestCase" haltonfailure="no" outfile="result">
+                <formatter type="xml"/>
+            </test>
 
             <batchtest fork="yes" todir="${report.dir}">
                 <fileset dir="${src-test.dir}">
                     <include name="**/*Test*.java"/>
+                    <exclude name="**/AllTests.java"/>
                 </fileset>
-
             </batchtest>
         </junit>
 
