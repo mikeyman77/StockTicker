@@ -1,7 +1,9 @@
 package com.stockticker.persistence;
 
-public class PersistenceService {
-    public List<String> getWatchedStocks(User);
-    public void setStockToWatch(String);
-    public void setStockToWatch(List<String>);
+import java.util.List;
+
+public interface PersistenceService {
+    public List<String> getWatchedStocks();
+    public void setStockToWatch(String symbol);
+    public void setStockToWatch(List<String> symbols);
 }
