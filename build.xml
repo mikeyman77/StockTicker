@@ -49,14 +49,46 @@
     <target name="test" description="Runs all the JUnit tests and generates the test results report" depends="compile">
 
         <junit printsummary="yes" haltonfailure="false" showoutput="true" failureproperty="test_failure">
+            <classpath refid="project.classpath"/>
+
+            <formatter type="xml"/>
+
+            <batchtest fork="yes" todir="${report.dir}">
+                <fileset dir="${src-test.dir}">
+                    <include name="**/*Test*.java"/>
+                </fileset>
+
+            </batchtest>
+        </junit>
+
+        <junitreport todir="${report.dir}">
+            <fileset dir="${report.dir}">
+                <include name="TEST-*.xml"/>
+            </fileset>
+            <report format="frames" todir="${report.dir}/html"/>
+        </junitreport>
+
+        <!-- if a test fails then the property  "test_failure" will be set and we fail now.
+         Failng now, rather than when the test actually failed allows all the tests to complete and the report
+         to be generated.
+         -->
+        <fail if="test_failure" message="At least one JUnit test failed. Please see report."/>
+
+    </target>
+
+
+    <target name="report" description="Creates html reports" depends="compile">
+
+        <junit printsummary="yes" haltonfailure="false">
             <classpath>
+                <path refid="project.classpath"/>
                 <pathelement location="${build.dir}"/>
-                <pathelement path="${java.class.path}"/>
+                <pathelement path="${lib.dir}"/>
             </classpath>
 
             <formatter type="plain"/>
 
-            <test name="StockTicker.test.TestCase" haltonfailure="no" outfile="result">
+            <test name="com.stockticker.persistence.PersistenceServiceTest" haltonfailure="no" outfile="result">
                 <formatter type="xml"/>
             </test>
 
@@ -77,16 +109,13 @@
 
         <!-- if a test fails then the property  "test_failure" will be set and we fail now.
          Failng now, rather than when the test actually failed allows all the tests to complete and the report
-         to be generated. 
+         to be generated.
          -->
         <fail if="test_failure" message="At least one JUnit test failed. Please see report."/>
-
-
     </target>
 
-
     <!-- this is the default target - it does everything -->
-    <target name="all" depends="init, clean, compile, test"
+    <target name="all" depends="init, clean, compile, test, report"
             description="deletes previous work, compiles new class, runs hello program"/>
 
 </project>
