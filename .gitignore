@@ -36,3 +36,5 @@ Thumbs.db
 out/
 *.iml
 build/
+result.txt
+result.xml
