@@ -11,7 +11,7 @@ public enum StockTickerPersistence implements PersistenceService {
 
     @Override
     public List<Stock> getTrackedStocks(User user) {
-        return (List<Stock>)null;
+        return null;
     }
 
     @Override
