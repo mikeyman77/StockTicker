@@ -1,7 +1,8 @@
 package com.stockticker.persistence;
 
 import java.util.List;
-import com.stockticker.*;
+import com.stockticker.Stock;
+import com.stockticker.User;
 
 public interface PersistenceService {
     public List<Stock> getTrackedStocks(User user);

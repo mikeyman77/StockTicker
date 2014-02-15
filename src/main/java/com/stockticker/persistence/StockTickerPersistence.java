@@ -6,6 +6,8 @@ import com.stockticker.User;
 
 public enum StockTickerPersistence implements PersistenceService {
     INSTANCE;
+    
+    private String name;
 
     @Override
     public List<Stock> getTrackedStocks(User user) {
@@ -36,4 +38,5 @@ public enum StockTickerPersistence implements PersistenceService {
     public boolean deleteUser(User user) {
         return false;
     }
+
 }
