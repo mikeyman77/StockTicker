@@ -46,6 +46,14 @@ public class PersistenceServiceTest {
     }
 
     /**
+     * Tests the userExists method
+     */
+    @Test
+    public void testUserExists() {
+
+    }
+
+    /**
      * Tests the saveUser method
      */
     @Test
