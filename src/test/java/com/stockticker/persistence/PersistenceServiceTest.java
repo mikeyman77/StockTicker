@@ -22,26 +22,51 @@ public class PersistenceServiceTest {
     }
 
     /**
-     * Tests the getWatchedStocks method for a value.
+     * Tests the getTrackedStocks method for a value.
      */
     @Test
-    public void getWatchedStocksTest() {
+    public void testGetTrackedStocks() {
 
     }
 
     /**
-     * Tests the setStockToWatch(String) method
+     * Tests the trackStock method
      */
     @Test
-    public void setStockToWatchStringTest() {
+    public void testTrackStock() {
 
     }
 
     /**
-     * Tests the setStockToWatch(List) method
+     * Tests the isStockTracked method
      */
     @Test
-    public void setStockToWatchListTest() {
+    public void testIsStockTracked() {
 
     }
+
+    /**
+     * Tests the saveUser method
+     */
+    @Test
+    public void testSaveUser() {
+        
+    }
+
+    /**
+     * Tests the loadUser method
+     */
+    @Test
+    public void testLoadUser() {
+
+    }
+
+    /**
+     * Tests the deleteUser method
+     */
+    @Test
+    public void testDeleteUser() {
+
+    }
+
 }
