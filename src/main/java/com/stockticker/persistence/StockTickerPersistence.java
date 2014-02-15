@@ -25,6 +25,11 @@ public enum StockTickerPersistence implements PersistenceService {
     }
 
     @Override
+    public boolean userExists(User user) {
+        return false;
+    }
+
+    @Override
     public boolean saveUser(User user) {
         return false;
     }
