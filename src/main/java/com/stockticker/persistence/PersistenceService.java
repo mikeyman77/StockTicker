@@ -10,6 +10,6 @@ public interface PersistenceService {
     public boolean isStockTracked(User user, Stock stock);
     public boolean userExists(User user);
     public boolean saveUser(User user);
-    public boolean loadUser(User user);
+    public User    loadUser(User user);
     public boolean deleteUser(User user);
 }
