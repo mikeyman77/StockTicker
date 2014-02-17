@@ -15,6 +15,7 @@ import static junit.framework.Assert.assertEquals;
 public class SymbolMapTest {
 
     private SymbolMap symbolMap;
+    private static final long NUMBER_OF_SYMBOLS = 2799;
 
     /**
      * Sets up each test before they run
@@ -30,9 +31,7 @@ public class SymbolMapTest {
     @Test
     public void testGetSymbols() {
         Map<String, String> symbols = symbolMap.getSymbols();
-        for (Map.Entry<String, String> item : symbols.entrySet()) {
-            System.out.println("Stock="+item.getKey()+" Description = "+item.getValue());
-        }
+        assertEquals("map size", NUMBER_OF_SYMBOLS, symbols.size());
     }
 
 }
