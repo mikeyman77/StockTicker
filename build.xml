@@ -39,10 +39,11 @@
     </target>
 
     <target name="compile" description="Compile all the code; produce classes" depends="init">
-        <javac destdir="${classes.dir}" debug="true" fork="true" >
+        <javac destdir="${classes.dir}" debug="true" fork="true" deprecation="on" includeantruntime="false">
             <src path="${src.dir}"/>
             <src path="${src-test.dir}"/>
             <classpath refid="project.classpath"/>
+            <compilerarg line="-Xlint:unchecked" />
         </javac>
     </target>
 
