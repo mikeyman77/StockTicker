@@ -6,7 +6,7 @@ import java.util.Map;
 public enum SymbolMap {
     INSTANCE;
 
-    public Map getSymbols() {
+    public Map<String, String> getSymbols() {
         return symbols;
     }
 
