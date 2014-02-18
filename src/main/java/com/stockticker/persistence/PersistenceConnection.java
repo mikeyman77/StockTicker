@@ -22,7 +22,7 @@ public enum PersistenceConnection {
      */
     private PersistenceConnection() {
         //Class.forName(H2_DRIVER);
-        //Connection conn = DriverManager.getConnection(H2_DBNAME);
+        //conn = DriverManager.getConnection(H2_DBNAME);
 
         /* If tables don't exist then initialize the database */
 
