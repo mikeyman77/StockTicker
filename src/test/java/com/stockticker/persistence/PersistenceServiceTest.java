@@ -33,9 +33,9 @@ public class PersistenceServiceTest {
     @Before
     public void setUp() {
         persistence = StockTickerPersistence.INSTANCE;
-        pedroia = new User("Pedroia");
-        ortiz   = new User("Ortiz");
-        victorino = new User("Victorino");
+        pedroia = new User("Pedroia", "redsox");
+        ortiz   = new User("Ortiz", "redsox");
+        victorino = new User("Victorino", "redsox");
         persistence.updateUser(pedroia);
         persistence.updateUser(ortiz);
         persistence.updateUser(victorino);
@@ -103,7 +103,7 @@ public class PersistenceServiceTest {
      */
     @Test
     public void testSaveUser() {
-        User brady = new User("Brady");
+        User brady = new User("Brady", "redsox");
         persistence.updateUser(brady);
         assertTrue("update user", persistence.userExists(brady.getUserName()));
     }
@@ -121,7 +121,7 @@ public class PersistenceServiceTest {
      */
     @Test
     public void testDeleteUser() {
-        User manning = new User("Manning");
+        User manning = new User("Manning", "redsox");
         persistence.updateUser(manning);
         assertTrue("delete user", persistence.deleteUser(manning.getUserName()));
     }
