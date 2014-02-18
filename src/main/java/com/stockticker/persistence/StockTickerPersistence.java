@@ -6,34 +6,41 @@ import java.util.TreeMap;
 import java.util.List;
 import com.stockticker.Stock;
 import com.stockticker.User;
+import com.stockticker.TrackedStocks;
 
 public enum StockTickerPersistence implements PersistenceService {
     INSTANCE;
 
+
     private Map<String,Stock> stocksMap = new TreeMap<String,Stock>();
-    private Map<String,User> usersMap = new TreeMap<String,User>();
-    private List<String> usernames = new ArrayList<String>();
+    private Map<String,TrackedStocks> trackedStocksMap = new TreeMap<String,TrackedStocks>();
+    private Map<String,User> usersMap = new TreeMap<String, User>();
     private int userId = 0;
 
     @Override
     public List<Stock> getTrackedStocks(String username) {
-        List<Stock> stocks = new ArrayList<Stock>(stocksMap.values());
+        TrackedStocks tracked = trackedStocksMap.get(username);
+        List<Stock> stocks = new ArrayList<Stock>(tracked.getStocks());
         return stocks;
     }
 
     @Override
     public boolean trackStock(String username, Stock stock, boolean track) {
-        if (!stocksMap.containsKey(stock.getSymbol()))
-            stocksMap.put(stock.getSymbol(), stock);
+            TrackedStocks tracked = trackedStocksMap.get(username);
+            if (track) {
+                tracked.put(stock);
+            }
+            else {
+                tracked.remove(stock);
+            }
         return true;
     }
 
     @Override
     public boolean isStockTracked(String username, String symbol) {
-        if (stocksMap.get(symbol) != null)
-            return true;
-        else
-            return false;
+        TrackedStocks tracked = trackedStocksMap.get(username);
+
+        return tracked.isStockTracked(symbol);
     }
 
     @Override
@@ -45,11 +52,15 @@ public enum StockTickerPersistence implements PersistenceService {
     }
 
     @Override
-    public int createUser(String username, String password) {
-        if (usersMap.containsKey(username))
-            return -1;
-        else
-            return ++userId;
+    public User createUser(String username, String password) {
+        User user = null;
+        if (!usersMap.containsKey(username)) {
+            userId++;
+            user = new User(username, password);
+            user.setUserID(userId);
+            usersMap.put(username, user);
+        }
+        return user;
     }
 
     @Override
