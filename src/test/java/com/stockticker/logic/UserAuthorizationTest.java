@@ -34,12 +34,12 @@ public class UserAuthorizationTest {
     }
 
     @Test
-    public void testCreateUser() throws Exception {
+    public void testGetUserInfo() throws Exception {
 
     }
 
     @Test
-    public void testGetUser() throws Exception {
+    public void testChangePassword() throws Exception {
 
     }
 }
