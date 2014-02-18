@@ -36,15 +36,15 @@ public class PersistenceServiceTest {
         pedroia = new User("Pedroia");
         ortiz   = new User("Ortiz");
         victorino = new User("Victorino");
-        persistence.saveUser(pedroia);
-        persistence.saveUser(ortiz);
-        persistence.saveUser(victorino);
+        persistence.updateUser(pedroia);
+        persistence.updateUser(ortiz);
+        persistence.updateUser(victorino);
         google = new Stock("GOOG");
         apple = new Stock("AAPPL");
         microsoft = new Stock("MSFT");
-        persistence.trackStock(ortiz, google, true);
-        persistence.trackStock(ortiz, apple, true);
-        persistence.trackStock(ortiz, microsoft, true);
+        persistence.trackStock(ortiz.getUserName(), google, true);
+        persistence.trackStock(ortiz.getUserName(), apple, true);
+        persistence.trackStock(ortiz.getUserName(), microsoft, true);
     }
 
     /**
@@ -52,7 +52,7 @@ public class PersistenceServiceTest {
      */
     @Test
     public void testGetTrackedStocks() {
-        List<Stock> stocks = persistence.getTrackedStocks(ortiz);
+        List<Stock> stocks = persistence.getTrackedStocks(ortiz.getUserName());
         assertTrue("tracked stocks", (stocks.size() > 0));
     }
 
@@ -61,8 +61,8 @@ public class PersistenceServiceTest {
      */
     @Test
     public void testTrackStock() {
-        persistence.trackStock(ortiz, google, true);
-        assertTrue("stock tracked", persistence.isStockTracked(ortiz, google));
+        persistence.trackStock(ortiz.getUserName(), google, true);
+        assertTrue("stock tracked", persistence.isStockTracked(ortiz.getUserName(), google.getSymbol()));
     }
 
     /**
@@ -70,8 +70,8 @@ public class PersistenceServiceTest {
      */
     @Test
     public void testIsStockTrackedTrue() {
-        persistence.trackStock(ortiz, google, true);
-        assertTrue("stock tracked", persistence.isStockTracked(ortiz, google));
+        persistence.trackStock(ortiz.getUserName(), google, true);
+        assertTrue("stock tracked", persistence.isStockTracked(ortiz.getUserName(), google.getSymbol()));
     }
 
     /**
@@ -79,7 +79,7 @@ public class PersistenceServiceTest {
      */
     @Test
     public void testIsStockTrackedFalse() {
-        assertFalse("stock tracked", persistence.isStockTracked(ortiz, new Stock("JAVA")));
+        assertFalse("stock tracked", persistence.isStockTracked(ortiz.getUserName(), "JAVA"));
     }
 
     /**
@@ -87,7 +87,7 @@ public class PersistenceServiceTest {
      */
     @Test
     public void testUserExistsTrue() {
-        assertTrue("user exists", persistence.userExists(ortiz));
+        assertTrue("user exists", persistence.userExists(ortiz.getUserName()));
     }
 
     /**
@@ -95,7 +95,7 @@ public class PersistenceServiceTest {
      */
     @Test
     public void testUserExistsFalse() {
-        assertFalse("user doesn't exist", persistence.userExists(new User("Connall")));
+        assertFalse("user doesn't exist", persistence.userExists("Connall"));
     }
 
     /**
@@ -104,8 +104,8 @@ public class PersistenceServiceTest {
     @Test
     public void testSaveUser() {
         User brady = new User("Brady");
-        persistence.saveUser(brady);
-        assertTrue("save user", persistence.userExists(brady));
+        persistence.updateUser(brady);
+        assertTrue("update user", persistence.userExists(brady.getUserName()));
     }
 
     /**
@@ -113,7 +113,7 @@ public class PersistenceServiceTest {
      */
     @Test
     public void testLoadUser() {
-        assertNotNull("load user", persistence.loadUser(victorino));
+        assertNotNull("load user", persistence.loadUser(victorino.getUserName()));
     }
 
     /**
@@ -122,8 +122,8 @@ public class PersistenceServiceTest {
     @Test
     public void testDeleteUser() {
         User manning = new User("Manning");
-        persistence.saveUser(manning);
-        assertTrue("delete user", persistence.deleteUser(manning));
+        persistence.updateUser(manning);
+        assertTrue("delete user", persistence.deleteUser(manning.getUserName()));
     }
 
 }
