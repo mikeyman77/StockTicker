@@ -6,7 +6,6 @@ import java.util.TreeMap;
 import java.util.List;
 import com.stockticker.Stock;
 import com.stockticker.User;
-import com.stockticker.TrackedStocks;
 
 public enum StockTickerPersistence implements PersistenceService {
     INSTANCE;
@@ -28,7 +27,9 @@ public enum StockTickerPersistence implements PersistenceService {
     public boolean trackStock(String username, Stock stock, boolean track) {
             TrackedStocks tracked = trackedStocksMap.get(username);
             if (track) {
-                tracked.put(stock);
+                if (tracked) {
+                    tracked.put(stock);
+                }
             }
             else {
                 tracked.remove(stock);
