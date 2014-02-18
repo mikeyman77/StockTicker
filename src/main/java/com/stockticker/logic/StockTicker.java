@@ -2,7 +2,6 @@ package com.stockticker.logic;
 
 import com.stockticker.Stock;
 import com.stockticker.StockQuote;
-import com.stockticker.User;
 
 import java.util.List;
 
@@ -20,18 +19,17 @@ public enum StockTicker implements StockTickerService {
     }
 
     @Override
-    public List<Stock> getTrackedStocks(User user) {
+    public List<Stock> getTrackedStocks(String username) {
         return null;
     }
 
     @Override
-    public boolean trackStock(User user, Stock stock, boolean tracked) {
+    public boolean trackStock(String username, Stock stock, boolean tracked) {
         return false;
     }
 
     @Override
-    public boolean isStockTracked(User user, Stock stock) {
+    public boolean isStockTracked(String username, Stock stock) {
         return false;
     }
-
 }
