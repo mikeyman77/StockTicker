@@ -13,6 +13,7 @@ public enum StockTickerPersistence implements PersistenceService {
     private Map<String,Stock> stocksMap = new TreeMap<String,Stock>();
     private Map<String,User> usersMap = new TreeMap<String,User>();
     private List<String> usernames = new ArrayList<String>();
+    private int userId = 0;
 
     @Override
     public List<Stock> getTrackedStocks(String username) {
@@ -45,7 +46,10 @@ public enum StockTickerPersistence implements PersistenceService {
 
     @Override
     public int createUser(String username, String password) {
-        return -1;
+        if (usersMap.containsKey(username))
+            return -1;
+        else
+            return ++userId;
     }
 
     @Override
