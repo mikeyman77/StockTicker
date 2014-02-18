@@ -4,10 +4,13 @@ import com.stockticker.User;
 
 public interface AuthorizationService {
 
-    boolean logIn(User user);
-    boolean logOut(User user);
-    boolean register(User user);
-    boolean unRegister(User user);
+    boolean logIn(String username, String password);
+    boolean logOut(String username);
     boolean isLoggedIn(User user);
+    boolean register(User user);
+    boolean unRegister(String username);
+    boolean isRegistered(String username);
+    User createUser(String username, String password);
+    User getUser(String username);
 
 }
