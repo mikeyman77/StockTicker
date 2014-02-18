@@ -1,6 +1,8 @@
 package com.stockticker.persistence;
 
 import java.util.ArrayList;
+import java.util.Map;
+import java.util.TreeMap;
 import java.util.List;
 import com.stockticker.Stock;
 import com.stockticker.User;
@@ -8,65 +10,57 @@ import com.stockticker.User;
 public enum StockTickerPersistence implements PersistenceService {
     INSTANCE;
 
-    private List<Stock> stocks = new ArrayList<Stock>();
-    private List<User> users = new ArrayList<User>();
+    private Map<String,Stock> stocksMap = new TreeMap<String,Stock>();
+    private Map<String,User> usersMap = new TreeMap<String,User>();
+    private List<String> usernames = new ArrayList<String>();
 
     @Override
-    public List<Stock> getTrackedStocks(User user) {
+    public List<Stock> getTrackedStocks(String username) {
+        List<Stock> stocks = new ArrayList<Stock>(stocksMap.values());
         return stocks;
     }
 
     @Override
-    public boolean trackStock(User user, Stock stock, boolean track) {
-        if (!stocks.contains(stock))
-            stocks.add(stock);
+    public boolean trackStock(String username, Stock stock, boolean track) {
+        if (!stocksMap.containsKey(stock.getSymbol()))
+            stocksMap.put(stock.getSymbol(), stock);
         return true;
     }
 
     @Override
-    public boolean isStockTracked(User user, Stock stock) {
-        if (stocks.contains(stock))
+    public boolean isStockTracked(String username, String symbol) {
+        if (stocksMap.get(symbol) != null)
             return true;
         else
             return false;
     }
 
     @Override
-    public boolean userExists(User user) {
-        if (users.contains(user))
+    public boolean userExists(String username) {
+        if (usersMap.containsKey(username))
             return true;
         else
             return false;
     }
 
     @Override
-    public boolean saveUser(User user) {
-        int i = users.indexOf(user);
-        if (i >= 0)
-            users.set(i, user);
-        else
-            users.add(user);
+    public boolean updateUser(User user) {
+        usersMap.put(user.getUserName(), user);
 
         return true;
     }
 
     @Override
-    public User loadUser(User user) {
-        int i = users.indexOf(user);
-        if (i >= 0)
-            return users.get(i);
-        else
-            return null;
+    public User loadUser(String username) {
+        return usersMap.get(username);
     }
 
     @Override
-    public boolean deleteUser(User user) {
-        int i = users.indexOf(user);
-        if (i >= 0) {
-            users.remove(i);
+    public boolean deleteUser(String username) {
+        if (usersMap.remove(username) != null)
             return true;
-        }
-        return false;
+        else
+            return false;
     }
 
 }

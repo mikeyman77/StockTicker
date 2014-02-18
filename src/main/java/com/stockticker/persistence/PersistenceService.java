@@ -5,11 +5,11 @@ import com.stockticker.Stock;
 import com.stockticker.User;
 
 public interface PersistenceService {
-    public List<Stock> getTrackedStocks(User user);
-    public boolean trackStock(User user, Stock stock, boolean track);
-    public boolean isStockTracked(User user, Stock stock);
-    public boolean userExists(User user);
-    public boolean saveUser(User user);
-    public User    loadUser(User user);
-    public boolean deleteUser(User user);
+    public List<Stock> getTrackedStocks(String username);
+    public boolean trackStock(String username, Stock stock, boolean track);
+    public boolean isStockTracked(String username, String symbol);
+    public boolean userExists(String username);
+    public boolean updateUser(User user);
+    public User    loadUser(String username);
+    public boolean deleteUser(String username);
 }
