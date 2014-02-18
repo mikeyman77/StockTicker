@@ -7,10 +7,10 @@ import java.util.List;
 
 public interface StockTickerService {
 
-    StockQuote getStockQuote(Stock stock);
-    List<StockQuote> getStockQuotes(List<Stock> stocks);
-    List<Stock> getTrackedStocks(String username);
-    boolean trackStock(String username, Stock stock, boolean tracked);
-    boolean isStockTracked(String username, Stock stock);
+    public StockQuote getStockQuote(String symbol);
+    public List<StockQuote> getStockQuotes(List<String> symbols);
+    public List<String> getTrackedStocks(String username);
+    public boolean trackStock(String username, String symbol, boolean tracked);
+    public boolean isStockTracked(String username, String symbol);
 
 }
