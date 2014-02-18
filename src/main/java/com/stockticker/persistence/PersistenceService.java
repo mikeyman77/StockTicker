@@ -9,6 +9,7 @@ public interface PersistenceService {
     public boolean trackStock(String username, Stock stock, boolean track);
     public boolean isStockTracked(String username, String symbol);
     public boolean userExists(String username);
+    public int createUser(String username, String password);
     public boolean updateUser(User user);
     public User    loadUser(String username);
     public boolean deleteUser(String username);

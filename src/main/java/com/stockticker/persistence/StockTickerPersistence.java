@@ -44,6 +44,11 @@ public enum StockTickerPersistence implements PersistenceService {
     }
 
     @Override
+    public int createUser(String username, String password) {
+        return -1;
+    }
+
+    @Override
     public boolean updateUser(User user) {
         usersMap.put(user.getUserName(), user);
 
