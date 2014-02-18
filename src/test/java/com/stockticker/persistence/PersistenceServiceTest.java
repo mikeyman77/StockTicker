@@ -111,8 +111,8 @@ public class PersistenceServiceTest {
      */
     @Test
     public void testCreateUser() {
-        int userId = persistence.createUser(SCHILLING, PASSWORD);
-        assertTrue("create user", (userId >= 0));
+        User user = persistence.createUser(SCHILLING, PASSWORD);
+        assertNotNull("create user", user);
     }
 
     /**
