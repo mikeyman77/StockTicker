@@ -20,9 +20,17 @@ import static junit.framework.Assert.assertNotNull;
 public class PersistenceServiceTest {
 
     private PersistenceService persistence;
-    private User pedroia;
-    private User ortiz;
-    private User victorino;
+    private static final String PEDROIA = "Pedroia";
+    private static final String ORTIZ = "Ortiz";
+    private static final String VICTORINO = "Victorino";
+    private static final String BRADY = "Brady";
+    private static final String MANNING = "Manning";
+    private static final String SCHILLING = "Schilling";
+    private static final String CONNALL = "Connall";
+    private static final String PASSWORD = "redsox";
+    private static final String GOOG = "GOOG";
+    private static final String AAPL = "AAPL";
+    private static final String MSFT = "MSFT";
     private Stock google;
     private Stock apple;
     private Stock microsoft;
@@ -33,18 +41,18 @@ public class PersistenceServiceTest {
     @Before
     public void setUp() {
         persistence = StockTickerPersistence.INSTANCE;
-        pedroia = new User("Pedroia", "redsox");
-        ortiz   = new User("Ortiz", "redsox");
-        victorino = new User("Victorino", "redsox");
-        persistence.updateUser(pedroia);
-        persistence.updateUser(ortiz);
-        persistence.updateUser(victorino);
-        google = new Stock("GOOG");
-        apple = new Stock("AAPPL");
-        microsoft = new Stock("MSFT");
-        persistence.trackStock(ortiz.getUserName(), google, true);
-        persistence.trackStock(ortiz.getUserName(), apple, true);
-        persistence.trackStock(ortiz.getUserName(), microsoft, true);
+        persistence.createUser(PEDROIA, PASSWORD);
+        persistence.updateUser(new User(PEDROIA, PASSWORD));
+        persistence.createUser(ORTIZ, PASSWORD);
+        persistence.updateUser(new User(ORTIZ, PASSWORD));
+        persistence.createUser(VICTORINO, PASSWORD);
+        persistence.updateUser(new User(VICTORINO, PASSWORD));
+        google = new Stock(GOOG);
+        apple = new Stock(AAPL);
+        microsoft = new Stock(MSFT);
+        persistence.trackStock(ORTIZ, google, true);
+        persistence.trackStock(ORTIZ, apple, true);
+        persistence.trackStock(ORTIZ, microsoft, true);
     }
 
     /**
@@ -52,7 +60,7 @@ public class PersistenceServiceTest {
      */
     @Test
     public void testGetTrackedStocks() {
-        List<Stock> stocks = persistence.getTrackedStocks(ortiz.getUserName());
+        List<Stock> stocks = persistence.getTrackedStocks(ORTIZ);
         assertTrue("tracked stocks", (stocks.size() > 0));
     }
 
@@ -61,8 +69,8 @@ public class PersistenceServiceTest {
      */
     @Test
     public void testTrackStock() {
-        persistence.trackStock(ortiz.getUserName(), google, true);
-        assertTrue("stock tracked", persistence.isStockTracked(ortiz.getUserName(), google.getSymbol()));
+        persistence.trackStock(ORTIZ, google, true);
+        assertTrue("stock tracked", persistence.isStockTracked(ORTIZ, google.getSymbol()));
     }
 
     /**
@@ -70,8 +78,8 @@ public class PersistenceServiceTest {
      */
     @Test
     public void testIsStockTrackedTrue() {
-        persistence.trackStock(ortiz.getUserName(), google, true);
-        assertTrue("stock tracked", persistence.isStockTracked(ortiz.getUserName(), google.getSymbol()));
+        persistence.trackStock(ORTIZ, google, true);
+        assertTrue("stock tracked", persistence.isStockTracked(ORTIZ, google.getSymbol()));
     }
 
     /**
@@ -79,7 +87,7 @@ public class PersistenceServiceTest {
      */
     @Test
     public void testIsStockTrackedFalse() {
-        assertFalse("stock tracked", persistence.isStockTracked(ortiz.getUserName(), "JAVA"));
+        assertFalse("stock tracked", persistence.isStockTracked(ORTIZ, "JAVA"));
     }
 
     /**
@@ -87,7 +95,7 @@ public class PersistenceServiceTest {
      */
     @Test
     public void testUserExistsTrue() {
-        assertTrue("user exists", persistence.userExists(ortiz.getUserName()));
+        assertTrue("user exists", persistence.userExists(ORTIZ));
     }
 
     /**
@@ -95,17 +103,26 @@ public class PersistenceServiceTest {
      */
     @Test
     public void testUserExistsFalse() {
-        assertFalse("user doesn't exist", persistence.userExists("Connall"));
+        assertFalse("user doesn't exist", persistence.userExists(CONNALL));
     }
 
     /**
-     * Tests the saveUser method
+     * Tests the createUser method
      */
     @Test
-    public void testSaveUser() {
-        User brady = new User("Brady", "redsox");
-        persistence.updateUser(brady);
-        assertTrue("update user", persistence.userExists(brady.getUserName()));
+    public void testCreateUser() {
+        int userId = persistence.createUser(SCHILLING, PASSWORD);
+        assertTrue("create user", (userId >= 0));
+    }
+
+    /**
+     * Tests the updateUser method
+     */
+    @Test
+    public void testUpdateUser() {
+        User ortiz = new User(ORTIZ, PASSWORD+"2014");
+        persistence.updateUser(ortiz);
+        assertEquals("update user", PASSWORD+"2014", persistence.loadUser(ORTIZ).getPassword());
     }
 
     /**
@@ -113,7 +130,7 @@ public class PersistenceServiceTest {
      */
     @Test
     public void testLoadUser() {
-        assertNotNull("load user", persistence.loadUser(victorino.getUserName()));
+        assertNotNull("load user", persistence.loadUser(VICTORINO));
     }
 
     /**
@@ -121,7 +138,7 @@ public class PersistenceServiceTest {
      */
     @Test
     public void testDeleteUser() {
-        User manning = new User("Manning", "redsox");
+        User manning = new User(MANNING, PASSWORD);
         persistence.updateUser(manning);
         assertTrue("delete user", persistence.deleteUser(manning.getUserName()));
     }
