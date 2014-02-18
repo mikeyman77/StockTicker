@@ -15,4 +15,8 @@ public class User {
         return this.userName;
     }
 
+    public String getPassword() {
+        return this.password;
+    }
+
 }
