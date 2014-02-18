@@ -14,6 +14,11 @@ public class UserAuthorizationTest {
     }
 
     @Test
+    public void testIsLoggedIn() throws Exception {
+
+    }
+
+    @Test
     public void testRegister() throws Exception {
 
     }
@@ -24,7 +29,17 @@ public class UserAuthorizationTest {
     }
 
     @Test
-    public void testIsLoggedIn() throws Exception {
+    public void testIsRegistered() throws Exception {
+
+    }
+
+    @Test
+    public void testCreateUser() throws Exception {
+
+    }
+
+    @Test
+    public void testGetUser() throws Exception {
 
     }
 }
