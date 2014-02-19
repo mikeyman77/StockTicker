@@ -90,7 +90,11 @@ public enum StockTickerPersistence implements PersistenceService {
 
     @Override
     public boolean setLoginStatus(User user) {
-        usersMap.put(user.getUserName(), user);
+        if (usersMap.containsKey(user.getUserName()))
+            usersMap.put(user.getUserName(), user);
+        else
+            return false;
+
         return true;
     }
 
