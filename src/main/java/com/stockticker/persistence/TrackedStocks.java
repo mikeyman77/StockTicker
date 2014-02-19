@@ -15,10 +15,9 @@ public class TrackedStocks {
     private String userName;
     private Map<String, Stock> trackedStocks;
 
-    public TrackedStocks(String username, Stock stock) {
+    public TrackedStocks(String username) {
         this.userName = userName;
         trackedStocks = new TreeMap<String, Stock>();
-        trackedStocks.put(stock.getSymbol(), stock);
     }
 
     public void put(Stock stock) {
