@@ -19,8 +19,7 @@ public enum StockTickerPersistence implements PersistenceService {
     @Override
     public List<Stock> getTrackedStocks(User user) {
         TrackedStocks tracked = trackedStocksMap.get(user.getUserName());
-        List<Stock> stocks = new ArrayList<Stock>(tracked.getStocks());
-        return stocks;
+        return new ArrayList<Stock>(tracked.getStocks());
     }
 
     @Override
