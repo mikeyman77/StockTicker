@@ -88,4 +88,10 @@ public enum StockTickerPersistence implements PersistenceService {
             return false;
     }
 
+    @Override
+    public boolean setLoginStatus(User user) {
+        usersMap.put(user.getUserName(), user);
+        return true;
+    }
+
 }
