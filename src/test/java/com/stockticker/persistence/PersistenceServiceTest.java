@@ -145,4 +145,14 @@ public class PersistenceServiceTest {
         assertTrue("delete user", persistence.deleteUser(manning));
     }
 
+    /**
+     * Tests the setLoginStatus method for TRUE
+     */
+    @Test
+    public void testSetLoginStatusTrue() {
+        User manning = new User(MANNING, PASSWORD);
+        persistence.updateUser(manning);
+        assertTrue("delete user", persistence.deleteUser(manning));
+    }
+
 }
