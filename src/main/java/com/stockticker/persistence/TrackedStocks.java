@@ -1,4 +1,4 @@
-package com.stockticker;
+package com.stockticker.persistence;
 
 import java.util.ArrayList;
 import java.util.List;
