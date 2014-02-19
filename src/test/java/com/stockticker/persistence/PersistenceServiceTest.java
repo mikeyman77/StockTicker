@@ -151,6 +151,7 @@ public class PersistenceServiceTest {
     @Test
     public void testSetLoginStatusTrue() {
         User manning = new User(MANNING, PASSWORD);
+        manning  = persistence.createUser(manning);
         manning.setLoggedIn(true);
         persistence.setLoginStatus(manning);
         assertTrue("login status true", persistence.isLoggedIn(manning));
@@ -162,6 +163,7 @@ public class PersistenceServiceTest {
     @Test
     public void testSetLoginStatusFalse() {
         User manning = new User(MANNING, PASSWORD);
+        manning  = persistence.createUser(manning);
         manning.setLoggedIn(false);
         persistence.setLoginStatus(manning);
         assertFalse("login status false", persistence.isLoggedIn(manning));
@@ -173,6 +175,7 @@ public class PersistenceServiceTest {
     @Test
     public void testIsLoggedInTrue() {
         User manning = new User(MANNING, PASSWORD);
+        manning  = persistence.createUser(manning);
         manning.setLoggedIn(true);
         persistence.setLoginStatus(manning);
         assertTrue("is logged in true", persistence.isLoggedIn(manning));
@@ -184,6 +187,7 @@ public class PersistenceServiceTest {
     @Test
     public void testIsLoggedInFalse() {
         User manning = new User(MANNING, PASSWORD);
+        manning  = persistence.createUser(manning);
         manning.setLoggedIn(false);
         persistence.setLoginStatus(manning);
         assertFalse("is logged in false", persistence.isLoggedIn(manning));
