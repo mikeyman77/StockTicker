@@ -151,8 +151,41 @@ public class PersistenceServiceTest {
     @Test
     public void testSetLoginStatusTrue() {
         User manning = new User(MANNING, PASSWORD);
-        persistence.updateUser(manning);
-        assertTrue("delete user", persistence.deleteUser(manning));
+        manning.setLoggedIn(true);
+        persistence.setLoginStatus(manning);
+        assertTrue("login status true", persistence.isLoggedIn(manning));
     }
 
+    /**
+     * Tests the setLoginStatus method for FALSE
+     */
+    @Test
+    public void testSetLoginStatusFalse() {
+        User manning = new User(MANNING, PASSWORD);
+        manning.setLoggedIn(false);
+        persistence.setLoginStatus(manning);
+        assertFalse("login status false", persistence.isLoggedIn(manning));
+    }
+
+    /**
+     * Tests the isLoggedIn method for TRUE
+     */
+    @Test
+    public void testIsLoggedInTrue() {
+        User manning = new User(MANNING, PASSWORD);
+        manning.setLoggedIn(true);
+        persistence.setLoginStatus(manning);
+        assertTrue("is logged in true", persistence.isLoggedIn(manning));
+    }
+
+    /**
+     * Tests the isLoggedIn method for FALSE
+     */
+    @Test
+    public void testIsLoggedInFalse() {
+        User manning = new User(MANNING, PASSWORD);
+        manning.setLoggedIn(false);
+        persistence.setLoginStatus(manning);
+        assertFalse("is logged in false", persistence.isLoggedIn(manning));
+    }
 }
