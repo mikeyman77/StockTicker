@@ -27,9 +27,10 @@ public enum StockTickerPersistence implements PersistenceService {
     public boolean trackStock(String username, Stock stock, boolean track) {
             TrackedStocks tracked = trackedStocksMap.get(username);
             if (track) {
-                if (tracked) {
-                    tracked.put(stock);
-                }
+
+                //if (tracked) {
+                //    tracked.put(stock);
+                //}
             }
             else {
                 tracked.remove(stock);
