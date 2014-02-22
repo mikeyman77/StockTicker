@@ -4,11 +4,11 @@
  * and open the template in the editor.
  */
 
-package com.stockticker.ui;
+package main;
 
 /**
  *
- * @author Hunter97
+ * @author prwallace
  */
 public class StockTicker_Main {
     
@@ -16,6 +16,6 @@ public class StockTicker_Main {
         ViewStockTicker gui = new ViewStockTicker();
         gui.build();
         gui.setPanels();
-        gui.setVisible( true );
+        //gui.setVisible( true );
     }
 }
