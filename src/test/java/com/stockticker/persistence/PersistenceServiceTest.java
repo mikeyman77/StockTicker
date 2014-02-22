@@ -8,6 +8,7 @@ import org.junit.Test;
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertTrue;
 import static junit.framework.Assert.assertFalse;
+import static junit.framework.Assert.assertNull;
 import static junit.framework.Assert.assertNotNull;
 
 /**
@@ -118,8 +119,14 @@ public class PersistenceServiceTest {
     }
 
     /**
-     * Tests the updateUser method
+     * Tests the createUser method returns null when User exists
      */
+    @Test
+    public void testCreateUserReturnsNullIfExist() {
+        User user = persistence.createUser(ortiz);
+        assertNull("create user when exists", user);
+    }
+
     @Test
     public void testUpdateUser() {
         User ortiz = new User(ORTIZ, PASSWORD+"2014");
