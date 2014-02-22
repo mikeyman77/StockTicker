@@ -59,12 +59,17 @@ public enum StockTickerPersistence implements PersistenceService {
 
     @Override
     public User createUser(User user) {
+        User newUser = null;
         if (!usersMap.containsKey(user.getUserName())) {
             userId++;
-            user.setUserID(userId);
-            usersMap.put(user.getUserName(), user);
+            newUser = user;
+            newUser.setUserID(userId);
+            usersMap.put(newUser.getUserName(), newUser);
         }
-        return user;
+        else
+            newUser = null;
+
+        return newUser;
     }
 
     @Override
@@ -104,6 +109,22 @@ public enum StockTickerPersistence implements PersistenceService {
             return false;
 
         return true;
+    }
+
+    public static void main(String [] args) {
+        PersistenceService ps = StockTickerPersistence.INSTANCE;
+
+        User sconnall = new User("sconnall", "redsox");
+        sconnall = ps.createUser(sconnall);
+        sconnall.setLoggedIn(true);
+        ps.setLoginStatus(sconnall);
+        System.out.print("User " + sconnall.getUserName() + " is ");
+        if (ps.isLoggedIn(sconnall)) {
+            System.out.println("logged in.");
+        }
+        else {
+            System.out.println("not logged in.");
+        }
     }
 
 }
