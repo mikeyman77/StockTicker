@@ -189,4 +189,21 @@ public class PersistenceServiceTest {
         persistence.setLoginStatus(ortiz);
         assertFalse("is logged in false", persistence.isLoggedIn(ortiz));
     }
+
+    /**
+     * Tests the getLoggedInUsers method for non-null
+     */
+    @Test
+    public void testIsLoggedInNotNull() {
+        assertNotNull("users logged in true", persistence.getLoggedInUsers());
+    }
+
+    /**
+     * Tests the getLoggedInUsers method for null
+     */
+//    @Test
+//    public void testIsLoggedInNull() {
+//        assertNotNull("users logged in true", persistence.getLoggedInUsers());
+//    }
+
 }
