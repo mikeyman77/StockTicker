@@ -1,6 +1,7 @@
 package com.stockticker.persistence;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.Map;
 import java.util.TreeMap;
 import java.util.List;
@@ -109,6 +110,25 @@ public enum StockTickerPersistence implements PersistenceService {
             return false;
 
         return true;
+    }
+
+    @Override
+    public List<User> getLoggedInUsers() {
+        List<User> loggedInUsers = null;
+
+        if (usersMap.size() > 0) {
+            User user = null;
+            loggedInUsers = new ArrayList<User>();
+            Iterator<User> users = usersMap.values().iterator();
+            while (users.hasNext()) {
+                user = users.next();
+                if (user.isLoggedIn()) {
+                    loggedInUsers.add(user);
+                }
+            }
+        }
+
+        return loggedInUsers;
     }
 
     public static void main(String [] args) {

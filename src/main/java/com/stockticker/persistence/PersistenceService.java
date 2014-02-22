@@ -15,4 +15,5 @@ public interface PersistenceService {
     public boolean deleteUser(User user);
     public boolean isLoggedIn(User user);
     public boolean setLoginStatus(User user);
+    public List<User> getLoggedInUsers();
 }
