@@ -113,17 +113,17 @@ public enum StockTickerPersistence implements PersistenceService {
     }
 
     @Override
-    public List<User> getLoggedInUsers() {
-        List<User> loggedInUsers = null;
+    public Map<String,User> getLoggedInUsers() {
+        Map<String,User> loggedInUsers = null;
 
         if (usersMap.size() > 0) {
             User user = null;
-            loggedInUsers = new ArrayList<User>();
+            loggedInUsers = new TreeMap<String,User>();
             Iterator<User> users = usersMap.values().iterator();
             while (users.hasNext()) {
                 user = users.next();
                 if (user.isLoggedIn()) {
-                    loggedInUsers.add(user);
+                    loggedInUsers.put(user.getUserName(), user);
                 }
             }
         }

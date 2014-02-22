@@ -1,6 +1,7 @@
 package com.stockticker.persistence;
 
 import java.util.List;
+import java.util.Map;
 import com.stockticker.Stock;
 import com.stockticker.User;
 
@@ -15,5 +16,5 @@ public interface PersistenceService {
     public boolean deleteUser(User user);
     public boolean isLoggedIn(User user);
     public boolean setLoginStatus(User user);
-    public List<User> getLoggedInUsers();
+    public Map<String,User> getLoggedInUsers();
 }
