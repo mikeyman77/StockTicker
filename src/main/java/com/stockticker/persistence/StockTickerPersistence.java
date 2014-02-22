@@ -136,6 +136,8 @@ public enum StockTickerPersistence implements PersistenceService {
 
         User sconnall = new User("sconnall", "redsox");
         sconnall = ps.createUser(sconnall);
+
+        //Set logged in and test
         sconnall.setLoggedIn(true);
         ps.setLoginStatus(sconnall);
         System.out.print("User " + sconnall.getUserName() + " is ");
@@ -143,7 +145,57 @@ public enum StockTickerPersistence implements PersistenceService {
             System.out.println("logged in.");
         }
         else {
-            System.out.println("not logged in.");
+            System.out.println("not logged out.");
+        }
+
+        //set logged out and test
+        sconnall.setLoggedIn(false);
+        ps.setLoginStatus(sconnall);
+        System.out.print("User " + sconnall.getUserName() + " is ");
+        if (ps.isLoggedIn(sconnall)) {
+            System.out.println("logged in.");
+        }
+        else {
+            System.out.println("logged out.");
+        }
+
+        //Set logged in and test
+        sconnall.setLoggedIn(true);
+        ps.setLoginStatus(sconnall);
+        System.out.print("User " + sconnall.getUserName() + " is ");
+        if (ps.isLoggedIn(sconnall)) {
+            System.out.println("logged in.");
+        }
+        else {
+            System.out.println("logged out.");
+        }
+
+        //Create new user and log in
+        User sconnall2 = new User("sconnall2", "redsox");
+        sconnall2.setLoggedIn(true);
+        ps.setLoginStatus(sconnall2);
+        System.out.print("User " + sconnall2.getUserName() + " is ");
+        if (ps.isLoggedIn(sconnall2)) {
+            System.out.println("logged in.");
+        }
+        else {
+            System.out.println("logged out.");
+        }
+
+        User user = null;
+        Map<String, User> loggedInUsers = ps.getLoggedInUsers();
+        Iterator<User> users = loggedInUsers.values().iterator();
+        while (users.hasNext()) {
+            user = users.next();
+            if (user.isLoggedIn()) {
+                System.out.print("User " + user.getUserName() + " is ");
+                if (user.isLoggedIn()) {
+                    System.out.println("logged in.");
+                }
+                else {
+                    System.out.println("logged out.");
+                }
+            }
         }
     }
 
