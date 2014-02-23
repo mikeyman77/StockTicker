@@ -35,8 +35,8 @@ public enum UserAuthorization implements AuthorizationService {
             }
         }
         
-        // match password
-        if (user !=null && password == user.getPassword()) {
+        // check password
+        if (checkPassword(password, user.getPassword())) {
             user.setLoggedIn(true);
             persistence.setLoginStatus(user.getUserName(), true);
             successful = true;
@@ -98,5 +98,13 @@ public enum UserAuthorization implements AuthorizationService {
     @Override
     public boolean changePassword(String username, String oldPassword, String newPassword) {
         return false;
+    }
+    
+    // helper method to check password for user
+    private boolean checkPassword(String password, String userPassword) {
+        if (password == userPassword)
+            return true;
+        else
+            return false;
     }
 }
