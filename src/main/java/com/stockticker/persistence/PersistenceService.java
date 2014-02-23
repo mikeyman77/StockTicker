@@ -14,7 +14,7 @@ public interface PersistenceService {
     public boolean updateUser(User user);
     public User    loadUser(User user);
     public boolean deleteUser(User user);
-    public boolean isLoggedIn(User user);
-    public boolean setLoginStatus(User user);
-    public Map<String,User> getLoggedInUsers();
+    public boolean isLoggedIn(String username);
+    public boolean setLoginStatus(String username, boolean status);
+    public List<String> getLoggedInUsers();
 }

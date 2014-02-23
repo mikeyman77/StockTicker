@@ -94,36 +94,46 @@ public enum StockTickerPersistence implements PersistenceService {
     }
 
     @Override
-    public boolean isLoggedIn(User user) {
-        if (!usersMap.containsKey(user.getUserName()))
+    public boolean isLoggedIn(String username) {
+        if (!usersMap.containsKey(username))
             return false;
 
-        User current = usersMap.get(user.getUserName());
+        User current = usersMap.get(username);
         return current.isLoggedIn();
     }
 
     @Override
-    public boolean setLoginStatus(User user) {
-        if (usersMap.containsKey(user.getUserName()))
-            usersMap.put(user.getUserName(), user);
-        else
+    public boolean setLoginStatus(String username, boolean status) {
+        System.out.println("\n*****************************************************");
+        System.out.println("\nsetLoginStatus User="+username+" login status="+status);
+        if (usersMap.containsKey(username)) {
+            User cachedUser = usersMap.remove(username);
+            System.out.println("BEFORE Cached user : "+cachedUser.getUserName()+" status before="+cachedUser.isLoggedIn());
+            cachedUser.setLoggedIn(status);
+            usersMap.put(username, cachedUser);
+            System.out.println("AFTER Cached user : "+cachedUser.getUserName()+" status before="+cachedUser.isLoggedIn());
+        }
+        else {
+            System.out.println("setLoginStatus failed.");
             return false;
+        }
 
+        System.out.println("\n*****************************************************");
         return true;
     }
 
     @Override
-    public Map<String,User> getLoggedInUsers() {
-        Map<String,User> loggedInUsers = null;
+    public List<String> getLoggedInUsers() {
+        List<String> loggedInUsers = null;
 
         if (usersMap.size() > 0) {
             User user = null;
-            loggedInUsers = new TreeMap<String,User>();
+            loggedInUsers = new ArrayList<String>();
             Iterator<User> users = usersMap.values().iterator();
             while (users.hasNext()) {
                 user = users.next();
                 if (user.isLoggedIn()) {
-                    loggedInUsers.put(user.getUserName(), user);
+                    loggedInUsers.add(user.getUserName());
                 }
             }
         }
@@ -138,10 +148,9 @@ public enum StockTickerPersistence implements PersistenceService {
         sconnall = ps.createUser(sconnall);
 
         //Set logged in and test
-        sconnall.setLoggedIn(true);
-        ps.setLoginStatus(sconnall);
+        ps.setLoginStatus(sconnall.getUserName(), true);
         System.out.print("User " + sconnall.getUserName() + " is ");
-        if (ps.isLoggedIn(sconnall)) {
+        if (ps.isLoggedIn(sconnall.getUserName())) {
             System.out.println("logged in.");
         }
         else {
@@ -149,10 +158,9 @@ public enum StockTickerPersistence implements PersistenceService {
         }
 
         //set logged out and test
-        sconnall.setLoggedIn(false);
-        ps.setLoginStatus(sconnall);
+        ps.setLoginStatus(sconnall.getUserName(), false);
         System.out.print("User " + sconnall.getUserName() + " is ");
-        if (ps.isLoggedIn(sconnall)) {
+        if (ps.isLoggedIn(sconnall.getUserName())) {
             System.out.println("logged in.");
         }
         else {
@@ -160,10 +168,9 @@ public enum StockTickerPersistence implements PersistenceService {
         }
 
         //Set logged in and test
-        sconnall.setLoggedIn(true);
-        ps.setLoginStatus(sconnall);
+        ps.setLoginStatus(sconnall.getUserName(), true);
         System.out.print("User " + sconnall.getUserName() + " is ");
-        if (ps.isLoggedIn(sconnall)) {
+        if (ps.isLoggedIn(sconnall.getUserName())) {
             System.out.println("logged in.");
         }
         else {
@@ -172,10 +179,9 @@ public enum StockTickerPersistence implements PersistenceService {
 
         //Create new user and log in
         User sconnall2 = new User("sconnall2", "redsox");
-        sconnall2.setLoggedIn(true);
-        ps.setLoginStatus(sconnall2);
+        ps.setLoginStatus(sconnall2.getUserName(), true);
         System.out.print("User " + sconnall2.getUserName() + " is ");
-        if (ps.isLoggedIn(sconnall2)) {
+        if (ps.isLoggedIn(sconnall2.getUserName())) {
             System.out.println("logged in.");
         }
         else {
@@ -183,19 +189,9 @@ public enum StockTickerPersistence implements PersistenceService {
         }
 
         User user = null;
-        Map<String, User> loggedInUsers = ps.getLoggedInUsers();
-        Iterator<User> users = loggedInUsers.values().iterator();
-        while (users.hasNext()) {
-            user = users.next();
-            if (user.isLoggedIn()) {
-                System.out.print("User " + user.getUserName() + " is ");
-                if (user.isLoggedIn()) {
-                    System.out.println("logged in.");
-                }
-                else {
-                    System.out.println("logged out.");
-                }
-            }
+        List<String> loggedInUsers = ps.getLoggedInUsers();
+        for (String username : loggedInUsers) {
+            System.out.print("User " + username + " is logged in");
         }
     }
 
