@@ -35,6 +35,10 @@ public class User {
     }
 
     // Setter methods
+    public void setPassword(String password) {
+        this.password = password;
+    }
+    
     public void setLoggedIn(boolean loggedIn) {
         this.loggedIn = loggedIn;
     }
