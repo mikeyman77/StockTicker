@@ -104,21 +104,15 @@ public enum StockTickerPersistence implements PersistenceService {
 
     @Override
     public boolean setLoginStatus(String username, boolean status) {
-        System.out.println("\n*****************************************************");
-        System.out.println("\nsetLoginStatus User="+username+" login status="+status);
         if (usersMap.containsKey(username)) {
             User cachedUser = usersMap.remove(username);
-            System.out.println("BEFORE Cached user : "+cachedUser.getUserName()+" status before="+cachedUser.isLoggedIn());
             cachedUser.setLoggedIn(status);
             usersMap.put(username, cachedUser);
-            System.out.println("AFTER Cached user : "+cachedUser.getUserName()+" status before="+cachedUser.isLoggedIn());
         }
         else {
-            System.out.println("setLoginStatus failed.");
             return false;
         }
 
-        System.out.println("\n*****************************************************");
         return true;
     }
 
