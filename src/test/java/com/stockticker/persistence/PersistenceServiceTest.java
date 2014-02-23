@@ -155,9 +155,8 @@ public class PersistenceServiceTest {
      */
     @Test
     public void testSetLoginStatusTrue() {
-        ortiz.setLoggedIn(true);
-        persistence.setLoginStatus(ortiz);
-        assertTrue("login status true", persistence.isLoggedIn(ortiz));
+        persistence.setLoginStatus(ortiz.getUserName(), true);
+        assertTrue("login status true", persistence.isLoggedIn(ortiz.getUserName()));
     }
 
     /**
@@ -165,9 +164,8 @@ public class PersistenceServiceTest {
      */
     @Test
     public void testSetLoginStatusFalse() {
-        ortiz.setLoggedIn(false);
-        persistence.setLoginStatus(ortiz);
-        assertFalse("login status false", persistence.isLoggedIn(ortiz));
+        persistence.setLoginStatus(ortiz.getUserName(), false);
+        assertFalse("login status false", persistence.isLoggedIn(ortiz.getUserName()));
     }
 
     /**
@@ -175,9 +173,8 @@ public class PersistenceServiceTest {
      */
     @Test
     public void testIsLoggedInTrue() {
-        ortiz.setLoggedIn(true);
-        persistence.setLoginStatus(ortiz);
-        assertTrue("is logged in true", persistence.isLoggedIn(ortiz));
+        persistence.setLoginStatus(ortiz.getUserName(), true);
+        assertTrue("is logged in true", persistence.isLoggedIn(ortiz.getUserName()));
     }
 
     /**
@@ -185,9 +182,8 @@ public class PersistenceServiceTest {
      */
     @Test
     public void testIsLoggedInFalse() {
-        ortiz.setLoggedIn(false);
-        persistence.setLoginStatus(ortiz);
-        assertFalse("is logged in false", persistence.isLoggedIn(ortiz));
+        persistence.setLoginStatus(ortiz.getUserName(), false);
+        assertFalse("is logged in false", persistence.isLoggedIn(ortiz.getUserName()));
     }
 
     /**
