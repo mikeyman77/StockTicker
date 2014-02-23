@@ -96,8 +96,7 @@ public enum UserAuthorization implements AuthorizationService {
     }
 
     @Override
-    public boolean changePassword(String username, String newPassword) {
-        // going to change the interface for this
+    public boolean changePassword(String username, String oldPassword, String newPassword) {
         return false;
     }
 }

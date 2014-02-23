@@ -11,6 +11,6 @@ public interface AuthorizationService {
     public boolean unRegister(String username);
     public boolean isRegistered(String username);
     public UserInfo getUserInfo(String username);
-    public boolean changePassword(String username, String newPassword);
+    public boolean changePassword(String username, String oldPassword, String newPassword);
 
 }
