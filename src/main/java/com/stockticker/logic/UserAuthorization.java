@@ -97,7 +97,20 @@ public enum UserAuthorization implements AuthorizationService {
 
     @Override
     public boolean changePassword(String username, String oldPassword, String newPassword) {
-        return false;
+        boolean successful = false;
+        List<String> loggedInUsers = persistence.getLoggedInUsers();
+        
+        // only allow logged in users to change password
+        if (loggedInUsers.contains(username)) {
+            User user = persistence.loadUser(new User(username, ""));
+            
+            if (checkPassword(oldPassword, user.getPassword())) {
+                user.setPassword(newPassword);
+                successful = true;
+            }
+        }
+        
+        return successful;
     }
     
     // helper method to check password for user
