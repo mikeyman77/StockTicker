@@ -7,6 +7,7 @@ import java.util.TreeMap;
 import java.util.List;
 import com.stockticker.Stock;
 import com.stockticker.User;
+import com.stockticker.UserInfo;
 
 public enum StockTickerPersistence implements PersistenceService {
     INSTANCE;
@@ -134,6 +135,16 @@ public enum StockTickerPersistence implements PersistenceService {
 
         return loggedInUsers;
     }
+
+    @Override
+    public UserInfo getUserInfo(String username) {
+        if (!usersMap.containsKey(username))
+            return null;
+
+        User current = usersMap.get(username);
+        return current.getUserInfo();
+    }
+
 
     public static void main(String [] args) {
         PersistenceService ps = StockTickerPersistence.INSTANCE;

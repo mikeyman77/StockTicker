@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Map;
 import com.stockticker.Stock;
 import com.stockticker.User;
+import com.stockticker.UserInfo;
 
 public interface PersistenceService {
     public List<Stock> getTrackedStocks(User user);
@@ -17,4 +18,5 @@ public interface PersistenceService {
     public boolean isLoggedIn(String username);
     public boolean setLoginStatus(String username, boolean status);
     public List<String> getLoggedInUsers();
+    public UserInfo getUserInfo(String username);
 }
