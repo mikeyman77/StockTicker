@@ -17,6 +17,7 @@ public class UserAuthorizationTest {
     private final String testUsername = "test";
     private final String testPassword = "password";
     private final String wrongPassword = "none";
+    private final String newPassword = "newPass";
     
     private final User regUser = new User("mary", "password1");
     private final User nonRegUser = new User("john", "password2");
@@ -131,6 +132,25 @@ public class UserAuthorizationTest {
 
     @Test
     public void testChangePassword() throws Exception {
-        // will implement soon
+        String username = loggedInUser.getUserName();
+        String password = loggedInUser.getPassword();
+        boolean result = userAuth.changePassword(username, password, newPassword);
+        assertTrue("Successful change password", result);
+    }
+    
+    @Test
+    public void testFailedChangePassword() throws Exception {
+        String username = loggedInUser.getUserName();
+        String password = loggedInUser.getPassword();
+        boolean result = userAuth.changePassword(username, wrongPassword, newPassword);
+        assertFalse("Failed change password (bad password)", result);
+    }
+    
+    @Test
+    public void testFailedLoggedoutChangePassword() throws Exception {
+        String username = loggedOutUser.getUserName();
+        String password = loggedOutUser.getPassword();
+        boolean result = userAuth.changePassword(username, password, newPassword);
+        assertFalse("Failed change password (logged out user)", result);
     }
 }
