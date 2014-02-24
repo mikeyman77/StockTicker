@@ -20,12 +20,18 @@ public class TrackedStocks {
         trackedStocks = new TreeMap<String, Stock>();
     }
 
-    public void put(Stock stock) {
+    public boolean put(Stock stock) {
+        if (stock == null)
+            return false;
+
         trackedStocks.put(stock.getSymbol(), stock);
+        return true;
     }
 
-    public void remove(Stock stock) {
-        trackedStocks.remove(stock.getSymbol());
+    public Stock remove(Stock stock) {
+        if (stock == null)
+            return null;
+        return trackedStocks.remove(stock.getSymbol());
     }
 
     public List<Stock> getStocks() {
