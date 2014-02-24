@@ -199,8 +199,8 @@ public class PersistenceServiceTest {
      * Tests the setLoginStatus method for FALSE
      */
     @Test
-    public void testSetLoginStatusFalse() {
-        persistence.setLoginStatus(ortiz.getUserName(), false);
+    public void testSetLoginStatusUserNotFound() {
+        persistence.setLoginStatus(vedder.getUserName(), true);
         assertFalse("login status false", persistence.isLoggedIn(ortiz.getUserName()));
     }
 
@@ -231,11 +231,15 @@ public class PersistenceServiceTest {
     }
 
     /**
-     * Tests the getLoggedInUsers method for null
+     * Tests the getLoggedInUsers method for empty list
      */
-    //@Test
-    //public void testIsLoggedInNull() {
-    //    assertNull("users logged in true", persistence.getLoggedInUsers());
-    //}
+    @Test
+    public void testIsLoggedInNull() {
+        List<String> users = persistence.getLoggedInUsers();
+        for (String user : users) {
+            persistence.setLoginStatus(user, false);
+        }
+        assertEquals("no users logged in", 0, persistence.getLoggedInUsers().size());
+    }
 
 }
