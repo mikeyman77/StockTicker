@@ -28,16 +28,20 @@ public class PersistenceServiceTest {
     private static final String MANNING = "Manning";
     private static final String SCHILLING = "Schilling";
     private static final String CONNALL = "Connall";
+    private static final String VEDDER = "Vedder";
     private static final String PASSWORD = "redsox";
     private static final String GOOG = "GOOG";
     private static final String AAPL = "AAPL";
     private static final String MSFT = "MSFT";
+    private static final String ORCL = "ORCL";
     private User pedroia = new User(PEDROIA, PASSWORD);
     private User ortiz = new User(ORTIZ, PASSWORD);
     private User victorino = new User(VICTORINO, PASSWORD);
+    private User vedder = new User(VEDDER, PASSWORD);
     private Stock google;
     private Stock apple;
     private Stock microsoft;
+    private Stock oracle;
 
     /**
      * Sets up each test before they run
@@ -66,21 +70,27 @@ public class PersistenceServiceTest {
     }
 
     /**
-     * Tests the trackStock method
+     * Tests the trackStock method returns true
      */
     @Test
-    public void testTrackStock() {
-        persistence.trackStock(ortiz, google, true);
-        assertTrue("stock tracked", persistence.isStockTracked(ortiz, google));
+    public void testTrackStockTrue() {
+        assertTrue("track stock true", persistence.trackStock(ortiz, google, true));
     }
 
+    /**
+     * Tests the trackStock method returns false
+     */
+    @Test
+    public void testTrackStockFalse() {
+        persistence.trackStock(ortiz, google, false);
+        assertFalse("track stock false", persistence.trackStock(ortiz, null, true));
+    }
     /**
      * Tests the isStockTracked method is true
      */
     @Test
     public void testIsStockTrackedTrue() {
-        persistence.trackStock(ortiz, google, true);
-        assertTrue("stock tracked", persistence.isStockTracked(ortiz, google));
+        assertTrue("is stock tracked true", persistence.isStockTracked(ortiz, google));
     }
 
     /**
@@ -88,7 +98,7 @@ public class PersistenceServiceTest {
      */
     @Test
     public void testIsStockTrackedFalse() {
-        assertFalse("stock tracked", persistence.isStockTracked(ortiz, new Stock("JAVA")));
+        assertFalse("is stock tracked false", persistence.isStockTracked(ortiz, oracle));
     }
 
     /**
@@ -128,26 +138,52 @@ public class PersistenceServiceTest {
     }
 
     @Test
-    public void testUpdateUser() {
+    public void testUpdateUserUpdatesPassword() {
         User ortiz = new User(ORTIZ, PASSWORD+"2014");
         persistence.updateUser(ortiz);
-        assertEquals("update user", PASSWORD+"2014", persistence.loadUser(ortiz).getPassword());
+        assertEquals("update user updates password", PASSWORD + "2014", persistence.loadUser(ortiz).getPassword());
+    }
+
+    @Test
+    public void testUpdateUserTrue() {
+        assertTrue("update user true", persistence.updateUser(ortiz));
+    }
+
+    @Test
+    public void testUpdateUserFalse() {
+        assertFalse("update user false", persistence.updateUser(vedder));
+    }
+      
+    /**
+     * Tests the loadUser method for non null return
+     */
+    @Test
+    public void testLoadUserNotNull() {
+        assertNotNull("load user not null", persistence.loadUser(victorino));
     }
 
     /**
-     * Tests the loadUser method
+     * Tests the loadUser method for null return
      */
     @Test
-    public void testLoadUser() {
-        assertNotNull("load user", persistence.loadUser(victorino));
+    public void testLoadUserNull() {
+        assertNull("load user null", persistence.loadUser(vedder));
     }
 
     /**
-     * Tests the deleteUser method
+     * Tests the deleteUser method for return true
      */
     @Test
-    public void testDeleteUser() {
-        assertTrue("delete user", persistence.deleteUser(ortiz));
+    public void testDeleteUserTrue() {
+        assertTrue("delete user true", persistence.deleteUser(ortiz));
+    }
+
+    /**
+     * Tests the deleteUser method for return false
+     */
+    @Test
+    public void testDeleteUserFalse() {
+        assertFalse("delete user false", persistence.deleteUser(vedder));
     }
 
     /**
@@ -197,9 +233,9 @@ public class PersistenceServiceTest {
     /**
      * Tests the getLoggedInUsers method for null
      */
-//    @Test
-//    public void testIsLoggedInNull() {
-//        assertNotNull("users logged in true", persistence.getLoggedInUsers());
-//    }
+    //@Test
+    //public void testIsLoggedInNull() {
+    //    assertNull("users logged in true", persistence.getLoggedInUsers());
+    //}
 
 }
