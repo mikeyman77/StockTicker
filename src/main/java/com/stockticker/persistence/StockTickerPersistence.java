@@ -26,6 +26,9 @@ public enum StockTickerPersistence implements PersistenceService {
 
     @Override
     public boolean trackStock(User user, Stock stock, boolean track) {
+            if (user == null || stock == null)
+                return false;
+
             TrackedStocks tracked = trackedStocksMap.get(user.getUserName());
             if (track) {
                 if (tracked != null) {
@@ -37,15 +40,16 @@ public enum StockTickerPersistence implements PersistenceService {
                 }
             }
             else {
-                if (tracked != null) {
-                    tracked.remove(stock);
-                }
+                tracked.remove(stock);
             }
         return true;
     }
 
     @Override
     public boolean isStockTracked(User user, Stock stock) {
+        if (user == null || stock == null)
+            return false;
+
         TrackedStocks tracked = trackedStocksMap.get(user.getUserName());
 
         return tracked.isStockTracked(stock.getSymbol());
@@ -53,45 +57,50 @@ public enum StockTickerPersistence implements PersistenceService {
 
     @Override
     public boolean userExists(User user) {
-        if (usersMap.containsKey(user.getUserName()))
-            return true;
-        else
+        if (user == null || (! usersMap.containsKey(user.getUserName())))
             return false;
-    }
-
-    @Override
-    public User createUser(User user) {
-        User newUser = null;
-        if (!usersMap.containsKey(user.getUserName())) {
-            userId++;
-            newUser = user;
-            newUser.setUserID(userId);
-            usersMap.put(newUser.getUserName(), newUser);
-        }
-        else
-            newUser = null;
-
-        return newUser;
-    }
-
-    @Override
-    public boolean updateUser(User user) {
-        usersMap.put(user.getUserName(), user);
 
         return true;
     }
 
     @Override
+    public User createUser(User user) {
+
+        //if user is null or already exists, return null
+        if (user == null || usersMap.containsKey(user.getUserName()))
+            return null;
+
+        //otherwise, create the new user
+        userId++;
+        user.setUserID(userId);
+        usersMap.put(user.getUserName(), user);
+
+        return user;
+    }
+
+    @Override
+    public boolean updateUser(User user) {
+        if (user == null || !usersMap.containsKey(user.getUserName()))
+            return false;
+
+        usersMap.put(user.getUserName(), user);
+        return true;
+    }
+
+    @Override
     public User loadUser(User user) {
+        if (user == null)
+            return null;
+
         return usersMap.get(user.getUserName());
     }
 
     @Override
     public boolean deleteUser(User user) {
-        if (usersMap.remove(user.getUserName()) != null)
-            return true;
-        else
+        if (user == null || usersMap.remove(user.getUserName()) == null)
             return false;
+
+        return true;
     }
 
     @Override
@@ -105,15 +114,12 @@ public enum StockTickerPersistence implements PersistenceService {
 
     @Override
     public boolean setLoginStatus(String username, boolean status) {
-        if (usersMap.containsKey(username)) {
-            User cachedUser = usersMap.remove(username);
-            cachedUser.setLoggedIn(status);
-            usersMap.put(username, cachedUser);
-        }
-        else {
+        if (!usersMap.containsKey(username))
             return false;
-        }
 
+        User cachedUser = usersMap.remove(username);
+        cachedUser.setLoggedIn(status);
+        usersMap.put(username, cachedUser);
         return true;
     }
 
