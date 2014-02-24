@@ -115,6 +115,7 @@
 
         <cobertura-instrument todir="${cobertura.instrumented.dir}" datafile="${cobertura.data.file}">
             <ignore regex="org.apache.log4j.*" />
+            <ignoreMethodAnnotation annotationName="foo.bar.CoverageIgnore"/>
             <fileset dir="${classes.dir}">
                 <include name="**/*.class"/>
                 <exclude name="**/*Test.class"/>
@@ -131,11 +132,12 @@
             <formatter type="xml" />
             <test name="${testcase}" todir="${cobertura.reports.xml.dir}" if="testcase" />
             <batchtest todir="${cobertura.reports.xml.dir}/">
-                <fileset dir="${src.dir}">
+                <!--<fileset dir="${src.dir}">
                     <include name="**/*.java"/>
-                </fileset>
+                </fileset>-->
                 <fileset dir="${src-test.dir}">
                     <include name="**/*Test*.java"/>
+                    <exclude name="**/*$*.class"/>
                 </fileset>
             </batchtest>
         </junit>
@@ -144,9 +146,9 @@
             <fileset dir="${src.dir}">
                 <include name="**/*.java" />
             </fileset>
-            <fileset dir="${src-test.dir}">
+            <!--<fileset dir="${src-test.dir}">
                 <include name="**/*.java" />
-            </fileset>
+            </fileset>-->
         </cobertura-report>
     </target>
 
