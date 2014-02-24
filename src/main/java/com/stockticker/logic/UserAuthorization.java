@@ -13,13 +13,12 @@ public enum UserAuthorization implements AuthorizationService {
 
     @Override
     public boolean logIn(String username, String password) {
-        User tempUser = new User(username, password);
         User user = null;
         boolean successful = false;
         
         // check if user exists
-        if (persistence.userExists(tempUser))
-            user = persistence.loadUser(tempUser);
+        if (persistence.userExists(username))
+            user = persistence.getUser(username);
         
         else
             return successful;
@@ -67,7 +66,7 @@ public enum UserAuthorization implements AuthorizationService {
     @Override
     public boolean register(String username, String password) {
         
-        if (persistence.createUser(new User(username, password)) != null) {
+        if (persistence.createUser(username, password) != null) {
             return true;
         }
 
@@ -76,10 +75,9 @@ public enum UserAuthorization implements AuthorizationService {
 
     @Override
     public boolean unRegister(String username) {
-        User user = new User(username, "");
         
-        if (persistence.userExists(user)) {
-            return persistence.deleteUser(user);
+        if (persistence.userExists(username)) {
+            return persistence.deleteUser(username);
         }
         
         return false;
@@ -87,7 +85,7 @@ public enum UserAuthorization implements AuthorizationService {
 
     @Override
     public boolean isRegistered(String username) {
-        return persistence.userExists(new User(username, ""));
+        return persistence.userExists(username);
     }
 
     @Override
@@ -102,7 +100,7 @@ public enum UserAuthorization implements AuthorizationService {
         
         // only allow logged in users to change password
         if (loggedInUsers.contains(username)) {
-            User user = persistence.loadUser(new User(username, ""));
+            User user = persistence.getUser(username);
             
             if (checkPassword(oldPassword, user.getPassword())) {
                 user.setPassword(newPassword);

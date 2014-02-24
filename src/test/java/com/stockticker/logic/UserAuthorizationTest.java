@@ -14,33 +14,35 @@ public class UserAuthorizationTest {
     private final PersistenceService persistentence = StockTickerPersistence.INSTANCE;
     private final AuthorizationService userAuth = UserAuthorization.INSTANCE;
 
-    private final String testUsername = "test";
-    private final String testPassword = "password";
     private final String wrongPassword = "none";
     private final String newPassword = "newPass";
     
-    private final User regUser = new User("mary", "password1");
-    private final User nonRegUser = new User("john", "password2");
-    private final User loggedInUser = new User("mark", "password3");
-    private final User loggedOutUser = new User("susan", "password4");
+    private final User mary = new User("mary", "marypass");
+    private final User john = new User("john", "johnpass");
+    private final User mark = new User("mark", "markpass");
+    private final User susan = new User("susan", "susanpass");
+    
+    private final User nonRegUser = john;
+    private final User regUser = mary;
+    private final User loggedInUser = mark;
+    private final User loggedOutUser = susan;
     
     @Before
     public void setUp() {
+        
         // create a registered user
-        persistentence.createUser(regUser);
+        persistentence.createUser(mary.getUserName(), mary.getPassword());
         
-        // create logged out user
-        persistentence.createUser(loggedOutUser);
+        // create and setup logged out user
+        persistentence.createUser(susan.getUserName(), susan.getPassword());
+        loggedOutUser.setLoggedIn(false);
+        persistentence.setLoginStatus(loggedOutUser.getUserName(), false);
         
-        // create logged in user
-        persistentence.createUser(loggedInUser);
+        // create and setup logged in user
+        persistentence.createUser(mark.getUserName(), mark.getPassword());
         loggedInUser.setLoggedIn(true);
         persistentence.setLoginStatus(loggedInUser.getUserName(), true);
         
-        // create logged out user
-        persistentence.createUser(loggedOutUser);
-        loggedInUser.setLoggedIn(false);
-        persistentence.setLoginStatus(loggedOutUser.getUserName(), false);
     }
     
     @Test
