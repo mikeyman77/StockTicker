@@ -28,7 +28,7 @@ public enum UserAuthorization implements AuthorizationService {
         List<String> loggedInUsers = persistence.getLoggedInUsers();
         
         // log out all users but the username
-        if (loggedInUsers != null && !loggedInUsers.isEmpty()) {
+        if (!loggedInUsers.isEmpty()) {
             for (String uname : loggedInUsers) {
                 if (uname != username)
                     persistence.setLoginStatus(uname, false);
@@ -50,7 +50,7 @@ public enum UserAuthorization implements AuthorizationService {
         boolean successful = false;
         List<String> loggedInUsers = persistence.getLoggedInUsers();
         
-        if (loggedInUsers != null && !loggedInUsers.isEmpty()) {
+        if (!loggedInUsers.isEmpty()) {
             if (loggedInUsers.contains(username)) {
                 successful = persistence.setLoginStatus(username, false);
             }
