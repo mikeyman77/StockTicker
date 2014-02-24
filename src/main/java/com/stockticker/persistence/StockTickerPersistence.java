@@ -125,11 +125,10 @@ public enum StockTickerPersistence implements PersistenceService {
 
     @Override
     public List<String> getLoggedInUsers() {
-        List<String> loggedInUsers = null;
+        List<String> loggedInUsers = new ArrayList<String>();
 
         if (usersMap.size() > 0) {
             User user = null;
-            loggedInUsers = new ArrayList<String>();
             Iterator<User> users = usersMap.values().iterator();
             while (users.hasNext()) {
                 user = users.next();
@@ -151,7 +150,7 @@ public enum StockTickerPersistence implements PersistenceService {
         return current.getUserInfo();
     }
 
-
+/*
     public static void main(String [] args) {
         PersistenceService ps = StockTickerPersistence.INSTANCE;
 
@@ -205,5 +204,5 @@ public enum StockTickerPersistence implements PersistenceService {
             System.out.print("User " + username + " is logged in");
         }
     }
-
+*/
 }
