@@ -64,14 +64,15 @@ public enum StockTickerPersistence implements PersistenceService {
     }
 
     @Override
-    public User createUser(User user) {
+    public User createUser(String username, String password) {
 
         //if user is null or already exists, return null
-        if (user == null || usersMap.containsKey(user.getUserName()))
+        if (usersMap.containsKey(username))
             return null;
 
         //otherwise, create the new user
         userId++;
+        User user = usersMap.get(username);
         user.setUserID(userId);
         usersMap.put(user.getUserName(), user);
 
@@ -93,8 +94,8 @@ public enum StockTickerPersistence implements PersistenceService {
     }
 
     @Override
-    public boolean deleteUser(User user) {
-        if (user == null || usersMap.remove(user.getUserName()) == null)
+    public boolean deleteUser(String username) {
+        if (usersMap.remove(username) == null)
             return false;
 
         return true;

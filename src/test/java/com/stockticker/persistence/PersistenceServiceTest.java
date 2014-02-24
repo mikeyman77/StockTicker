@@ -49,9 +49,9 @@ public class PersistenceServiceTest {
     @Before
     public void setUp() {
         persistence = StockTickerPersistence.INSTANCE;
-        persistence.createUser(pedroia);
-        persistence.createUser(ortiz);
-        persistence.createUser(victorino);
+        persistence.createUser(PEDROIA, PASSWORD);
+        persistence.createUser(ORTIZ, PASSWORD);
+        persistence.createUser(VICTORINO, PASSWORD);
         google = new Stock(GOOG);
         apple = new Stock(AAPL);
         microsoft = new Stock(MSFT);
@@ -124,7 +124,7 @@ public class PersistenceServiceTest {
     @Test
     public void testCreateUser() {
         User schilling = new User(SCHILLING, PASSWORD);
-        User user = persistence.createUser(schilling);
+        User user = persistence.createUser(SCHILLING, PASSWORD);
         assertNotNull("create user", user);
     }
 
@@ -133,7 +133,7 @@ public class PersistenceServiceTest {
      */
     @Test
     public void testCreateUserReturnsNullIfExist() {
-        User user = persistence.createUser(ortiz);
+        User user = persistence.createUser(ORTIZ, PASSWORD);
         assertNull("create user when exists", user);
     }
 
@@ -175,7 +175,7 @@ public class PersistenceServiceTest {
      */
     @Test
     public void testDeleteUserTrue() {
-        assertTrue("delete user true", persistence.deleteUser(ortiz));
+        assertTrue("delete user true", persistence.deleteUser(ORTIZ));
     }
 
     /**
@@ -183,7 +183,7 @@ public class PersistenceServiceTest {
      */
     @Test
     public void testDeleteUserFalse() {
-        assertFalse("delete user false", persistence.deleteUser(vedder));
+        assertFalse("delete user false", persistence.deleteUser(VEDDER));
     }
 
     /**
