@@ -72,7 +72,7 @@ public enum StockTickerPersistence implements PersistenceService {
 
         //otherwise, create the new user
         userId++;
-        User user = usersMap.get(username);
+        User user = new User(username, password);
         user.setUserID(userId);
         usersMap.put(user.getUserName(), user);
 
