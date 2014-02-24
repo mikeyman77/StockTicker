@@ -141,7 +141,7 @@ public class PersistenceServiceTest {
     public void testUpdateUserUpdatesPassword() {
         User ortiz = new User(ORTIZ, PASSWORD+"2014");
         persistence.updateUser(ortiz);
-        assertEquals("update user updates password", PASSWORD + "2014", persistence.loadUser(ortiz).getPassword());
+        assertEquals("update user updates password", PASSWORD + "2014", persistence.getUser(ortiz.getUserName()).getPassword());
     }
 
     @Test
@@ -155,19 +155,19 @@ public class PersistenceServiceTest {
     }
       
     /**
-     * Tests the loadUser method for non null return
+     * Tests the getUser method for non null return
      */
     @Test
     public void testLoadUserNotNull() {
-        assertNotNull("load user not null", persistence.loadUser(victorino));
+        assertNotNull("load user not null", persistence.getUser(victorino.getUserName()));
     }
 
     /**
-     * Tests the loadUser method for null return
+     * Tests the getUser method for null return
      */
     @Test
     public void testLoadUserNull() {
-        assertNull("load user null", persistence.loadUser(vedder));
+        assertNull("load user null", persistence.getUser(vedder.getUserName()));
     }
 
     /**
@@ -234,12 +234,12 @@ public class PersistenceServiceTest {
      * Tests the getLoggedInUsers method for empty list
      */
     @Test
-    public void testIsLoggedInNull() {
+    public void testIsLoggedInReturnsEmptyList() {
         List<String> users = persistence.getLoggedInUsers();
         for (String user : users) {
             persistence.setLoginStatus(user, false);
         }
-        assertEquals("no users logged in", 0, persistence.getLoggedInUsers().size());
+        assertTrue("no users logged in", persistence.getLoggedInUsers().isEmpty());
     }
 
 }
