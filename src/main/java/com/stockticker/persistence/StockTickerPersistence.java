@@ -88,11 +88,8 @@ public enum StockTickerPersistence implements PersistenceService {
     }
 
     @Override
-    public User getUser(User user) {
-        if (user == null)
-            return null;
-
-        return usersMap.get(user.getUserName());
+    public User getUser(String username) {
+        return usersMap.get(username);
     }
 
     @Override
