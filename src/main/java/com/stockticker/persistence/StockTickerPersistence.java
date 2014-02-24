@@ -88,7 +88,7 @@ public enum StockTickerPersistence implements PersistenceService {
     }
 
     @Override
-    public User loadUser(User user) {
+    public User getUser(User user) {
         if (user == null)
             return null;
 

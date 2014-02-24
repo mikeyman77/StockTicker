@@ -13,7 +13,7 @@ public interface PersistenceService {
     public boolean userExists(User user);
     public User createUser(User user);
     public boolean updateUser(User user);
-    public User    loadUser(User user);
+    public User    getUser(User user);
     public boolean deleteUser(User user);
     public boolean isLoggedIn(String username);
     public boolean setLoginStatus(String username, boolean status);
