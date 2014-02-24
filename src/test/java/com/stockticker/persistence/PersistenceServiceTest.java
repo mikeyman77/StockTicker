@@ -106,7 +106,7 @@ public class PersistenceServiceTest {
      */
     @Test
     public void testUserExistsTrue() {
-        assertTrue("user exists", persistence.userExists(ortiz));
+        assertTrue("user exists", persistence.userExists(ortiz.getUserName()));
     }
 
     /**
@@ -115,7 +115,7 @@ public class PersistenceServiceTest {
     @Test
     public void testUserExistsFalse() {
         User connall = new User(CONNALL, PASSWORD);
-        assertFalse("user doesn't exist", persistence.userExists(connall));
+        assertFalse("user doesn't exist", persistence.userExists(connall.getUserName()));
     }
 
     /**

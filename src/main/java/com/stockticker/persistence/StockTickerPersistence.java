@@ -56,8 +56,8 @@ public enum StockTickerPersistence implements PersistenceService {
     }
 
     @Override
-    public boolean userExists(User user) {
-        if (user == null || (! usersMap.containsKey(user.getUserName())))
+    public boolean userExists(String username) {
+        if (! usersMap.containsKey(username))
             return false;
 
         return true;
