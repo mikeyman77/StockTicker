@@ -64,10 +64,13 @@ public enum UserAuthorization implements AuthorizationService {
     }
 
     @Override
-    public boolean register(String username, String password) {
+    public boolean register(String username, String password, UserInfo userInfo) {
         
-        if (persistence.createUser(username, password) != null) {
-            return true;
+        User user = persistence.createUser(username, password);
+        
+        if (user != null) {
+            user.setUserInfo(userInfo);
+            return persistence.updateUser(user);
         }
 
         return false;
@@ -90,7 +93,7 @@ public enum UserAuthorization implements AuthorizationService {
 
     @Override
     public UserInfo getUserInfo(String username) {
-        return null;
+        return persistence.getUserInfo(username);
     }
 
     @Override
@@ -109,6 +112,22 @@ public enum UserAuthorization implements AuthorizationService {
         }
         
         return successful;
+    }
+    
+    @Override
+    public boolean updateUserInfo(String username, UserInfo userInfo) {
+        List<String> loggedInUsers = persistence.getLoggedInUsers();
+        
+        if (loggedInUsers.isEmpty())
+            return false;
+        
+        if (loggedInUsers.contains(username)) {
+            User user = persistence.getUser(username);
+            user.setUserInfo(userInfo);
+            return persistence.updateUser(user);
+        }
+        
+        return false;
     }
     
     // helper method to check password for user

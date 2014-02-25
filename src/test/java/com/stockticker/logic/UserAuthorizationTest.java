@@ -1,14 +1,15 @@
 package com.stockticker.logic;
 
 import com.stockticker.User;
+import com.stockticker.UserInfo;
 import com.stockticker.persistence.PersistenceService;
 import com.stockticker.persistence.StockTickerPersistence;
 import org.junit.Test;
 
 import static junit.framework.Assert.assertTrue;
 import static junit.framework.Assert.assertFalse;
+import static junit.framework.Assert.assertEquals;
 import org.junit.After;
-import org.junit.Before;
 
 public class UserAuthorizationTest {
 
@@ -19,6 +20,7 @@ public class UserAuthorizationTest {
     private final String newPassword = "newPass";
     
     private final User testUser = new User("test", "testpass");
+    private final UserInfo testUserInfo = new UserInfo("Test", "User");
     
     @After
     public void tearDown() {
@@ -78,8 +80,10 @@ public class UserAuthorizationTest {
 
     @Test
     public void testRegister() throws Exception {
+        UserInfo userInfo = new UserInfo("test", "name");
         boolean result = userAuth.register(testUser.getUserName(), 
-                                            testUser.getPassword());
+                                            testUser.getPassword(),
+                                            testUserInfo);
         assertTrue("Register test", result);
     }
     
@@ -87,7 +91,8 @@ public class UserAuthorizationTest {
     public void testFailedRegister() throws Exception {
         persistentence.createUser(testUser.getUserName(), testUser.getPassword());
         boolean result = userAuth.register(testUser.getUserName(), 
-                                            testUser.getPassword());
+                                            testUser.getPassword(),
+                                            testUserInfo);
         assertFalse("Failed user registeration test", result);
     }
 
@@ -119,7 +124,26 @@ public class UserAuthorizationTest {
 
     @Test
     public void testGetUserInfo() throws Exception {
-        // will implement soon
+        User user = persistentence.createUser(testUser.getUserName(), testUser.getPassword());
+        user.setUserInfo(testUserInfo);
+        persistentence.updateUser(user);
+        UserInfo userInfo = userAuth.getUserInfo(testUser.getUserName());
+        assertEquals("Get user info", testUserInfo, userInfo);
+    }
+    
+    @Test
+    public void testUpdateUserInfo() {
+        persistentence.createUser(testUser.getUserName(), testUser.getPassword());
+        persistentence.setLoginStatus(testUser.getUserName(), true);
+        boolean result = userAuth.updateUserInfo(testUser.getUserName(), testUserInfo);
+        assertTrue("Update user info test with user logged in", result);
+    }
+    
+    @Test
+    public void testFailedUpdateUserInfo() {
+        persistentence.createUser(testUser.getUserName(), testUser.getPassword());
+        boolean result = userAuth.updateUserInfo(testUser.getUserName(), testUserInfo);
+        assertFalse("Update user info test with user logged in", result);
     }
 
     @Test
