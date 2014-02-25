@@ -43,6 +43,25 @@ public class UserAuthorizationTest {
     }
     
     @Test
+    public void testLoginWithMultipleUsersLoggedIn() throws Exception {
+        persistentence.createUser(otherUser.getUserName(), otherUser.getPassword());
+        persistentence.setLoginStatus(otherUser.getUserName(), true);
+        User user = persistentence.createUser(testUser.getUserName(), testUser.getPassword());
+        boolean result = userAuth.logIn(user.getUserName(), user.getPassword());
+        assertTrue("Successful Login Test with multiple users logged in", result);
+    }
+    
+    @Test
+    public void testLoginWithMultipleUsersLoggedInAndUserLoggedIn() throws Exception {
+        persistentence.createUser(otherUser.getUserName(), otherUser.getPassword());
+        persistentence.setLoginStatus(otherUser.getUserName(), true);
+        User user = persistentence.createUser(testUser.getUserName(), testUser.getPassword());
+        persistentence.setLoginStatus(testUser.getUserName(), true);
+        boolean result = userAuth.logIn(user.getUserName(), user.getPassword());
+        assertTrue("Successful Login Test", result);
+    }
+    
+    @Test
     public void testNonRegisteredLogIn() {
         boolean result = userAuth.logIn(testUser.getUserName(), 
                                         testUser.getPassword());
