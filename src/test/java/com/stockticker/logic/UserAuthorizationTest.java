@@ -21,6 +21,7 @@ public class UserAuthorizationTest {
     
     private final User testUser = new User("test", "testpass");
     private final UserInfo testUserInfo = new UserInfo("Test", "User");
+    private final User otherUser = new User("other", "otherpass");
     
     @After
     public void tearDown() {
@@ -143,7 +144,15 @@ public class UserAuthorizationTest {
     public void testFailedUpdateUserInfo() {
         persistentence.createUser(testUser.getUserName(), testUser.getPassword());
         boolean result = userAuth.updateUserInfo(testUser.getUserName(), testUserInfo);
-        assertFalse("Update user info test with user logged in", result);
+        assertFalse("Update user info test with user logged out", result);
+    }
+    
+    @Test
+    public void testFailedUpdateUserInfoWithOtherUsersLoggedIn() {
+        persistentence.createUser(otherUser.getUserName(), otherUser.getPassword());
+        persistentence.setLoginStatus(otherUser.getUserName(), true);
+        boolean result = userAuth.updateUserInfo(testUser.getUserName(), testUserInfo);
+        assertFalse("Update user info test with other users logged in", result);
     }
 
     @Test
