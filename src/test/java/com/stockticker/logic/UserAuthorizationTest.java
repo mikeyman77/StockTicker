@@ -58,7 +58,7 @@ public class UserAuthorizationTest {
         User user = persistentence.createUser(testUser.getUserName(), testUser.getPassword());
         persistentence.setLoginStatus(testUser.getUserName(), true);
         boolean result = userAuth.logIn(user.getUserName(), user.getPassword());
-        assertTrue("Successful Login Test", result);
+        assertTrue("Successful Login Test with multiple users logged in", result);
     }
     
     @Test
@@ -74,6 +74,15 @@ public class UserAuthorizationTest {
         persistentence.setLoginStatus(testUser.getUserName(), true);
         boolean result = userAuth.logOut(testUser.getUserName());
         assertTrue("Log out test", result);
+    }
+    
+    @Test
+    public void testLogOutWhileNotLoggedIn() throws Exception {
+        persistentence.createUser(otherUser.getUserName(), otherUser.getPassword());
+        persistentence.setLoginStatus(otherUser.getUserName(), true);
+        persistentence.createUser(testUser.getUserName(), testUser.getPassword());
+        boolean result = userAuth.logOut(testUser.getUserName());
+        assertTrue("Log out test when not logged in", result);
     }
     
     @Test
