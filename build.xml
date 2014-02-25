@@ -22,7 +22,7 @@
     <property name="cobertura.junit.html.dir" value="${cobertura.reports.dir}${file.separator}junit-html" />
     <property name="cobertura.coverage.html.dir" value="${cobertura.reports.dir}${file.separator}cobertura-html" />
     <property name="cobertura.data.file" value="cobertura.ser" />
-    <property name="cobertura.jar.file" value="${lib.dir}/cobertura-2.0.3.jar" />
+    <property name="cobertura.jar.file" value="${lib.dir}${file.separator}cobertura-2.0.3.jar" />
 
     <!-- this sets up the classpath for the project. Whenever you a .jar to the lib directory it will automatically be
         be added to the classpath
@@ -77,7 +77,7 @@
             <fileset dir="${report.junit.dir}">
                 <include name="TEST-*.xml"/>
             </fileset>
-            <report format="frames" todir="${report.junit.dir}/html"/>
+            <report format="frames" todir="${report.junit.dir}${file.separator}html"/>
         </junitreport>
 
         <!-- if a test fails then the property  "test_failure" will be set and we fail now.
@@ -90,11 +90,10 @@
 
     <target name="coverage" depends="compile">
 
-        <delete file="cobertura.ser" />
         <delete dir="${cobertura.instrumented.dir}"/>
         <delete dir="${cobertura.reports.dir}"/>
+        <delete file="cobertura.ser" />
         <!-- cobertura directories -->
-        <!--<mkdir dir="${cobertura.dir}" />-->
         <mkdir dir="${cobertura.instrumented.dir}" />
         <mkdir dir="${cobertura.junit.xml.dir}" />
         <mkdir dir="${cobertura.junit.html.dir}" />
@@ -103,7 +102,6 @@
         <path id="cobertura.classpath">
             <fileset dir="${cobertura.home}">
                 <include name="cobertura-2.0.3.jar"/>
-                <!--<include name="lib/**/*.jar"/>-->
                 <include name="**/*.jar"/>
             </fileset>
             <fileset dir="${lib.dir}">
@@ -117,6 +115,7 @@
             <fileset dir="${classes.dir}">
                 <include name="**/*.class"/>
                 <exclude name="**/*Test.class"/>
+                <exclude name="**/*$*.class"/>
             </fileset>
         </cobertura-instrument>
 
@@ -128,7 +127,6 @@
             <classpath location="${classes.dir}"/>
             <classpath location="${lib.dir}"/>
             <formatter type="xml" />
-            <!--<test name="${testcase}" todir="${cobertura.junit.xml.dir}" if="testcase" />-->
             <batchtest todir="${cobertura.junit.xml.dir}/">
                 <fileset dir="${src-test.dir}">
                     <include name="**/*Test*.java"/>
@@ -147,6 +145,7 @@
         <cobertura-report format="html" destdir="${cobertura.coverage.html.dir}" datafile="${cobertura.data.file}">
             <fileset dir="${src.dir}">
                 <include name="**/*.java" />
+                <exclude name="**/*$*.class"/>
             </fileset>
         </cobertura-report>
     </target>
