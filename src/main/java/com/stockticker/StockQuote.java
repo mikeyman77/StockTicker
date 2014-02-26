@@ -2,13 +2,6 @@ package com.stockticker;
 
 
 public abstract class StockQuote {
-
-    private final Stock stock;
-    
-    
-    protected StockQuote(Stock stock) {
-        this.stock = stock;
-    }
     
     // Getter methods
     public abstract String getName();
