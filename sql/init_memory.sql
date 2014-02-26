@@ -36,7 +36,7 @@ CREATE MEMORY TABLE IF NOT EXISTS userinfo (
   userInfoId   int NOT NULL AUTO_INCREMENT,
   firstName   varchar(30) DEFAULT NULL,
   lastName    varchar(30) DEFAULT NULL,
-  FK_trackId      int DEFAULT NULL,
+  FK_trackId  int DEFAULT NULL,
   PRIMARY KEY (userInfoId),
   FOREIGN KEY (FK_trackId)
     REFERENCES tracked_stock(trackId)
@@ -50,7 +50,7 @@ CREATE MEMORY TABLE IF NOT EXISTS user (
   userId     int NOT NULL AUTO_INCREMENT,
   FK_userInfoId int DEFAULT NOT NULL,
   username     varchar(20) DEFAULT NULL,
-  password     varchar(8) DEFAULT NULL,
+  password     varchar(12) DEFAULT NULL,
   joinedDate datetime DEFAULT NULL,
   isLoggedIn  boolean,
   PRIMARY KEY (userId),
