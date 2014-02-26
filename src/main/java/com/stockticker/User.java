@@ -8,6 +8,8 @@ public class User {
     private int userID;
     private UserInfo userInfo;
 
+    public User() { }
+
     public User(String userName, String password) {
         this.userName = userName;
         this.password = password;
@@ -35,6 +37,10 @@ public class User {
     }
 
     // Setter methods
+    public void setUserName(String username) {
+        this.userName = username;
+    }
+
     public void setPassword(String password) {
         this.password = password;
     }
