@@ -1,157 +1,138 @@
 
 package com.stockticker;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 
+@JsonIgnoreProperties(ignoreUnknown=true)
 public class YahooStockQuote extends StockQuote {
     
-    private String name;
-    private String symbol;
-    private String date;
-    private String time;
-    private String price;
-    private String change;
-    private String changeInPercent;
-    private String low;
-    private String high;
-    private String volume;
-    private String prevClose;
-    private String open;
-    private String bid;
-    private String ask;
-    private String yearLow;
-    private String yearHigh;
-    private String avgVolume;
-    private String marketCap;
-    private String pe;
-    private String eps;
+    @JsonProperty("Name")                   private String name;
+    @JsonProperty("Symbol")                 private String symbol;
+    @JsonProperty("LastTradeDate")          private String date;
+    @JsonProperty("LastTradeTime")          private String time;
+    @JsonProperty("LastTradePriceOnly")     private String price;
+    @JsonProperty("Change")                 private String change;
+    @JsonProperty("ChangeinPercent")        private String changeInPercent;
+    @JsonProperty("DaysLow")                private String low;
+    @JsonProperty("DaysHigh")               private String high;
+    @JsonProperty("Volume")                 private String volume;
+    @JsonProperty("PreviousClose")          private String prevClose;
+    @JsonProperty("Open")                   private String open;
+    @JsonProperty("Bid")                    private String bid;
+    @JsonProperty("Ask")                    private String ask;
+    @JsonProperty("YearLow")                private String yearLow;
+    @JsonProperty("YearHigh")               private String yearHigh;
+    @JsonProperty("AverageDailyVolume")     private String avgVolume;
+    @JsonProperty("MarketCapitalization")   private String marketCap;
+    @JsonProperty("PERatio")                private String pe;
+    @JsonProperty("EarningsShare")          private String eps;
     
     
-    public YahooStockQuote(Stock stock) {
-        super(stock);
+    public YahooStockQuote() {
     }
-
+    
     @Override
-    @JsonProperty("Name")
     public String getName() {
         return name;
     }
 
     @Override
-    @JsonProperty("Symbol")
     public String getSymbol() {
         return symbol;
     }
 
     @Override
-    @JsonProperty("LastTradeDate")
     public String getDate() {
         return date;
     }
 
     @Override
-    @JsonProperty("LastTradeTime")
     public String getTime() {
         return time;
     }
 
     @Override
-    @JsonProperty("LastTradePriceOnly")
     public String getPrice() {
         return price;
     }
 
     @Override
-    @JsonProperty("Change")
     public String getChange() {
         return change;
     }
 
     @Override
-    @JsonProperty("ChangeinPercent")
     public String getChangePercent() {
         return changeInPercent;
     }
 
     @Override
-    @JsonProperty("DaysLow")
     public String getLow() {
         return low;
     }
 
     @Override
-    @JsonProperty("DaysHigh")
     public String getHigh() {
         return high;
     }
 
     @Override
-    @JsonProperty("Volume")
     public String getVolume() {
         return volume;
     }
 
     @Override
-    @JsonProperty("PreviousClose")
     public String getPrevClose() {
         return prevClose;
     }
 
     @Override
-    @JsonProperty("Open")
     public String getOpen() {
         return open;
     }
 
     @Override
-    @JsonProperty("Bid")
     public String getBid() {
         return bid;
     }
 
     @Override
-    @JsonProperty("Ask")
     public String getAsk() {
         return ask;
     }
 
     @Override
-    @JsonProperty("YearLow")
     public String getYearLow() {
         return yearLow;
     }
 
     @Override
-    @JsonProperty("YearHigh")
     public String getYearHigh() {
         return yearHigh;
     }
 
     @Override
-    @JsonProperty("AverageDailyVolume")
     public String getAvgVolume() {
         return avgVolume;
     }
 
     @Override
-    @JsonProperty("MarketCapitalization")
     public String getMarketCap() {
         return marketCap;
     }
 
     @Override
-    @JsonProperty("PERatio")
     public String getPE() {
         return pe;
     }
 
     @Override
-    @JsonProperty("EarningsShare")
     public String getEPS() {
         return eps;
     }
-
+    
     @Override
     public void setName(String name) {
         this.name = name;
@@ -251,5 +232,5 @@ public class YahooStockQuote extends StockQuote {
     public void setEPS(String eps) {
         this.eps = eps;
     }
-    
+
 }
