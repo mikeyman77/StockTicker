@@ -8,11 +8,6 @@ public enum StockTicker implements StockTickerService {
     INSTANCE;
 
     @Override
-    public StockQuote getStockQuote(String symbol) {
-        return null;
-    }
-
-    @Override
     public List<StockQuote> getStockQuotes(List<String> symbols) {
         return null;
     }
