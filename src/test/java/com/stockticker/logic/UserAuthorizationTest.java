@@ -158,7 +158,9 @@ public class UserAuthorizationTest {
         user.setUserInfo(testUserInfo);
         persistentence.updateUser(user);
         UserInfo userInfo = userAuth.getUserInfo(testUser.getUserName());
-        assertEquals("Get user info", testUserInfo, userInfo);
+        boolean result = (testUserInfo.getFirstName().equals(userInfo.getFirstName()))
+                && (testUserInfo.getLastName().equals(userInfo.getLastName()));
+        assertTrue("Get user info", result);
     }
     
     @Test
