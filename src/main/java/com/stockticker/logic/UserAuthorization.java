@@ -29,8 +29,9 @@ public enum UserAuthorization implements AuthorizationService {
         // log out all users but the username
         if (!loggedInUsers.isEmpty()) {
             for (String uname : loggedInUsers) {
-                if (uname != username)
+                if (!username.equals(uname)) {
                     persistence.setLoginStatus(uname, false);
+                }
             }
         }
         
@@ -132,7 +133,7 @@ public enum UserAuthorization implements AuthorizationService {
     
     // helper method to check password for user
     private boolean checkPassword(String password, String userPassword) {
-        if (password == userPassword)
+        if (password.equals(userPassword))
             return true;
         else
             return false;
