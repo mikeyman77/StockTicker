@@ -6,11 +6,11 @@ import java.util.Map;
 public enum SymbolMap {
     INSTANCE;
 
-    public Map<String, String> getSymbols() {
+    public final static Map<String, String> getSymbols() {
         return symbols;
     }
 
-    private Map<String, String> symbols = new TreeMap<String, String>() {{
+    private final static Map<String, String> symbols = new TreeMap<String, String>() {{
 
         /* Symbol,    Stock Symbol Description */
          put("AAIT"    ,"AC Asia Information Tech MSCI Ishares" );

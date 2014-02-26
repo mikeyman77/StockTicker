@@ -11,7 +11,7 @@ import java.awt.Color;
 
 /**
  *
- * @author Hunter97
+ * @author prwallace
  */
 public interface IStockTicker_UIComponents {
 
