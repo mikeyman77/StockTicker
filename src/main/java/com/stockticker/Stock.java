@@ -1,26 +1,24 @@
 package com.stockticker;
 
-import java.util.Date;
-
 public class Stock {
 
     private String symbol;
-    private Date date;
+    private String name;
 
     public Stock(String symbol) {
         this.symbol = symbol;
     }
 
-    public Stock(String symbol, Date date) {
-        this.date = date;
+    public Stock(String symbol, String name) {
+        this.symbol = symbol;
     }
 
     public String getSymbol() {
         return this.symbol;
     }
 
-    public Date getDate() {
-        return this.date;
+    public String getName() {
+        return this.name;
     }
 
 }
