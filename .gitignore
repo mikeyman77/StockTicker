@@ -38,3 +38,7 @@ out/
 build/
 result.txt
 result.xml
+
+# Cobertura #
+###############
+cobertura.ser
