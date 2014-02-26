@@ -39,8 +39,8 @@ build/
 result.txt
 result.xml
 
-# Cobertura #
-###############
+# Cobertura Specific #
+######################
 cobertura.ser
 
 # Netbeans Specific #
@@ -50,6 +50,7 @@ nbbuild.xml
 dist/
 nbproject/
 
-# Other #
-#########
-mem/stockticker.h2.db
+# H2 Specific #
+###############
+data/*.db
+data/mem/*.db
