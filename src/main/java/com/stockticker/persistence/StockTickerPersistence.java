@@ -16,27 +16,32 @@ public enum StockTickerPersistence implements PersistenceService {
     private Map<String,Stock> stocksMap = new TreeMap<String,Stock>();
     private Map<String,TrackedStocks> trackedStocksMap = new TreeMap<String,TrackedStocks>();
     private Map<String,User> usersMap = new TreeMap<String, User>();
+    private PersistenceConnection persistence;
     private int userId = 0;
 
-    @Override
-    public List<Stock> getTrackedStocks(User user) {
-        TrackedStocks tracked = trackedStocksMap.get(user.getUserName());
-        return new ArrayList<Stock>(tracked.getStocks());
+    private StockTickerPersistence() {
+        persistence = PersistenceConnection.INSTANCE;
     }
 
     @Override
-    public boolean trackStock(User user, Stock stock, boolean track) {
-            if (user == null || stock == null)
+    public List<String> getTrackedStocks(String username) {
+        TrackedStocks tracked = trackedStocksMap.get(username);
+        return new ArrayList<String>(tracked.getStocks());
+    }
+
+    @Override
+    public boolean trackStock(String username, String stock, boolean track) {
+            if (username.equals("") || stock.equals(""))
                 return false;
 
-            TrackedStocks tracked = trackedStocksMap.get(user.getUserName());
+            TrackedStocks tracked = trackedStocksMap.get(username);
             if (track) {
                 if (tracked != null) {
                     tracked.put(stock);
                 }
                 else {
-                    tracked = new TrackedStocks(user.getUserName());
-                    trackedStocksMap.put(user.getUserName(), tracked);
+                    tracked = new TrackedStocks(username);
+                    trackedStocksMap.put(username, tracked);
                 }
             }
             else {
@@ -46,114 +51,87 @@ public enum StockTickerPersistence implements PersistenceService {
     }
 
     @Override
-    public boolean isStockTracked(User user, Stock stock) {
-        if (user == null || stock == null)
+    public boolean isStockTracked(String username, String stock) {
+        if (username.equals("") || stock.equals(""))
             return false;
 
-        TrackedStocks tracked = trackedStocksMap.get(user.getUserName());
+        TrackedStocks tracked = trackedStocksMap.get(username);
 
-        return tracked.isStockTracked(stock.getSymbol());
+        return tracked.isStockTracked(stock);
     }
 
     @Override
     public boolean userExists(String username) {
-        if (! usersMap.containsKey(username))
-            return false;
 
-        return true;
+        UserDAO userDAO = new UserDAOImpl(persistence.getConnection());
+        return userDAO.exists(username);
     }
 
     @Override
     public User createUser(String username, String password) {
 
-        //if user is null or already exists, return null
-        if (usersMap.containsKey(username))
-            return null;
-
-        //otherwise, create the new user
-        userId++;
-        User user = new User(username, password);
-        user.setUserID(userId);
-        usersMap.put(user.getUserName(), user);
+        UserDAO userDAO = new UserDAOImpl(persistence.getConnection());
+        User user = userDAO.create(username, password);
 
         return user;
     }
 
     @Override
     public boolean updateUser(User user) {
-        if (user == null || !usersMap.containsKey(user.getUserName()))
+        if (user == null)
             return false;
 
-        usersMap.put(user.getUserName(), user);
-        return true;
+        UserDAO userDAO = new UserDAOImpl(persistence.getConnection());
+        return userDAO.update(user);
     }
 
     @Override
     public User getUser(String username) {
-        return usersMap.get(username);
+
+        UserDAO userDAO = new UserDAOImpl(persistence.getConnection());
+        return userDAO.get(username);
     }
 
     @Override
     public boolean deleteUser(String username) {
-        if (usersMap.remove(username) == null)
-            return false;
 
-        return true;
+        UserDAO userDAO = new UserDAOImpl(persistence.getConnection());
+        return userDAO.delete(username);
     }
 
     @Override
     public boolean isLoggedIn(String username) {
-        if (!usersMap.containsKey(username))
-            return false;
 
-        User current = usersMap.get(username);
-        return current.isLoggedIn();
+        UserDAO userDAO = new UserDAOImpl(persistence.getConnection());
+        return userDAO.isLoggedIn(username);
     }
 
     @Override
     public boolean setLoginStatus(String username, boolean status) {
-        if (!usersMap.containsKey(username))
-            return false;
 
-        User cachedUser = usersMap.remove(username);
-        cachedUser.setLoggedIn(status);
-        usersMap.put(username, cachedUser);
-        return true;
+        UserDAO userDAO = new UserDAOImpl(persistence.getConnection());
+        return userDAO.setLoginStatus(username, status);
     }
 
     @Override
     public List<String> getLoggedInUsers() {
-        List<String> loggedInUsers = new ArrayList<String>();
 
-        if (usersMap.size() > 0) {
-            User user = null;
-            Iterator<User> users = usersMap.values().iterator();
-            while (users.hasNext()) {
-                user = users.next();
-                if (user.isLoggedIn()) {
-                    loggedInUsers.add(user.getUserName());
-                }
-            }
-        }
-
-        return loggedInUsers;
+        UserDAO userDAO = new UserDAOImpl(persistence.getConnection());
+        return userDAO.getLoggedInUsers();
     }
 
     @Override
     public UserInfo getUserInfo(String username) {
-        if (!usersMap.containsKey(username))
-            return null;
 
-        User current = usersMap.get(username);
-        return current.getUserInfo();
+        User user = getUser(username);
+        return user == null ? null : user.getUserInfo();
     }
 
-/*
+
     public static void main(String [] args) {
         PersistenceService ps = StockTickerPersistence.INSTANCE;
 
-        User sconnall = new User("sconnall", "redsox");
-        sconnall = ps.createUser(sconnall);
+        User sconnall = ps.createUser("connall", "password");
 
         //Set logged in and test
         ps.setLoginStatus(sconnall.getUserName(), true);
@@ -164,6 +142,13 @@ public enum StockTickerPersistence implements PersistenceService {
         else {
             System.out.println("not logged out.");
         }
+        sconnall = ps.getUser(sconnall.getUserName());
+        sconnall.setPassword("PATRIOTS");
+        ps.updateUser(sconnall);
+        sconnall.setPassword("BRUINS");
+        ps.updateUser(sconnall);
+        //ps.deleteUser(sconnall.getUserName());
+        //ps.deleteUser(sconnall.getUserName());
 
         //set logged out and test
         ps.setLoginStatus(sconnall.getUserName(), false);
@@ -186,7 +171,7 @@ public enum StockTickerPersistence implements PersistenceService {
         }
 
         //Create new user and log in
-        User sconnall2 = new User("sconnall2", "redsox");
+        User sconnall2 = ps.createUser("connall2", "password");
         ps.setLoginStatus(sconnall2.getUserName(), true);
         System.out.print("User " + sconnall2.getUserName() + " is ");
         if (ps.isLoggedIn(sconnall2.getUserName())) {
@@ -196,11 +181,10 @@ public enum StockTickerPersistence implements PersistenceService {
             System.out.println("logged out.");
         }
 
-        User user = null;
         List<String> loggedInUsers = ps.getLoggedInUsers();
         for (String username : loggedInUsers) {
             System.out.print("User " + username + " is logged in");
         }
     }
-*/
+
 }

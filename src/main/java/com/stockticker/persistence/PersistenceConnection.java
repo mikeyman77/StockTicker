@@ -1,6 +1,10 @@
 package com.stockticker.persistence;
 
 import java.sql.Connection;
+import java.sql.DatabaseMetaData;
+import java.sql.DriverManager;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 
 /**
  * This class is responsible for creating and initializing the
@@ -12,7 +16,10 @@ public enum PersistenceConnection {
     INSTANCE;
 
     private static final String H2_DRIVER = "org.h2.Driver";
-    private static final String H2_DBNAME = "jdbc:h2:~/test";
+    //private static final String H2_DBNAME = "jdbc:h2:/!!UMass/AgileJava/git/StockTicker/data/stockticker";
+    //private static final String H2_URL = H2_DBNAME+";INIT=runscript from '/!!UMass/AgileJava/git/StockTicker/sql/init_cached.sql'";
+    private static final String H2_DBNAME = "jdbc:h2:mem/stockticker";
+    private static final String H2_URL = H2_DBNAME+";INIT=runscript from './sql/init_memory.sql'";
 
     private Connection conn;
     private boolean dbInitialized = false;
@@ -21,13 +28,25 @@ public enum PersistenceConnection {
      * Default constructor that initiates database initialization
      */
     private PersistenceConnection() {
-        //Class.forName(H2_DRIVER);
-        //conn = DriverManager.getConnection(H2_DBNAME);
+
+        try {
+            Class.forName(H2_DRIVER);
+            conn = DriverManager.getConnection(H2_URL, "sa", "");
 
         /* If tables don't exist then initialize the database */
 
-        if (!dbInitialized) {
-            dbInitialized = initializeDatabase(H2_DBNAME);
+            DatabaseMetaData meta = conn.getMetaData();
+            ResultSet result = meta.getTables(null, null, "user", null);
+            //If not result, then tables have not been created yet
+            if (!result.next()) {
+                dbInitialized = initializeDatabase(H2_DBNAME);
+            }
+        }
+        catch (ClassNotFoundException e) {
+            System.out.println(e.getMessage());
+        }
+        catch (SQLException e) {
+            System.out.println(e.getMessage());
         }
     }
 
@@ -37,7 +56,7 @@ public enum PersistenceConnection {
      * @return sql Connection object
      */
     public Connection getConnection() {
-        return null;
+        return conn;
     }
 
     /**
@@ -48,10 +67,8 @@ public enum PersistenceConnection {
     public boolean initializeDatabase(String dbName) {
         if (dbName.equals(""))
             return false;
-        else
-            return true;
-        /*
 
+        /*
         SDC - this is just sample code that demonstrates how to create a table
         and insert some data. Once the data is inserted you can submit queries
         to look at the data. In this specification the create table statements
@@ -74,6 +91,7 @@ public enum PersistenceConnection {
         stat.close();
         conn.close();
         */
+        return true;
     }
 
 }

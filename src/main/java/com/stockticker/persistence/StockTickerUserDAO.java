@@ -6,7 +6,7 @@ import java.sql.Connection;
 /**
  * Created by stu on 2/17/14.
  */
-public class StockTickerUserDAO implements UserDAO {
+public class StockTickerUserDAO {
 
     private Connection conn;
 
@@ -14,27 +14,27 @@ public class StockTickerUserDAO implements UserDAO {
         this.conn = conn;
     }
 
-    @Override
+    //@Override
     public boolean save(User user) {
         return false;
     }
 
-    @Override
+    //@Override
     public boolean update(User user) {
         return false;
     }
 
-    @Override
+    //@Override
     public boolean findByUserId(int userId) {
         return false;
     }
 
-    @Override
+    //@Override
     public User get(User user) {
         return null;
     }
 
-    @Override
+    //@Override
     public boolean delete(User user) {
         return false;
     }

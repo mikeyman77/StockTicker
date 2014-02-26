@@ -2,14 +2,24 @@ package com.stockticker.persistence;
 
 import com.stockticker.User;
 
+import java.sql.ResultSet;
+import java.sql.Statement;
+import java.util.List;
+
 /**
- * Created by stu on 2/17/14.
+ * @author -  Stuart Connall
+ * @version - 1.0 02/25/2014
  */
 public interface UserDAO {
 
-    public boolean save(User user);
+    public User create(String username, String password);
+    public boolean exists(String username);
     public boolean update(User user);
-    public boolean findByUserId(int userId);
-    public User    get(User user);
-    public boolean delete(User user);
+    public User findByUserId(int userId);
+    public User    get(String username);
+    public boolean delete(String username);
+    public boolean isLoggedIn(String username);
+    public boolean setLoginStatus(String username, boolean status);
+    public List<String> getLoggedInUsers();
+
 }
