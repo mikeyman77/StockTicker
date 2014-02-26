@@ -110,7 +110,7 @@
         </path>
         <taskdef classpathref="cobertura.classpath" resource="tasks.properties"/>
 
-        <cobertura-instrument todir="${cobertura.instrumented.dir}" datafile="${cobertura.data.file}">
+        <cobertura-instrument todir="${cobertura.instrumented.dir}" datafile="${cobertura.data.file}" ignoreTrivial="true" >
             <ignore regex="org.apache.log4j.*" />
             <fileset dir="${classes.dir}">
                 <include name="**/*.class"/>
