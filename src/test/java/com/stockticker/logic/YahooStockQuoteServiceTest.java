@@ -79,8 +79,8 @@ public class YahooStockQuoteServiceTest {
      */
     @Test
     public void testGetStocksWithNoUrlSet() throws Exception {
-        List<StockQuote> expResult = null;
-        List<StockQuote> result = instance.getStocks();
+        int expResult = 0;
+        int result = instance.getStocks().size();
         assertEquals(expResult, result);
     }
     

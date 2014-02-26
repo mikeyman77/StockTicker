@@ -79,7 +79,7 @@ public enum YahooStockQuoteService implements StockQuoteService {
         JsonNode quoteNode = null;
         
         if (queryUrl == null)
-            return null;
+            return stockQuoteList;
         
         // read the full json tree
         try {
