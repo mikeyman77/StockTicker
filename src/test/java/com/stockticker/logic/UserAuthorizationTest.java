@@ -82,7 +82,7 @@ public class UserAuthorizationTest {
         persistentence.setLoginStatus(otherUser.getUserName(), true);
         persistentence.createUser(testUser.getUserName(), testUser.getPassword());
         boolean result = userAuth.logOut(testUser.getUserName());
-        assertTrue("Log out test when not logged in", result);
+        assertFalse("Log out test when not logged in", result);
     }
     
     @Test
