@@ -32,24 +32,16 @@ public enum StockTicker implements StockTickerService {
 
     @Override
     public List<String> getTrackedStocks(String username) {
-        
-        List<Stock> trackedStocks = persistentence.getTrackedStocks(new User(username, ""));
-        List<String> trackedSymbols = new ArrayList<>();
-        
-        for (Stock stock : trackedStocks) {
-            trackedSymbols.add(stock.getSymbol());
-        }
-        
-        return trackedSymbols;
+        return persistentence.getTrackedStocks(username);
     }
 
     @Override
     public boolean trackStock(String username, String symbol, boolean tracked) {
-        return persistentence.trackStock(new User(username, ""), new Stock(symbol), tracked);
+        return persistentence.trackStock(username, symbol, tracked);
     }
 
     @Override
     public boolean isStockTracked(String username, String symbol) {
-        return persistentence.isStockTracked(new User(username, ""), new Stock(symbol));
+        return persistentence.isStockTracked(username, symbol);
     }
 }
