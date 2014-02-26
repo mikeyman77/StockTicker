@@ -18,10 +18,10 @@ public class TrackedStocksTest {
     private TrackedStocks tracked;
 
     private static final String USER1 = "sconnall";
-    private static final Stock GOOG = new Stock("GOOG");
-    private static final Stock AAPL = new Stock("AAPL");
-    private static final Stock MSFT = new Stock("MSFT");
-    private static final Stock ORCL = new Stock("ORCL");
+    private static final String GOOG = "GOOG";
+    private static final String AAPL = "AAPL";
+    private static final String MSFT = "MSFT";
+    private static final String ORCL = "ORCL";
 
     /**
      * Sets up the environment by instantiating the
@@ -47,23 +47,23 @@ public class TrackedStocksTest {
      */
     @Test
     public void testPutFalse() {
-        assertFalse("put stock false", tracked.put(null));
+        assertFalse("put stock false", tracked.put(""));
     }
 
     /**
      * Tests the TrackedStocks remove for removal of Stock
      */
     @Test
-    public void testRemoveNotNull() {
-        assertNotNull("remove Stock not null", tracked.remove(GOOG));
+    public void testRemoveTrue() {
+        assertTrue("remove Stock true", tracked.remove(GOOG));
     }
 
     /**
      * Tests the TrackedStocks for failure to remove stock, most
-     * likely because it doesn't exist or is null
+     * likely because it doesn't exist
      */
     @Test
     public void testRemoveNull() {
-        assertNull("remove Stock null", tracked.remove(ORCL));
+        assertFalse("remove Stock false", tracked.remove(ORCL));
     }
 }
