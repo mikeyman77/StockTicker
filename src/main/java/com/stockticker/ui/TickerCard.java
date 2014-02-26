@@ -10,18 +10,20 @@ import java.awt.GridBagLayout;
 import java.awt.GridLayout;
 import java.awt.Insets;
 
+import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.JTextField;
-
+import javax.swing.border.EtchedBorder;
 
 /**
  * @author prwallace
  * 
  */
-public class TickerCard {
+public class TickerCard extends JPanel {
+    private static final long serialVersionUID = 1L;
     private StockTable m_stocks;
     private JPanel m_stockPanel;
     private JPanel m_tickerCard;
@@ -38,8 +40,9 @@ public class TickerCard {
         m_tickerCard = new JPanel();
         m_tickerCard.setPreferredSize(new Dimension(550, 520));
 
-        m_stocks = new StockTable();
+        m_stocks = new StockTable(true);
         m_stocks.setOpaque(true);
+        m_tickerCard.setBorder(BorderFactory.createTitledBorder(BorderFactory.createEtchedBorder(EtchedBorder.LOWERED), "Stocks"));
         m_tickerCard.add(m_stocks);
 
         setButtonPanel();

@@ -11,30 +11,27 @@ import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.border.EtchedBorder;
 
-public class RegistrationCard extends JPanel {
+public class LoginCard extends JPanel {
     private static final long serialVersionUID = 1L;
-    GridBagConstraints m_constraints;
-    JPanel m_regCard;
+    private JPanel m_loginCard;
+    private GridBagConstraints m_constraints;
 
-    public RegistrationCard() {
+    public LoginCard() {
         m_constraints = new GridBagConstraints();
         setCard();
     }
 
+
     public final void setCard() {
-        m_regCard = new JPanel(new GridBagLayout());
-        m_regCard.setPreferredSize(new Dimension(550, 520));
+        m_loginCard = new JPanel(new GridBagLayout());
+        m_loginCard.setPreferredSize(new Dimension(550, 520));
 
         JLabel userLbl = new JLabel("User Name:");
         JLabel passLbl = new JLabel("Password:");
-        JLabel fistNameLbl = new JLabel("First name:");
-        JLabel lastNameLbl = new JLabel("Last name:");
 
         JTextField userName = new JTextField(40);
 
         JTextField password = new JTextField(40);
-        JTextField fistName = new JTextField(40);
-        JTextField lastName = new JTextField(40);
 
         JPanel compPanel = new JPanel(new GridBagLayout());
         compPanel.setPreferredSize(new Dimension(400, 150));
@@ -67,37 +64,12 @@ public class RegistrationCard extends JPanel {
         m_constraints.insets = new Insets(0, 120, 0, 30);
         compPanel.add(password, m_constraints);
 
-        m_constraints.gridx = 0;
-        m_constraints.gridy = 2;
-        m_constraints.insets = new Insets(10, 30, 10, 0);
-        compPanel.add(fistNameLbl, m_constraints);
-
-        m_constraints.gridx = GridBagConstraints.REMAINDER;
-        m_constraints.gridy = 2;
-        m_constraints.gridwidth = 2;
-        m_constraints.weightx = 1.0;
-        m_constraints.fill = GridBagConstraints.HORIZONTAL;
-        m_constraints.insets = new Insets(0, 120, 0, 30);
-        compPanel.add(fistName, m_constraints);
-
-        m_constraints.gridx = 0;
-        m_constraints.gridy = 3;
-        m_constraints.insets = new Insets(10, 30, 10, 0);
-        compPanel.add(lastNameLbl, m_constraints);
-
-        m_constraints.gridx = GridBagConstraints.REMAINDER;
-        m_constraints.gridy = 3;
-        m_constraints.gridwidth = 2;
-        m_constraints.weightx = 1.0;
-        m_constraints.fill = GridBagConstraints.HORIZONTAL;
-        m_constraints.insets = new Insets(0, 120, 0, 30);
-        compPanel.add(lastName, m_constraints);
-
-        m_regCard.setBorder(BorderFactory.createTitledBorder(BorderFactory.createEtchedBorder(EtchedBorder.LOWERED), "Registration"));
-        m_regCard.add(compPanel, new GridBagConstraints());
+        m_loginCard.setBorder(BorderFactory.createTitledBorder(BorderFactory.createEtchedBorder(EtchedBorder.LOWERED), "Login"));
+        m_loginCard.add(compPanel, new GridBagConstraints());
     }
 
+
     public JPanel getCard() {
-        return m_regCard;
+        return m_loginCard;
     }
 }

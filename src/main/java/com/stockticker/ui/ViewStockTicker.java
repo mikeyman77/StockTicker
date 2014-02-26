@@ -21,6 +21,8 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.io.IOException;
+
 import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
@@ -30,8 +32,21 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextField;
 import javax.swing.ScrollPaneConstants;
+import javax.swing.UIManager;
+import javax.swing.UnsupportedLookAndFeelException;
 
 import com.stockticker.SymbolMap;
+
+/*
+ * Different LookAndFeel's that are available
+ * Motif:   "com.sun.java.swing.plaf.motif.MotifLookAndFeel"
+ * Metal:   "javax.swing.plaf.metal.MetalLookAndFeel"
+ *  or use UIManager.getCrossPlatformLookAndFeelClassName()
+ * System: UIManager.getSystemLookAndFeelClassName()
+ * GTK:     "com.sun.java.swing.plaf.gtk.GTKLookAndFeel"
+ * 
+ * 
+ */
 
 /**
  * 
@@ -61,13 +76,16 @@ public class ViewStockTicker extends WindowAdapter implements ActionListener,
     private String m_password;
     private String m_usrName;
     private final String m_icon = "images\\stock_ticker.png";
-
+    //private final String m_icon = "images\\tickerIcon_2.png";
+    //private final String m_icon = "images\\tickerIcon.png";
+    
 
     /**
      *
      */
     public ViewStockTicker() {
-        m_frame = new JFrame("Stock Ticker");
+        m_frame = new JFrame("Stock Ticker Portfolio Manager");
+        
     }
 
 
@@ -76,6 +94,17 @@ public class ViewStockTicker extends WindowAdapter implements ActionListener,
      * events.
      */
     public void build() {
+        
+        /*try {
+            UIManager.setLookAndFeel("com.sun.java.swing.plaf.motif.MotifLookAndFeel");
+            //UIManager.getCrossPlatformLookAndFeelClassName();
+        }
+        catch(ClassNotFoundException |UnsupportedLookAndFeelException | InstantiationException |IllegalAccessException e) {
+            System.err.println("Problem with locating current Look and Feel");
+            System.err.println(e.getMessage());
+            e.printStackTrace();
+        }*/
+
         m_titleIcon = new ImageIcon(toolKit.getImage(m_icon)).getImage();
         m_frame.setIconImage(m_titleIcon);
         m_frame.setSize(920, 600);
@@ -114,7 +143,8 @@ public class ViewStockTicker extends WindowAdapter implements ActionListener,
         m_cardPanel = new JPanel(new CardLayout());
         m_cardPanel.setLayout(cardLayout = new CardLayout());
         m_cardPanel.setPreferredSize(new Dimension(550, 520));
-        m_cardPanel.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createRaisedBevelBorder(), BorderFactory.createLoweredBevelBorder()));
+        m_cardPanel.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createRaisedBevelBorder(), 
+                BorderFactory.createLoweredBevelBorder()));
 
         JList stockList = new JList(SymbolMap.getSymbols().keySet().toArray());
         JScrollPane scrollPane = new JScrollPane(stockList);
@@ -207,13 +237,28 @@ public class ViewStockTicker extends WindowAdapter implements ActionListener,
      *
      */
     private void setCardLayout() {
-        JPanel quoteCard = new JPanel(new BorderLayout());
+        HomeCard homeCard = null;
+
+        try {
+            homeCard = new HomeCard();
+        }
+        catch(IOException ex) {
+            System.err.println("Exception attempting to load or retrieve splash image");
+            System.err.println(ex.getMessage());
+        }
+
+        DetailCard detailCard = new DetailCard();
+        QuoteCard quoteCard = new QuoteCard();
         TickerCard tickerCard = new TickerCard();
         RegistrationCard regCard = new RegistrationCard();
+        LoginCard loginCard = new LoginCard();
 
-        m_cardPanel.add(quoteCard);
+        m_cardPanel.add(homeCard.getCard());
+        m_cardPanel.add(detailCard.getCard());
+        m_cardPanel.add(quoteCard.getCard());
         m_cardPanel.add(tickerCard.getCard());
         m_cardPanel.add(regCard.getCard());
+        m_cardPanel.add(loginCard.getCard());
         m_frame.add(m_cardPanel, BorderLayout.CENTER);
     }
 
