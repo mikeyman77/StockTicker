@@ -6,7 +6,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 
 @JsonIgnoreProperties(ignoreUnknown=true)
-public class YahooStockQuote extends StockQuote {
+public class YahooStockQuote implements StockQuote {
     
     @JsonProperty("Name")                   private String name;
     @JsonProperty("Symbol")                 private String symbol;

@@ -1,50 +1,53 @@
 package com.stockticker;
 
-
-public abstract class StockQuote {
+/**
+ * This interface provides the basics for a StockQuote
+ * @author Michael Grissom
+ */
+public interface StockQuote {
     
     // Getter methods
-    public abstract String getName();
-    public abstract String getSymbol();
-    public abstract String getDate();
-    public abstract String getTime();
-    public abstract String getPrice();
-    public abstract String getChange();
-    public abstract String getChangePercent();
-    public abstract String getLow();
-    public abstract String getHigh();
-    public abstract String getVolume();
-    public abstract String getPrevClose();
-    public abstract String getOpen();
-    public abstract String getBid();
-    public abstract String getAsk();
-    public abstract String getYearLow();
-    public abstract String getYearHigh();
-    public abstract String getAvgVolume();
-    public abstract String getMarketCap();
-    public abstract String getPE();
-    public abstract String getEPS();
+    public String getName();
+    public String getSymbol();
+    public String getDate();
+    public String getTime();
+    public String getPrice();
+    public String getChange();
+    public String getChangePercent();
+    public String getLow();
+    public String getHigh();
+    public String getVolume();
+    public String getPrevClose();
+    public String getOpen();
+    public String getBid();
+    public String getAsk();
+    public String getYearLow();
+    public String getYearHigh();
+    public String getAvgVolume();
+    public String getMarketCap();
+    public String getPE();
+    public String getEPS();
     
     // Setter methods
-    public abstract void setName(String name);
-    public abstract void setSymbol(String symbol);
-    public abstract void setDate(String date);
-    public abstract void setTime(String time);
-    public abstract void setPrice(String price);
-    public abstract void setChange(String change);
-    public abstract void setChangePercent(String changeInPercent);
-    public abstract void setLow(String low);
-    public abstract void setHigh(String high);
-    public abstract void setVolume(String volume);
-    public abstract void setPrevClose(String prevClose);
-    public abstract void setOpen(String open);
-    public abstract void setBid(String bid);
-    public abstract void setAsk(String ask);
-    public abstract void setYearLow(String yearLow);
-    public abstract void setYearHigh(String yearHigh);
-    public abstract void setAvgVolume(String avgVolume);
-    public abstract void setMarketCap(String marketCap);
-    public abstract void setPE(String pe);
-    public abstract void setEPS(String eps);
+    public void setName(String name);
+    public void setSymbol(String symbol);
+    public void setDate(String date);
+    public void setTime(String time);
+    public void setPrice(String price);
+    public void setChange(String change);
+    public void setChangePercent(String changeInPercent);
+    public void setLow(String low);
+    public void setHigh(String high);
+    public void setVolume(String volume);
+    public void setPrevClose(String prevClose);
+    public void setOpen(String open);
+    public void setBid(String bid);
+    public void setAsk(String ask);
+    public void setYearLow(String yearLow);
+    public void setYearHigh(String yearHigh);
+    public void setAvgVolume(String avgVolume);
+    public void setMarketCap(String marketCap);
+    public void setPE(String pe);
+    public void setEPS(String eps);
     
 }
