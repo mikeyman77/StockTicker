@@ -7,9 +7,9 @@ import com.stockticker.User;
 import com.stockticker.UserInfo;
 
 public interface PersistenceService {
-    public List<Stock> getTrackedStocks(User user);
-    public boolean trackStock(User user, Stock stock, boolean track);
-    public boolean isStockTracked(User user, Stock stock);
+    public List<String> getTrackedStocks(String username);
+    public boolean trackStock(String username, String stock, boolean track);
+    public boolean isStockTracked(String username, String stock);
     public boolean userExists(String username);
     public User createUser(String username, String password);
     public boolean updateUser(User user);

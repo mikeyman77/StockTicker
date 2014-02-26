@@ -2,7 +2,6 @@ package com.stockticker.persistence;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.TreeMap;
 import com.stockticker.Stock;
 
@@ -13,37 +12,34 @@ import com.stockticker.Stock;
 public class TrackedStocks {
 
     private String userName;
-    private Map<String, Stock> trackedStocks;
+    private List<String> trackedStocks;
 
     public TrackedStocks(String username) {
         this.userName = userName;
-        trackedStocks = new TreeMap<String, Stock>();
+        trackedStocks = new ArrayList<String>();
     }
 
-    public boolean put(Stock stock) {
-        if (stock == null)
+    public boolean put(String stock) {
+        if (stock.equals(""))
             return false;
 
-        trackedStocks.put(stock.getSymbol(), stock);
+        trackedStocks.add(stock);
         return true;
     }
 
-    public Stock remove(Stock stock) {
-        if (stock == null)
-            return null;
-        return trackedStocks.remove(stock.getSymbol());
+    public boolean remove(String stock) {
+        if (stock.equals(""))
+            return false;
+
+        return trackedStocks.remove(stock);
     }
 
-    public List<Stock> getStocks() {
-        return new ArrayList<Stock>(trackedStocks.values());
+    public List<String> getStocks() {
+        return trackedStocks;
     }
 
-    public String[] getStockNames() {
-        return (trackedStocks.keySet()).toArray(new String[0]);
-    }
-
-    public boolean isStockTracked(String symbol) {
-        if (trackedStocks.containsKey(symbol))
+    public boolean isStockTracked(String stock) {
+        if (trackedStocks.contains(stock))
             return true;
         else
             return false;
