@@ -9,6 +9,10 @@ public enum SymbolMap {
     public final static Map<String, String> getSymbols() {
         return symbols;
     }
+    
+    public final static boolean isValidSymbol(String symbol) {
+        return symbols.containsKey(symbol);
+    }
 
     private final static Map<String, String> symbols = new TreeMap<String, String>() {{
 
