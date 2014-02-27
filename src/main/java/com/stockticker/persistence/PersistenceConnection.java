@@ -1,5 +1,7 @@
 package com.stockticker.persistence;
 
+import com.stockticker.PropertiesFileReader;
+
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.DriverManager;
@@ -16,22 +18,39 @@ public enum PersistenceConnection {
     INSTANCE;
 
     private static final String H2_DRIVER = "org.h2.Driver";
-    //private static final String H2_DBNAME = "jdbc:h2:/!!UMass/AgileJava/git/StockTicker/data/stockticker";
-    //private static final String H2_URL = H2_DBNAME+";INIT=runscript from '/!!UMass/AgileJava/git/StockTicker/sql/init_cached.sql'";
-    private static final String H2_DBNAME = "jdbc:h2:mem/stockticker";
-    private static final String H2_URL = H2_DBNAME+";INIT=runscript from './sql/init_memory.sql'";
+    private static final String H2_URL = "jdbc:h2:";
+    private static final String H2_SCRIPT = ";INIT=runscript from ";
+    private static final String PROPERTIES_FILE = "./config/stockticker.properties";
+    private static final String SINGLE_QUOTE = "'";
+    private static final String SEPARATOR = "/";
+
+    private static final String DB_SCHEMA = "dbSchema";
+    private static final String DB_NAME = "dbName";
+    private static final String DB_LOCATION = "dbLocation";
+    private static final String DB_USER = "dbUser";
+    private static final String DB_PASSWORD = "dbPswd";
 
     private Connection conn;
     private boolean dbInitialized = false;
+
+    private String dbSchema;
+    private String dbName;
+    private String dbLocation;
+    private String dbUser;
+    private String dbPswd;
 
     /**
      * Default constructor that initiates database initialization
      */
     private PersistenceConnection() {
 
+
         try {
+            loadProperties();
             Class.forName(H2_DRIVER);
-            conn = DriverManager.getConnection(H2_URL, "sa", "");
+
+            String connectionUrl = H2_URL+dbLocation+SEPARATOR+dbName+H2_SCRIPT+SINGLE_QUOTE+dbSchema+SINGLE_QUOTE;
+            conn = DriverManager.getConnection(connectionUrl, dbUser, dbPswd);
 
         /* If tables don't exist then initialize the database */
 
@@ -39,7 +58,8 @@ public enum PersistenceConnection {
             ResultSet result = meta.getTables(null, null, "user", null);
             //If not result, then tables have not been created yet
             if (!result.next()) {
-                dbInitialized = initializeDatabase(H2_DBNAME);
+                dbName = H2_URL+dbName;
+                dbInitialized = initializeDatabase(dbName);
             }
         }
         catch (ClassNotFoundException e) {
@@ -48,6 +68,18 @@ public enum PersistenceConnection {
         catch (SQLException e) {
             System.out.println(e.getMessage());
         }
+        catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void loadProperties() {
+        PropertiesFileReader properties = new PropertiesFileReader(PROPERTIES_FILE);
+        dbSchema = properties.getProperty(DB_SCHEMA);
+        dbName = properties.getProperty(DB_NAME);
+        dbLocation = properties.getProperty(DB_LOCATION);
+        dbUser = properties.getProperty(DB_USER);
+        dbPswd = properties.getProperty(DB_PASSWORD);
     }
 
     /**
