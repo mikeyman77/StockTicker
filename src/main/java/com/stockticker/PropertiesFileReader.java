@@ -29,6 +29,12 @@ public class PropertiesFileReader {
         }
         catch (IOException e) {
             System.out.println(e.getMessage());
+            try {
+                throw new IOException("file not found");
+            }
+            catch (IOException io) {
+
+            }
         }
     }
 
