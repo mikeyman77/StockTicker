@@ -9,9 +9,12 @@ import com.stockticker.Stock;
 import com.stockticker.User;
 import com.stockticker.UserInfo;
 
+/**
+ * Provides services to query and update User and Stock data from the
+ * database
+ */
 public enum StockTickerPersistence implements PersistenceService {
     INSTANCE;
-
 
     private Map<String,Stock> stocksMap = new TreeMap<String,Stock>();
     private Map<String,TrackedStocks> trackedStocksMap = new TreeMap<String,TrackedStocks>();
@@ -19,16 +22,34 @@ public enum StockTickerPersistence implements PersistenceService {
     private PersistenceConnection persistence;
     private int userId = 0;
 
+    /**
+     * Default no-args constructor that gets an instance of the
+     * PersistenceConnection interface.
+     */
     private StockTickerPersistence() {
         persistence = PersistenceConnection.INSTANCE;
     }
 
+    /**
+     * Returns a List of stock symbols being tracked by a specific user
+     *
+     * @param username name of user
+     * @return list of stock symbols
+     */
     @Override
     public List<String> getTrackedStocks(String username) {
         TrackedStocks tracked = trackedStocksMap.get(username);
         return new ArrayList<String>(tracked.getStocks());
     }
 
+    /**
+     * Sets whether or not a stock is to be tracked
+     *
+     * @param username name of user
+     * @param stock    stock symbol to track
+     * @param track    true to track, false to untrack
+     * @return true or false
+     */
     @Override
     public boolean trackStock(String username, String stock, boolean track) {
             if (username.equals("") || stock.equals(""))
@@ -50,16 +71,28 @@ public enum StockTickerPersistence implements PersistenceService {
         return true;
     }
 
+    /**
+     * Tests if a stock is being tracked for a specific user
+     *
+     * @param username name of user
+     * @param stock    stock symbol to check
+     * @return         true if tracked, false otherwise
+     */
     @Override
     public boolean isStockTracked(String username, String stock) {
         if (username.equals("") || stock.equals(""))
             return false;
 
         TrackedStocks tracked = trackedStocksMap.get(username);
-
         return tracked.isStockTracked(stock);
     }
 
+    /**
+     * Checks if a user exists in the database
+     *
+     * @param username the name of the user
+     * @return true if exists, false otherwise
+     */
     @Override
     public boolean userExists(String username) {
 
@@ -67,6 +100,13 @@ public enum StockTickerPersistence implements PersistenceService {
         return userDAO.exists(username);
     }
 
+    /**
+     * Creates a new user in the database
+     *
+     * @param username the name of the user
+     * @param password the user's password
+     * @return a User object if doesn't exist, null otherwise
+     */
     @Override
     public User createUser(String username, String password) {
 
@@ -76,6 +116,12 @@ public enum StockTickerPersistence implements PersistenceService {
         return user;
     }
 
+    /**
+     * Updates the specified user's information
+     *
+     * @param user a User object instance
+     * @return true if updated, false otherwise
+     */
     @Override
     public boolean updateUser(User user) {
         if (user == null)
@@ -85,6 +131,12 @@ public enum StockTickerPersistence implements PersistenceService {
         return userDAO.update(user);
     }
 
+    /**
+     * Gets the specified user's information
+     *
+     * @param username the name of the user
+     * @return a User object if exists, null otherwise
+     */
     @Override
     public User getUser(String username) {
 
@@ -92,6 +144,12 @@ public enum StockTickerPersistence implements PersistenceService {
         return userDAO.get(username);
     }
 
+    /**
+     * Deletes the specified user's information
+     *
+     * @param username the name of the user
+     * @return true if successful, false otherwise
+     */
     @Override
     public boolean deleteUser(String username) {
 
@@ -99,6 +157,12 @@ public enum StockTickerPersistence implements PersistenceService {
         return userDAO.delete(username);
     }
 
+    /**
+     * Checks if the specified user is logged in
+     *
+     * @param username the name of the user
+     * @return true if logged in, false otherwise
+     */
     @Override
     public boolean isLoggedIn(String username) {
 
@@ -106,6 +170,13 @@ public enum StockTickerPersistence implements PersistenceService {
         return userDAO.isLoggedIn(username);
     }
 
+    /**
+     * Sets the login status of the specified user
+     *
+     * @param username the name of the user
+     * @param status the login status to set (true or false)
+     * @return true if successful, false otherwise
+     */
     @Override
     public boolean setLoginStatus(String username, boolean status) {
 
@@ -113,6 +184,11 @@ public enum StockTickerPersistence implements PersistenceService {
         return userDAO.setLoginStatus(username, status);
     }
 
+    /**
+     * Returns a list of all logged in users
+     *
+     * @return list of logged in users or an empty List
+     */
     @Override
     public List<String> getLoggedInUsers() {
 
@@ -120,6 +196,12 @@ public enum StockTickerPersistence implements PersistenceService {
         return userDAO.getLoggedInUsers();
     }
 
+    /**
+     * Retrieves the user information associated with the specified user
+     *
+     * @param username the name of the user
+     * @return a UserInfo object or null
+     */
     @Override
     public UserInfo getUserInfo(String username) {
 
