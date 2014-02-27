@@ -5,7 +5,11 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.stockticker.StockQuote;
 import com.stockticker.YahooStockQuote;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
@@ -21,8 +25,11 @@ public enum YahooStockQuoteService implements StockQuoteService {
     
     private URL queryUrl = null;
     
+    /**
+     * This method returns a URL based on the list of stock symbols provided.
+     */
     @Override
-    public boolean constructURL(List<String> symbols) throws MalformedURLException {
+    public URL getURL(List<String> symbols) {
         
         StringBuilder symbolString = new StringBuilder();
         StringBuilder queryUrlStr = new StringBuilder();
@@ -36,13 +43,13 @@ public enum YahooStockQuoteService implements StockQuoteService {
                 + "where symbol in ", fields).replaceAll(" ", "%20");
         String suffixStr = "&format=json&env=store://datatables.org/alltableswithkeys";
         
-        String openParen = "%28";
-        String closeParen = "%29";
-        String quotationMark = "%22";
-        String comma = "%2C";
+        char openParen = '(';
+        char closeParen = ')';
+        char quotationMark = '"';
+        char comma = ',';
         
-        if (symbols.isEmpty())
-            return false;
+        if (symbols == null || symbols.isEmpty())
+            return null;
         
         // format symbol string for query
         for (int i = 0; i < symbols.size(); i++) {
@@ -61,16 +68,62 @@ public enum YahooStockQuoteService implements StockQuoteService {
         
         try {
             queryUrl = new URL(queryUrlString);
-            return true;
         }
         catch (MalformedURLException ex) {
             System.err.println("ERROR: A MalformedURLException exception was thrown!");
-            return false;
         }
+        
+        return queryUrl;
     }
     
+    /**
+     * This method returns an input stream from the file provided.
+     */
     @Override
-    public List<StockQuote> getStocks() throws IOException {
+    public InputStream getInputStream(File file) {
+        InputStream inputStream = null;
+        
+        if (file == null)
+            return inputStream;
+        
+        try {
+            inputStream = new FileInputStream(file);
+        }
+        catch (FileNotFoundException ex) {
+            System.err.println("ERROR: An FileNotFound exception has occurred!");
+        }
+        
+        return inputStream;
+    }
+    
+    /**
+     * This method returns an Input stream for the URL provided.
+     */
+    @Override
+    public InputStream getInputStream(URL url) {
+        
+        InputStream inputStream = null;
+        
+        if (url == null) {
+            return inputStream;
+        }
+        
+        try {
+            inputStream = url.openConnection().getInputStream();
+        }
+        catch (IOException ex) {
+            System.err.println("ERROR: An IO exception has occurred!");
+        }
+        
+        return inputStream;
+    }
+    
+    /**
+     * This method returns a list of StockQuote based on the JSON input stream
+     * provided.
+     */
+    @Override
+    public List<StockQuote> getStockQuotes(InputStream is) {
         ObjectMapper mapper = new ObjectMapper();
         List<StockQuote> stockQuoteList = new ArrayList<>();
         
@@ -78,15 +131,15 @@ public enum YahooStockQuoteService implements StockQuoteService {
         JsonNode rootNode = null;
         JsonNode quoteNode = null;
         
-        if (queryUrl == null)
-            return stockQuoteList;
+        if (is == null)
+            return stockQuoteList; // return empty list
         
         // read the full json tree
         try {
-            rootNode = mapper.readTree(queryUrl);
+            rootNode = mapper.readTree(is);
         }
         catch (IOException ex) {
-            System.err.println("ERROR: An IO exception was thrown!");
+            System.err.println("ERROR: An IO exception has occurred!");
             return stockQuoteList; // return empty list
         }
         
