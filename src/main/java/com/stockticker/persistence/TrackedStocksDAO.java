@@ -6,7 +6,10 @@ import java.util.List;
 
 /**
  * Interface that defines the Data Access methods for the
- * tracking of stocks for users
+ * tracking of stocks that users are interested in.
+ *
+ * @author Stuart Connall
+ * @version 1.0 02/27/2014
  */
 public interface TrackedStocksDAO {
 
