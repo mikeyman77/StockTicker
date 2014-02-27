@@ -22,7 +22,7 @@ CREATE MEMORY TABLE IF NOT EXISTS tracked_stock (
   trackId    int NOT NULL AUTO_INCREMENT,
   userId     int NOT NULL,
   stockId    int NOT NULL,
-  PRIMARY KEY (stockId, userId, stockId)
+  PRIMARY KEY (trackId, userId, stockId)
 ) AUTO_INCREMENT=0 ;
 
 DROP INDEX IF EXISTS idx_tracked_stock;
