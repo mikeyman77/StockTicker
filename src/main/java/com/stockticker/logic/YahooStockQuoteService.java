@@ -23,8 +23,6 @@ import java.util.List;
 public enum YahooStockQuoteService implements StockQuoteService {
     INSTANCE;
     
-    private URL queryUrl = null;
-    
     /**
      * This method returns a URL based on the list of stock symbols provided.
      */
@@ -33,6 +31,7 @@ public enum YahooStockQuoteService implements StockQuoteService {
         
         StringBuilder symbolString = new StringBuilder();
         StringBuilder queryUrlStr = new StringBuilder();
+        URL queryUrl = null;
         
         String yahooQueryUrl = "http://query.yahooapis.com/v1/public/yql?q=";
         String fields = "Name,Symbol,LastTradeDate,LastTradeTime,LastTradePriceOnly,"
@@ -49,7 +48,7 @@ public enum YahooStockQuoteService implements StockQuoteService {
         char comma = ',';
         
         if (symbols == null || symbols.isEmpty())
-            return null;
+            return queryUrl;
         
         // format symbol string for query
         for (int i = 0; i < symbols.size(); i++) {
