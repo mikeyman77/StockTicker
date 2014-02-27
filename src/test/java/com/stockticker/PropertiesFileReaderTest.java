@@ -28,7 +28,7 @@ public class PropertiesFileReaderTest {
     /**
      * Constructs PropertiesFileReader using stockticker.properties file
      */
-    public PropertiesFileReaderTest() {
+    public PropertiesFileReaderTest() throws IOException {
         properties = new PropertiesFileReader(PROP_FILE);
     }
 
@@ -50,7 +50,7 @@ public class PropertiesFileReaderTest {
      * Tests that an IOException occurred in the constructor
      */
     @Test
-    public void testPropertiesFileReaderConstructionGetsIOException() {
+    public void testPropertiesFileReaderConstructionGetsIOException() throws IOException {
 
         thrown.expect(IOException.class);
         thrown.expectMessage("file not found");
@@ -69,7 +69,7 @@ public class PropertiesFileReaderTest {
      * Tests that the getPropertyNames method returns a non-empty enumeration
      */
     @Test
-    public void testGetPropertyNamesEmpty() {
+    public void testGetPropertyNamesEmpty() throws IOException {
         PropertiesFileReader dummy = new PropertiesFileReader(DUMMY_PROP_FILE);
         assertFalse("no property names exist", dummy.getPropertyNames().hasMoreElements());
     }

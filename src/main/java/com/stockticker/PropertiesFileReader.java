@@ -20,22 +20,19 @@ public class PropertiesFileReader {
      * of filename argument.
      *
      * @param filename
+     * @throws IOException
      */
-    public PropertiesFileReader(String filename) {
-        try {
+    public PropertiesFileReader(String filename)
+        throws IOException {
+
+        //try {
             FileReader reader = new FileReader(filename);
             properties = new Properties();
             properties.load(reader);
-        }
-        catch (IOException e) {
-            System.out.println(e.getMessage());
-            try {
-                throw new IOException("file not found");
-            }
-            catch (IOException io) {
-
-            }
-        }
+        //}
+        //catch (IOException e) {
+        //   System.out.println(e.getMessage());
+        //}
     }
 
     /**
@@ -58,11 +55,17 @@ public class PropertiesFileReader {
     }
 
     public static void main(String [] args) {
-        String key = null;
-        PropertiesFileReader properties = new PropertiesFileReader("./config/stockticker.properties");
-        for (Enumeration<?> property = properties.getPropertyNames(); property.hasMoreElements();) {
-            key = (String) property.nextElement();
-            System.out.println(key+"="+properties.getProperty(key));
+
+        try {
+            String key = null;
+            PropertiesFileReader properties = new PropertiesFileReader("./config/stockticker.properties");
+            for (Enumeration<?> property = properties.getPropertyNames(); property.hasMoreElements();) {
+                key = (String) property.nextElement();
+                System.out.println(key+"="+properties.getProperty(key));
+            }
+        }
+        catch (IOException e) {
+            e.printStackTrace();
         }
 
     }
