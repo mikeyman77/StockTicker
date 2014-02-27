@@ -2,6 +2,7 @@ package com.stockticker.persistence;
 
 import com.stockticker.PropertiesFileReader;
 
+import java.io.IOException;
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.DriverManager;
@@ -88,7 +89,7 @@ public enum PersistenceConnection {
     /**
      * Loads the database properties from the project properties file
      */
-    private void loadProperties() {
+    private void loadProperties() throws IOException {
         PropertiesFileReader properties = new PropertiesFileReader(PROPERTIES_FILE);
         dbSchema = properties.getProperty(DB_SCHEMA);
         dbName = properties.getProperty(DB_NAME);
