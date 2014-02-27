@@ -5,13 +5,14 @@ import com.stockticker.User;
 import java.util.List;
 
 /**
- * Created by stu on 2/17/14.
+ * Interface that defines the Data Access methods for the
+ * tracking of stocks for users
  */
 public interface TrackedStocksDAO {
 
-    public boolean save(User user, Stock stock);
-    public boolean update(User user, Stock stock);
-    public boolean findByStockName(User user, String symbol);
-    public List<Stock> get(User user);
-    public boolean delete(User user, Stock stock);
+    public boolean create(String username, String stock);
+    public boolean exists(String username, String stock);
+    public boolean update(String username, String stock);
+    public List<String> get(String username);
+    public boolean delete(String username, String stock);
 }
