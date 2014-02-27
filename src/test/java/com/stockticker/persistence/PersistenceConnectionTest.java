@@ -43,7 +43,7 @@ public class PersistenceConnectionTest {
     }
 
     /**
-     * tests that the database was succuessfully initialized
+     * Tests that the database was successfully initialized
      */
     @Test
     public void testInitializeDatabaseTrue() {
@@ -52,7 +52,7 @@ public class PersistenceConnectionTest {
     }
 
     /**
-     * tests that the database was not initialized
+     * Tests that the database was not initialized
      */
     @Test
     public void testInitializeDatabaseFalse() {

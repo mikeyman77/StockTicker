@@ -30,7 +30,7 @@ public enum PersistenceConnection {
     private static final String DB_USER = "dbUser";
     private static final String DB_PASSWORD = "dbPswd";
 
-    private Connection conn;
+    private Connection connection;
     private boolean dbInitialized = false;
 
     private String dbSchema;
@@ -40,19 +40,30 @@ public enum PersistenceConnection {
     private String dbPswd;
 
     /**
-     * Default constructor that initiates database initialization
+     * Default constructor that grabs local properties to build the connection
+     * url and runs the database schema if not yet exists.
+     *
+     * @exception ClassNotFoundException
+     * @exception SQLException
+     * @exception Exception
      */
     private PersistenceConnection() {
-
 
         try {
             loadProperties();
             Class.forName(H2_DRIVER);
 
             String connectionUrl = H2_URL+dbLocation+SEPARATOR+dbName+H2_SCRIPT+SINGLE_QUOTE+dbSchema+SINGLE_QUOTE;
-            conn = DriverManager.getConnection(connectionUrl, dbUser, dbPswd);
+            connection = DriverManager.getConnection(connectionUrl, dbUser, dbPswd);
 
         /* If tables don't exist then initialize the database */
+
+            /* SDC - this code will go away once it is assured that the
+                     database schema is only run when the DB does not exist.
+                     Otherwise, the following code checks if the tables
+                     exist, which would enable the schema to be run using
+                     something like the MyBatis script runner in the
+                     initializeDatabase method below.
 
             DatabaseMetaData meta = conn.getMetaData();
             ResultSet result = meta.getTables(null, null, "user", null);
@@ -61,6 +72,7 @@ public enum PersistenceConnection {
                 dbName = H2_URL+dbName;
                 dbInitialized = initializeDatabase(dbName);
             }
+            */
         }
         catch (ClassNotFoundException e) {
             System.out.println(e.getMessage());
@@ -73,6 +85,9 @@ public enum PersistenceConnection {
         }
     }
 
+    /**
+     * Loads the database properties from the project properties file
+     */
     private void loadProperties() {
         PropertiesFileReader properties = new PropertiesFileReader(PROPERTIES_FILE);
         dbSchema = properties.getProperty(DB_SCHEMA);
@@ -88,7 +103,7 @@ public enum PersistenceConnection {
      * @return sql Connection object
      */
     public Connection getConnection() {
-        return conn;
+        return connection;
     }
 
     /**
@@ -100,29 +115,6 @@ public enum PersistenceConnection {
         if (dbName.equals(""))
             return false;
 
-        /*
-        SDC - this is just sample code that demonstrates how to create a table
-        and insert some data. Once the data is inserted you can submit queries
-        to look at the data. In this specification the create table statements
-        will be housed in a .sql file.
-
-        ex. stat.execute("runscript from 'init.sql'");
-
-        ex. retrieving a statement object and issuing create table and inserting
-            data.
-        Statement stat = conn.createStatement();
-        stat.execute(<create table statement goes hers>);
-        stat.execute(<insert data here);
-
-        ex. querying the database and displaying the data.
-        ResultSet rs;
-        rs = stat.executeQuery(<select statement goes here);
-        while (rs.next()) {
-            System.out.println(rs.getString("name"));
-        }
-        stat.close();
-        conn.close();
-        */
         return true;
     }
 
