@@ -32,21 +32,8 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextField;
 import javax.swing.ScrollPaneConstants;
-import javax.swing.UIManager;
-import javax.swing.UnsupportedLookAndFeelException;
 
 import com.stockticker.SymbolMap;
-
-/*
- * Different LookAndFeel's that are available
- * Motif:   "com.sun.java.swing.plaf.motif.MotifLookAndFeel"
- * Metal:   "javax.swing.plaf.metal.MetalLookAndFeel"
- *  or use UIManager.getCrossPlatformLookAndFeelClassName()
- * System: UIManager.getSystemLookAndFeelClassName()
- * GTK:     "com.sun.java.swing.plaf.gtk.GTKLookAndFeel"
- * 
- * 
- */
 
 /**
  * 
@@ -76,8 +63,6 @@ public class ViewStockTicker extends WindowAdapter implements ActionListener,
     private String m_password;
     private String m_usrName;
     private final String m_icon = "images\\stock_ticker.png";
-    //private final String m_icon = "images\\tickerIcon_2.png";
-    //private final String m_icon = "images\\tickerIcon.png";
     
 
     /**
@@ -94,17 +79,6 @@ public class ViewStockTicker extends WindowAdapter implements ActionListener,
      * events.
      */
     public void build() {
-        
-        /*try {
-            UIManager.setLookAndFeel("com.sun.java.swing.plaf.motif.MotifLookAndFeel");
-            //UIManager.getCrossPlatformLookAndFeelClassName();
-        }
-        catch(ClassNotFoundException |UnsupportedLookAndFeelException | InstantiationException |IllegalAccessException e) {
-            System.err.println("Problem with locating current Look and Feel");
-            System.err.println(e.getMessage());
-            e.printStackTrace();
-        }*/
-
         m_titleIcon = new ImageIcon(toolKit.getImage(m_icon)).getImage();
         m_frame.setIconImage(m_titleIcon);
         m_frame.setSize(920, 600);
