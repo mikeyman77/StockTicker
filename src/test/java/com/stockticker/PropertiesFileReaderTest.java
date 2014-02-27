@@ -1,5 +1,6 @@
 package com.stockticker;
 
+import junit.framework.Assert;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -42,8 +43,8 @@ public class PropertiesFileReaderTest {
     /**
      * Defines a rule for expected exceptions
      */
-    @Rule
-    public ExpectedException exception = ExpectedException.none();
+    //@Rule
+    public ExpectedException thrown = ExpectedException.none();
 
     /**
      * Tests that an IOException occurred in the constructor
@@ -51,8 +52,8 @@ public class PropertiesFileReaderTest {
     @Test
     public void testPropertiesFileReaderConstructionGetsIOException() {
 
-        exception.expect(IOException.class);
-        //exception.expectMessage("invalid properties file");
+        thrown.expect(IOException.class);
+        thrown.expectMessage("file not found");
         PropertiesFileReader properties = new PropertiesFileReader("");
     }
 
