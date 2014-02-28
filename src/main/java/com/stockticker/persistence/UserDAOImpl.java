@@ -23,6 +23,26 @@ public class UserDAOImpl implements UserDAO {
         this.connection = conn;
     }
 
+    /**
+     * Gets the userId associated with the specified user name
+     *
+     * @param username the name of the user
+     * @return the user id, -1 otherwise
+     */
+    public int getUserId(String username) {
+        try {
+            Statement statement = connection.createStatement();
+            ResultSet result = statement.executeQuery("SELECT userId FROM user WHERE username='"+username+"'");
+            if (result.next())
+                return result.getInt(1);
+        }
+        catch(SQLException e) {
+            System.out.println(e.getMessage());
+        }
+
+        return -1;
+    }
+
     public User create(String username, String password){
         User user = null;
         ResultSet rs;
@@ -278,6 +298,6 @@ public class UserDAOImpl implements UserDAO {
         }
 
         return users;
-
     }
+
 }

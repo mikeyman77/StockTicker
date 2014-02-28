@@ -12,6 +12,7 @@ import java.util.List;
  */
 public interface UserDAO {
 
+    public int getUserId(String username);
     public User create(String username, String password);
     public boolean exists(String username);
     public boolean update(User user);
