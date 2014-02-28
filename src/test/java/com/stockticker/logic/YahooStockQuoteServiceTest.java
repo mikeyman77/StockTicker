@@ -28,7 +28,12 @@ public class YahooStockQuoteServiceTest {
         symbols.add("GOOG");
         symbols.add("AAPL");
         
-        assertNotNull(instance.getURL(symbols));
+        URL url = instance.getURL(symbols);
+        String symbolStr = "\"GOOG\",\"AAPL\"";
+        String urlStr = url.toString();
+        boolean result = urlStr.contains(symbolStr);
+        
+        assertTrue(result);
     }
     
     /**
