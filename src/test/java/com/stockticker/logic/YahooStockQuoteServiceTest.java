@@ -2,8 +2,9 @@
 package com.stockticker.logic;
 
 import com.stockticker.StockQuote;
-import java.io.ByteArrayInputStream;
+import java.io.File;
 import java.io.InputStream;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 import org.junit.Test;
@@ -17,27 +18,6 @@ import static org.junit.Assert.*;
 public class YahooStockQuoteServiceTest {
     
     private final YahooStockQuoteService instance = YahooStockQuoteService.INSTANCE;
-    private final String jsonStockString = "{\"query\":{\"count\":2,\"created\""
-            + ":\"2014-02-27T11:48:41Z\",\"lang\":\"en-US\",\"results\""
-            + ":{\"quote\":[{\"Bid\":\"1213.9399\",\"Change\":\"+0.17\",\"LastTradeDate\""
-            + ":\"2/26/2014\",\"EarningsShare\":\"38.021\",\"DaysLow\""
-            + ":\"1213.76\",\"DaysHigh\":\"1228.88\",\"YearLow\""
-            + ":\"761.26\",\"YearHigh\":\"1228.88\",\"MarketCapitalization\""
-            + ":\"410.0B\",\"LastTradePriceOnly\":\"1220.17\",\"Name\""
-            + ":\"Google Inc.\",\"Open\":\"1224.00\",\"PreviousClose\""
-            + ":\"1220.00\",\"ChangeinPercent\":\"+0.01%\",\"PERatio\""
-            + ":\"32.09\",\"Symbol\":\"GOOG\",\"LastTradeTime\":\"4:00pm\",\"Volume\""
-            + ":\"1984047\",\"Ask\":\"1229.99\",\"AverageDailyVolume\""
-            + ":\"2092520\"},{\"Bid\":\"514.46\",\"Change\":\"-4.71\",\"LastTradeDate\""
-            + ":\"2/26/2014\",\"EarningsShare\":\"40.233\",\"DaysLow\""
-            + ":\"515.60\",\"DaysHigh\":\"525.00\",\"YearLow\""
-            + ":\"385.10\",\"YearHigh\":\"575.14\",\"MarketCapitalization\""
-            + ":\"461.5B\",\"LastTradePriceOnly\":\"517.35\",\"Name\""
-            + ":\"Apple Inc.\",\"Open\":\"523.61\",\"PreviousClose\""
-            + ":\"522.06\",\"ChangeinPercent\":\"-0.90%\",\"PERatio\""
-            + ":\"12.98\",\"Symbol\":\"AAPL\",\"LastTradeTime\":\"4:00pm\",\"Volume\""
-            + ":\"9880581\",\"Ask\":\"514.88\",\"AverageDailyVolume\""
-            + ":\"12711800\"}]}}}";
     
     /**
      * Test of getURL method with one valid symbol.
@@ -46,7 +26,8 @@ public class YahooStockQuoteServiceTest {
     public void testGetURL() throws Exception {
         List<String> symbols = new ArrayList<>();
         symbols.add("GOOG");
-
+        symbols.add("AAPL");
+        
         assertNotNull(instance.getURL(symbols));
     }
     
@@ -70,13 +51,74 @@ public class YahooStockQuoteServiceTest {
     }
     
     /**
+     * test getInputStream method with 2 stock quote results returned.
+     */
+    @Test
+    public void testGetInputStreamWith2Results() throws Exception {
+        
+        File file = new File("resources/stockquotedata2results.json");
+        URL fileUrl = file.toURI().toURL();
+        
+        InputStream inputStream = instance.getInputStream(fileUrl);
+        int bytesCount = inputStream.available();
+        int expResult = 984;
+        
+        assertEquals(expResult, bytesCount);
+    }
+    
+    /**
+     * test getInputStream method with 1 stock quote result returned.
+     */
+    @Test
+    public void testGetInputStreamWith1Result() throws Exception {
+        
+        File file = new File("resources/stockquotedata1result.json");
+        URL fileUrl = file.toURI().toURL();
+        
+        InputStream inputStream = instance.getInputStream(fileUrl);
+        int bytesCount = inputStream.available();
+        int expResult = 538;
+        
+        assertEquals(expResult, bytesCount);
+    }
+    
+    /**
+     * test getInputStream method with 1 stock quote result returned.
+     */
+    @Test
+    public void testGetInputStreamWithNoResults() throws Exception {
+        
+        File file = new File("resources/stockquotedata0results.json");
+        URL fileUrl = file.toURI().toURL();
+        
+        InputStream inputStream = instance.getInputStream(fileUrl);
+        int bytesCount = inputStream.available();
+        int expResult = 84;
+        
+        assertEquals(expResult, bytesCount);
+    }
+    
+    /**
+     * test getInputStream method when URL is null.
+     */
+    @Test
+    public void testGetInputStreamWithNullURL() throws Exception {
+        
+        InputStream inputStream = instance.getInputStream(null);
+        assertNull(inputStream);
+    }
+    
+    /**
      * Test of getStockQuotes method with multiple symbols
      */
     @Test
-    public void testGetStockQuotesWithString() throws Exception {
+    public void testGetStockQuotes() throws Exception {
         
-        // use json string
-        InputStream is = new ByteArrayInputStream(jsonStockString.getBytes());
+        // use test json results file
+        File file = new File("resources/stockquotedata2results.json");
+        URL fileUrl = file.toURI().toURL();
+        
+        InputStream is = instance.getInputStream(fileUrl);
         
         int stockQuoteCount = instance.getStockQuotes(is).size();
         int expResult = 2;
