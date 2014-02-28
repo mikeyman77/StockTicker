@@ -2,7 +2,6 @@
 package com.stockticker.logic;
 
 import com.stockticker.StockQuote;
-import java.io.File;
 import java.io.InputStream;
 import java.net.URL;
 import java.util.List;
@@ -18,7 +17,6 @@ import java.util.List;
 public interface StockQuoteService {
     
     public URL getURL(List<String> symbols);
-    public InputStream getInputStream(File file);
     public InputStream getInputStream(URL url);
     public List<StockQuote> getStockQuotes(InputStream is);
     

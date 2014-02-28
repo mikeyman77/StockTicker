@@ -3,7 +3,6 @@ package com.stockticker.logic;
 import com.stockticker.StockQuote;
 import com.stockticker.persistence.PersistenceService;
 import com.stockticker.persistence.StockTickerPersistence;
-import java.io.File;
 import java.util.List;
 
 
@@ -28,16 +27,6 @@ public enum StockTicker implements StockTickerService {
         
         return ysqs.getStockQuotes(ysqs
                 .getInputStream(ysqs.getURL(symbols)));
-    }
-    
-    /**
-     * This method returns a list of stock quotes based on the file provided.
-     */
-    @Override
-    public List<StockQuote> getStockQuotes(File file) {
-        
-        return ysqs.getStockQuotes(ysqs
-                .getInputStream(file));
     }
     
     /**

@@ -5,9 +5,6 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.stockticker.StockQuote;
 import com.stockticker.YahooStockQuote;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.MalformedURLException;
@@ -74,27 +71,7 @@ public enum YahooStockQuoteService implements StockQuoteService {
         
         return queryUrl;
     }
-    
-    /**
-     * This method returns an input stream from the file provided.
-     */
-    @Override
-    public InputStream getInputStream(File file) {
-        InputStream inputStream = null;
         
-        if (file == null)
-            return inputStream;
-        
-        try {
-            inputStream = new FileInputStream(file);
-        }
-        catch (FileNotFoundException ex) {
-            System.err.println("ERROR: An FileNotFound exception has occurred!");
-        }
-        
-        return inputStream;
-    }
-    
     /**
      * This method returns an Input stream for the URL provided.
      */
