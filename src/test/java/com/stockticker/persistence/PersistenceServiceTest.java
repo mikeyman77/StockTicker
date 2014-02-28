@@ -94,7 +94,7 @@ public class PersistenceServiceTest {
      */
     @Test
     public void testTrackStockFalse() {
-        assertFalse("track stock false", persistence.trackStock(ORTIZ, "", true));
+        assertFalse("track stock false", persistence.trackStock(ORTIZ, "", false));
     }
     /**
      * Tests the isStockTracked method is true
