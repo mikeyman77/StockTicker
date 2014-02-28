@@ -9,6 +9,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -21,49 +22,42 @@ import java.util.List;
 public class TrackedStocksDAOImpl implements TrackedStocksDAO {
 
     private Connection connection;
+    private UserDAO userDAO;
 
     public TrackedStocksDAOImpl(Connection conn) {
         this.connection = conn;
+        userDAO = new UserDAOImpl(connection);
+    }
+
+    /**
+     * Gets the stockId associated with the specified symbol
+     *
+     * @param symbol the name of the stock
+     * @return the stock id, -1 otherwise
+     */
+    public int getStockId(String symbol) {
+        try {
+            Statement statement = connection.createStatement();
+            ResultSet result = statement.executeQuery("SELECT stockId FROM stock WHERE symbol='"+symbol+"'");
+            if (result.next())
+                return result.getInt(1);
+        }
+        catch(SQLException e) {
+            System.out.println(e.getMessage());
+        }
+
+        return -1;
     }
 
     @Override
-    public boolean create(String username, String stock) {
-
-        PreparedStatement prepared = null;
-
+    public boolean add(int userId, int stockId) {
         try {
-            Statement statement = connection.createStatement();
-            ResultSet result = statement.executeQuery("SELECT userId FROM user WHERE username='"+username+"'");
-            if (!result.next() || !SymbolMap.isValidSymbol(stock))
-                return false;
-
-            int userId = result.getInt(1);
-
-            //See if a stock entry exists in the DB, meaning it is or was being tracked by someone
-            int stockId = -1;
-            statement.executeUpdate("SELECT stockId from stock WHERE symbol='"+stock+"'");
-            if (result.next()) {
-                stockId = result.getInt(1);
-            }
-            else {
-                prepared = connection.prepareStatement("INSERT INTO stock (symbol) VALUES ('?')");
-                prepared.setString(1, stock);
-                prepared.execute();
-                //stockId = prepared.getGeneratedKeys();
-            }
-
-            //check if the stock is already being tracked
-            int trackId = -1;
-            result = statement.executeQuery("SELECT trackId FROM tracked_stock where userId='" +
-                    userId + "' AND stockId='" + stockId + "'");
-            if (!result.next()) {
-                //if trackId returned, then stock is already being tracked
-                prepared = connection.prepareStatement("INSERT INTO tracked_stock (userId, stockId) VALUES ('?','?')");
-                prepared.setInt(1, userId);
-                prepared.setInt(2, stockId);
-                prepared.execute();
-                //trackId = prepared.getGeneratedKeys();
-            }
+            //if trackId returned, then stock is already being tracked
+            PreparedStatement prepared = connection.prepareStatement("INSERT INTO tracked_stock (userId, stockId) VALUES (?,?)");
+            prepared.setInt(1, userId);
+            prepared.setInt(2, stockId);
+            prepared.execute();
+            //trackId = prepared.getGeneratedKeys();
         }
         catch(SQLException e) {
             System.out.println(e.getMessage());
@@ -72,23 +66,76 @@ public class TrackedStocksDAOImpl implements TrackedStocksDAO {
     }
 
     @Override
-    public boolean exists(String username, String stock) {
+    public boolean exists(int userId, int stockId) {
+        try {
+
+            Statement statement = connection.createStatement();
+            ResultSet result = statement.executeQuery("SELECT trackId FROM tracked_stock WHERE userId='"+
+                                                       userId+"' AND stockId='"+stockId+"'");
+            if (result.next())
+                return true;
+        }
+        catch(SQLException e) {
+            System.out.println(e.getMessage());
+        }
+
         return false;
     }
 
     @Override
-    public boolean update(String username, String stock) {
-        return false;
-    }
+    public List<String> get(int userId) {
+        List<String> trackedStocks = new ArrayList<String>();
 
+        try {
+            Statement statement = connection.createStatement();
+            ResultSet result = statement.executeQuery("SELECT symbol FROM stock, tracked_stock "+
+                    "WHERE stock.stockId=tracked_stock.stockId and tracked_stock.UserId='"+userId+"'");
+            while (result.next()) {
+                trackedStocks.add(result.getString(1));
+            }
+        }
+        catch(SQLException e) {
+            System.out.println(e.getMessage());
+        }
+
+        return trackedStocks;
+    }
 
     @Override
-    public List<String> get(String username) {
-        return null;
+    public boolean delete(int userId, int stockId) {
+        try {
+            //Update the User table
+            PreparedStatement prepared = connection.prepareStatement
+                    ("DELETE FROM tracked_stock WHERE userId = ? AND stockId = ?");
+
+            prepared.setInt(1, userId);
+            prepared.setInt(2, stockId);
+            prepared.executeUpdate();
+        }
+        catch(SQLException e) {
+            System.out.println(e.getMessage());
+            return false;
+        }
+
+        return true;
     }
 
     @Override
-    public boolean delete(String username, String stock) {
-        return false;
+    public boolean deleteAll(int userId) {
+        try {
+            //Update the User table
+            PreparedStatement prepared = connection.prepareStatement
+                    ("DELETE FROM tracked_stock WHERE userId = ?");
+
+            prepared.setInt(1, userId);
+            prepared.executeUpdate();
+        }
+        catch(SQLException e) {
+            System.out.println(e.getMessage());
+            return false;
+        }
+
+        return true;
     }
+
 }

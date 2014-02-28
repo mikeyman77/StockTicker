@@ -16,11 +16,9 @@ import com.stockticker.UserInfo;
 public enum StockTickerPersistence implements PersistenceService {
     INSTANCE;
 
-    private Map<String,Stock> stocksMap = new TreeMap<String,Stock>();
-    private Map<String,TrackedStocks> trackedStocksMap = new TreeMap<String,TrackedStocks>();
-    private Map<String,User> usersMap = new TreeMap<String, User>();
     private PersistenceConnection persistence;
-    private int userId = 0;
+    private TrackedStocksDAO trackedDAO;
+    private UserDAO userDAO;
 
     /**
      * Default no-args constructor that gets an instance of the
@@ -28,6 +26,8 @@ public enum StockTickerPersistence implements PersistenceService {
      */
     private StockTickerPersistence() {
         persistence = PersistenceConnection.INSTANCE;
+        userDAO = new UserDAOImpl(persistence.getConnection());
+        trackedDAO = new TrackedStocksDAOImpl(persistence.getConnection());
     }
 
     /**
@@ -38,8 +38,8 @@ public enum StockTickerPersistence implements PersistenceService {
      */
     @Override
     public List<String> getTrackedStocks(String username) {
-        TrackedStocks tracked = trackedStocksMap.get(username);
-        return new ArrayList<String>(tracked.getStocks());
+        int userId = userDAO.getUserId(username);
+        return trackedDAO.get(userId);
     }
 
     /**
@@ -52,22 +52,21 @@ public enum StockTickerPersistence implements PersistenceService {
      */
     @Override
     public boolean trackStock(String username, String stock, boolean track) {
-            if (username.equals("") || stock.equals(""))
-                return false;
 
-            TrackedStocks tracked = trackedStocksMap.get(username);
-            if (track) {
-                if (tracked != null) {
-                    tracked.put(stock);
-                }
-                else {
-                    tracked = new TrackedStocks(username);
-                    trackedStocksMap.put(username, tracked);
-                }
+        int userId = userDAO.getUserId(username);
+        int stockId = trackedDAO.getStockId(stock);
+
+        if (track) {
+            if (!trackedDAO.exists(userId, stockId)) {
+                trackedDAO.add(userId, stockId);
             }
-            else {
-                tracked.remove(stock);
+        } else {
+            if (trackedDAO.exists(userId, stockId)) {
+                trackedDAO.delete(userId, stockId);
             }
+            else return false;
+        }
+
         return true;
     }
 
@@ -80,11 +79,11 @@ public enum StockTickerPersistence implements PersistenceService {
      */
     @Override
     public boolean isStockTracked(String username, String stock) {
-        if (username.equals("") || stock.equals(""))
-            return false;
 
-        TrackedStocks tracked = trackedStocksMap.get(username);
-        return tracked.isStockTracked(stock);
+        int userId = userDAO.getUserId(username);
+        int stockId = trackedDAO.getStockId(stock);
+
+        return trackedDAO.exists(userId, stockId);
     }
 
     /**
@@ -96,7 +95,6 @@ public enum StockTickerPersistence implements PersistenceService {
     @Override
     public boolean userExists(String username) {
 
-        UserDAO userDAO = new UserDAOImpl(persistence.getConnection());
         return userDAO.exists(username);
     }
 
@@ -110,10 +108,7 @@ public enum StockTickerPersistence implements PersistenceService {
     @Override
     public User createUser(String username, String password) {
 
-        UserDAO userDAO = new UserDAOImpl(persistence.getConnection());
-        User user = userDAO.create(username, password);
-
-        return user;
+        return userDAO.create(username, password);
     }
 
     /**
@@ -127,7 +122,6 @@ public enum StockTickerPersistence implements PersistenceService {
         if (user == null)
             return false;
 
-        UserDAO userDAO = new UserDAOImpl(persistence.getConnection());
         return userDAO.update(user);
     }
 
@@ -140,7 +134,6 @@ public enum StockTickerPersistence implements PersistenceService {
     @Override
     public User getUser(String username) {
 
-        UserDAO userDAO = new UserDAOImpl(persistence.getConnection());
         return userDAO.get(username);
     }
 
@@ -153,7 +146,6 @@ public enum StockTickerPersistence implements PersistenceService {
     @Override
     public boolean deleteUser(String username) {
 
-        UserDAO userDAO = new UserDAOImpl(persistence.getConnection());
         return userDAO.delete(username);
     }
 
@@ -166,7 +158,6 @@ public enum StockTickerPersistence implements PersistenceService {
     @Override
     public boolean isLoggedIn(String username) {
 
-        UserDAO userDAO = new UserDAOImpl(persistence.getConnection());
         return userDAO.isLoggedIn(username);
     }
 
@@ -180,7 +171,6 @@ public enum StockTickerPersistence implements PersistenceService {
     @Override
     public boolean setLoginStatus(String username, boolean status) {
 
-        UserDAO userDAO = new UserDAOImpl(persistence.getConnection());
         return userDAO.setLoginStatus(username, status);
     }
 
@@ -192,7 +182,6 @@ public enum StockTickerPersistence implements PersistenceService {
     @Override
     public List<String> getLoggedInUsers() {
 
-        UserDAO userDAO = new UserDAOImpl(persistence.getConnection());
         return userDAO.getLoggedInUsers();
     }
 
@@ -210,63 +199,23 @@ public enum StockTickerPersistence implements PersistenceService {
     }
 
 
+    /*
+     * This is for testing purposes only, to run in the debugger.
+     */
     public static void main(String [] args) {
         PersistenceService ps = StockTickerPersistence.INSTANCE;
 
-        User sconnall = ps.createUser("connall", "password");
-
-        //Set logged in and test
-        ps.setLoginStatus(sconnall.getUserName(), true);
-        System.out.print("User " + sconnall.getUserName() + " is ");
-        if (ps.isLoggedIn(sconnall.getUserName())) {
-            System.out.println("logged in.");
-        }
-        else {
-            System.out.println("not logged out.");
-        }
-        sconnall = ps.getUser(sconnall.getUserName());
-        sconnall.setPassword("PATRIOTS");
-        ps.updateUser(sconnall);
-        sconnall.setPassword("BRUINS");
-        ps.updateUser(sconnall);
-        //ps.deleteUser(sconnall.getUserName());
-        //ps.deleteUser(sconnall.getUserName());
-
-        //set logged out and test
-        ps.setLoginStatus(sconnall.getUserName(), false);
-        System.out.print("User " + sconnall.getUserName() + " is ");
-        if (ps.isLoggedIn(sconnall.getUserName())) {
-            System.out.println("logged in.");
-        }
-        else {
-            System.out.println("logged out.");
-        }
-
-        //Set logged in and test
-        ps.setLoginStatus(sconnall.getUserName(), true);
-        System.out.print("User " + sconnall.getUserName() + " is ");
-        if (ps.isLoggedIn(sconnall.getUserName())) {
-            System.out.println("logged in.");
-        }
-        else {
-            System.out.println("logged out.");
-        }
-
-        //Create new user and log in
         User sconnall2 = ps.createUser("connall2", "password");
         ps.setLoginStatus(sconnall2.getUserName(), true);
-        System.out.print("User " + sconnall2.getUserName() + " is ");
-        if (ps.isLoggedIn(sconnall2.getUserName())) {
-            System.out.println("logged in.");
-        }
-        else {
-            System.out.println("logged out.");
-        }
-
-        List<String> loggedInUsers = ps.getLoggedInUsers();
-        for (String username : loggedInUsers) {
-            System.out.print("User " + username + " is logged in");
-        }
+        ps.trackStock(sconnall2.getUserName(), "GOOG", true);
+        ps.trackStock(sconnall2.getUserName(), "AAPL", true);
+        ps.trackStock(sconnall2.getUserName(), "MSFT", true);
+        ps.isStockTracked(sconnall2.getUserName(), "GOOG");
+        ps.trackStock(sconnall2.getUserName(), "MSFT", false);
+        ps.isStockTracked(sconnall2.getUserName(), "MSFT");
+        List<String> tracked = ps.getTrackedStocks(sconnall2.getUserName());
+        System.out.println("");
+        System.exit(0);
     }
 
 }

@@ -13,9 +13,10 @@ import java.util.List;
  */
 public interface TrackedStocksDAO {
 
-    public boolean create(String username, String stock);
-    public boolean exists(String username, String stock);
-    public boolean update(String username, String stock);
-    public List<String> get(String username);
-    public boolean delete(String username, String stock);
+    public int     getStockId(String stock);
+    public boolean add(int userId, int stockId);
+    public boolean exists(int userId, int stockId);
+    public List<String> get(int userId);
+    public boolean delete(int userId, int stockId);
+    public boolean deleteAll(int userId);
 }
