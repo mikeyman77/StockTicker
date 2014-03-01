@@ -58,6 +58,29 @@
         </javac>
     </target>
 
+    <target name="javadoc" description="Generate source JavaDoc" depends="compile">
+        <javadoc packagenames="com.stockticker.*"
+                 classpathref="project.classpath"
+                 sourcepath="src/main/java"
+                 excludepackagenames=""
+                 defaultexcludes="yes"
+                 destdir="doc/api"
+                 author="true"
+                 version="true"
+                 use="true"
+                 windowtitle="Test API">
+            <doctitle><![CDATA[<h1>StockTicker</h1>]]></doctitle>
+            <bottom><![CDATA[Final Project - Stock Ticker - Stu Connall, Mike Grissom, and Paul Wallace]]></bottom>
+            <tag name="todo" scope="all" description="To do:"/>
+            <group title="Stock Ticker Common" packages="com.stockticker*"/>
+            <group title="Stock Ticker User Interface" packages="com.stockticker.ui*"/>
+            <group title="Stock Ticker Business Logic" packages="com.stockticker.logic*"/>
+            <group title="Stock Ticker Persistence" packages="com.stockticker.persistence*"/>
+            <link offline="true" href="http://docs.oracle.com/javase/7/docs/api/" packagelistLoc="\temp:\tmp"/>
+            <link href="http://docs.oracle.com/javase/7/docs/api/"/>
+        </javadoc>
+    </target>
+
     <target name="test" description="Runs all the JUnit tests and generates the test results report" depends="compile">
 
         <delete dir="${report.junit.dir}" />
@@ -154,7 +177,7 @@
 
     <!-- this is the default target - it does everything -->
 <!--    <target name="all" depends="init, clean, compile, test, instrument, cover-test, coverage-report"-->
-    <target name="all" depends="init, clean, compile, test, coverage"
+    <target name="all" depends="init, clean, compile, javadoc, test, coverage"
             description="deletes previous work, compiles new class, runs hello program"/>
 
 </project>
