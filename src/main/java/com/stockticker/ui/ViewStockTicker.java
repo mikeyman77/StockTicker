@@ -39,30 +39,35 @@ import com.stockticker.SymbolMap;
  * 
  * @author prwallace
  */
-public class ViewStockTicker extends WindowAdapter implements ActionListener,
-        IStockTicker_UIComponents {
+public class ViewStockTicker extends WindowAdapter implements ActionListener, IStockTicker_UIComponents {
 
-    final static int PWORD_LENGTH = 16;
-    static CardLayout cardLayout;
-    static JPanel m_cardPanel;
+    private static ViewStockTicker instance;
+    private static CardLayout cardLayout;
+    private static JPanel m_cardPanel;
 
     private final JFrame m_frame;
     private JPanel m_bottomPanel;
     private JPanel m_toolPanel;
     private JPanel m_topPanel;
     private JPanel m_sidePanel;
-
     private JPanel m_btnPanel;
     private JPanel m_statusPanel;
+
+    public JButton m_leftControlBtn;
+    public JButton m_rightControlBtn;
 
     private final Toolkit toolKit = Toolkit.getDefaultToolkit();
     private final Dimension screenSize = toolKit.getScreenSize();
     private GridBagConstraints m_constraints;
     private Image m_titleIcon;
 
-    private String m_password;
-    private String m_usrName;
     private final String m_icon = "images\\stock_ticker.png";
+
+    private boolean m_isLoggedIn = false;
+    private boolean m_isRegistered = false;
+
+    private int m_logInTries = 0;
+    private int m_maxTries = 3;
     
 
     /**
@@ -117,8 +122,8 @@ public class ViewStockTicker extends WindowAdapter implements ActionListener,
         m_cardPanel = new JPanel(new CardLayout());
         m_cardPanel.setLayout(cardLayout = new CardLayout());
         m_cardPanel.setPreferredSize(new Dimension(550, 520));
-        m_cardPanel.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createRaisedBevelBorder(), 
-                BorderFactory.createLoweredBevelBorder()));
+        m_cardPanel.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createRaisedBevelBorder(), BorderFactory.createLoweredBevelBorder()));
+
 
         JList stockList = new JList(SymbolMap.getSymbols().keySet().toArray());
         JScrollPane scrollPane = new JScrollPane(stockList);
@@ -152,6 +157,7 @@ public class ViewStockTicker extends WindowAdapter implements ActionListener,
             }
         });
 
+
         JPanel toolPanel = new JPanel();
         toolPanel.setPreferredSize(new Dimension(160, 180));
         JPanel midPanel = new JPanel(new GridBagLayout());
@@ -174,27 +180,31 @@ public class ViewStockTicker extends WindowAdapter implements ActionListener,
 
         JPanel btnPanel = new JPanel(new GridBagLayout());
         btnPanel.setPreferredSize(new Dimension(200, 40));
-        JButton regBtn = new JButton(UIButton.USER_REG.getName());
-        JButton logBtn = new JButton(UIButton.LOGIN.getName());
+        m_leftControlBtn = new JButton(UI.USER_REG.getName());
+        m_rightControlBtn = new JButton(UI.LOGIN.getName());
+
         m_constraints.gridx = 0;
         m_constraints.gridy = 0;
         m_constraints.anchor = GridBagConstraints.PAGE_START;
         m_constraints.insets = new Insets(0, 0, 10, 10);
-        btnPanel.add(regBtn, m_constraints);
+        btnPanel.add(m_leftControlBtn, m_constraints);
+
         m_constraints.gridx = 1;
         m_constraints.gridy = 0;
         m_constraints.insets = new Insets(0, 0, 0, 0);
-        btnPanel.add(logBtn, m_constraints);
+        btnPanel.add(m_rightControlBtn, m_constraints);
         m_constraints.insets = new Insets(0, 0, 0, 0);
 
-        regBtn.addActionListener(this);
-        logBtn.addActionListener(this);
+        m_leftControlBtn.addActionListener(this);
+        m_rightControlBtn.addActionListener(this);
+
 
         m_toolPanel.add(toolPanel, BorderLayout.NORTH);
         m_toolPanel.add(midPanel, BorderLayout.CENTER);
         m_toolPanel.add(btmPanel, BorderLayout.SOUTH);
         m_statusPanel.add(btnPanel, BorderLayout.NORTH);
         m_bottomPanel.add(m_statusPanel, BorderLayout.CENTER);
+
         m_frame.getContentPane().add(m_bottomPanel, BorderLayout.SOUTH);
         m_frame.getContentPane().add(m_topPanel, BorderLayout.NORTH);
         m_frame.getContentPane().add(m_cardPanel, BorderLayout.CENTER);
@@ -223,17 +233,36 @@ public class ViewStockTicker extends WindowAdapter implements ActionListener,
 
         DetailCard detailCard = new DetailCard();
         QuoteCard quoteCard = new QuoteCard();
-        TickerCard tickerCard = new TickerCard();
+        TickerCard tickerCard = new TickerCard(m_cardPanel);
         RegistrationCard regCard = new RegistrationCard();
         LoginCard loginCard = new LoginCard();
 
-        m_cardPanel.add(homeCard.getCard());
-        m_cardPanel.add(detailCard.getCard());
-        m_cardPanel.add(quoteCard.getCard());
-        m_cardPanel.add(tickerCard.getCard());
-        m_cardPanel.add(regCard.getCard());
-        m_cardPanel.add(loginCard.getCard());
+        m_cardPanel.add(UI.HOME.getName(), homeCard.getCard());
+        m_cardPanel.add(UI.DETAIL.getName(), detailCard.getCard());
+        m_cardPanel.add(UI.QUOTE.getName(), quoteCard.getCard());
+        m_cardPanel.add(UI.TICKER.getName(), tickerCard.getCard());
+        m_cardPanel.add(UI.USER_REG.getName(), regCard.getCard());
+        m_cardPanel.add(UI.LOGIN.getName(), loginCard.getCard());
         m_frame.add(m_cardPanel, BorderLayout.CENTER);
+    }
+
+
+    public static ViewStockTicker getInstance() {
+        if(instance == null) {
+            instance = new ViewStockTicker();
+        }
+
+        return instance;
+    }
+
+
+    public void reSetLeftButton(String name) {
+        m_leftControlBtn.setText(name);
+    }
+
+
+    public void reSetRightButton(String name) {
+        m_rightControlBtn.setText(name);
     }
 
 
@@ -247,17 +276,37 @@ public class ViewStockTicker extends WindowAdapter implements ActionListener,
      */
     @Override
     public void actionPerformed(ActionEvent evt) {
-        UIButton selection = UIButton.getType(evt.getActionCommand());
+        UI selection = UI.getType(evt.getActionCommand());
         cardLayout = (CardLayout) (m_cardPanel.getLayout());
+        
 
         switch(selection) {
 
             case USER_REG:
-                cardLayout.next(m_cardPanel);
+                cardLayout.show(m_cardPanel, UI.USER_REG.getName());
+                this.reSetLeftButton(UI.SUBMIT.getName());
+                //m_rightControlBtn.setEnabled(false);
                 break;
 
             case LOGIN:
-                cardLayout.next(m_cardPanel);
+                cardLayout.show(m_cardPanel, UI.LOGIN.getName());
+                if(m_logInTries < m_maxTries && !m_isLoggedIn ) {
+
+                }
+
+                break;
+
+            case SUBMIT:
+                m_isRegistered = true;  // temp place holder
+
+                if(m_isRegistered && !m_isLoggedIn) {
+                    cardLayout.show(m_cardPanel, UI.LOGIN.getName());
+                    m_isLoggedIn = true;   // temp place holder
+                }
+                else if(m_isLoggedIn) {
+                    cardLayout.show(m_cardPanel, UI.TICKER.getName());
+                }
+
                 break;
 
             default:
@@ -281,17 +330,14 @@ public class ViewStockTicker extends WindowAdapter implements ActionListener,
     }
 
 
-    public void displayUIProperties() {
+    /*public void displayUIProperties() {
         System.out.println("frame: " + m_frame);
         System.out.println("bottom panel: " + m_bottomPanel);
         System.out.println("side panel(main) " + m_toolPanel);
         System.out.println("side panel(button) " + m_btnPanel);
         System.out.println("card panel(main) " + m_cardPanel);
         System.out.println("bottom2 " + m_statusPanel);
-        System.out.println("username: " + m_usrName);
-        System.out.println("password: " + m_password);
-        System.out.println("constraints " + m_constraints);
         System.out.println("btnPanel " + m_btnPanel);
 
-    }
+    }*/
 }

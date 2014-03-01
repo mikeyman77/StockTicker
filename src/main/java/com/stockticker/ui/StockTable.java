@@ -6,12 +6,17 @@ import java.awt.GridLayout;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
+import javax.swing.ListSelectionModel;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
 
 /**
 *
 * @author prwallace
 */
 public class StockTable extends JPanel {
+
+
 	/**
      * 
      */
@@ -21,13 +26,13 @@ public class StockTable extends JPanel {
     public StockTable(boolean hasHeader) {
         super(new GridLayout(1,0));
 
-        if(hasHeader) {
-            String[] tableHeader = {"SYMBOL","TIME","PRICE","CHG","CHG%", "LOW", "HIGH", "VOLUME"};
-        } else {
-            String[] tableHeader = {"","","","","", "", "", ""};
-        }
+        //if(hasHeader) {
+        String[] tableHeader = {"SYMBOL","TIME","PRICE","CHG","CHG%", "LOW", "HIGH", "VOLUME"};
+        /*} else {
+            tableHeader = {"","","","","", "", "", ""};
+        }*/
            
-String[] tableHeader = {"","","","","", "", "", ""};
+        //String[] tableHeader = {"","","","","", "", "", ""};
         Object[][] data = { {"", "","", "", "", "", "", ""}, {"", "","", "", "", "", "", ""}, 
                             {"", "","", "", "", "", "", ""}, {"", "","", "", "", "", "", ""},
                             {"", "","", "", "", "", "", ""}, {"", "","", "", "", "", "", ""}, 
@@ -43,5 +48,14 @@ String[] tableHeader = {"","","","","", "", "", ""};
 
         JScrollPane scrollPane = new JScrollPane(stockTable);
         add(scrollPane);
+        
+        stockTable.setRowSelectionAllowed(true);
+        ListSelectionModel rowSelection = stockTable.getSelectionModel();
+        rowSelection.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+        rowSelection.addListSelectionListener(new ListSelectionListener() {
+            public void valueChanged(ListSelectionEvent evt) {
+                System.out.println("Selection in table");
+            }
+        });
     }
 }

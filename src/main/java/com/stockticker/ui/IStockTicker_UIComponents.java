@@ -20,14 +20,14 @@ public interface IStockTicker_UIComponents {
      * public getName method that returns the String value of this constant.
      *
      */
-    public enum  UIButton {
+    public enum  UI {
 
-        CLOSE("Close"), USER_REG("Registration"), TICKER("Ticker"), QUOTE("Quote"),
-                LOGIN("Login"), DEFAULT("Default");
+        CLOSE("Close"), USER_REG("Registration"), TICKER("Ticker"), QUOTE("Quote"), HOME("Home"), DETAIL("Detail"),
+                LOGIN("Login"), SUBMIT("Submit"), DEFAULT("Default");
 
         private final String btnName;
 
-        private UIButton( String name ) {
+        private UI( String name ) {
             this.btnName = name;
         }
 
@@ -40,10 +40,10 @@ public interface IStockTicker_UIComponents {
             return btnName;
         }
 
-        public static UIButton getType( String name ) {
-            UIButton temp = DEFAULT;
+        public static UI getType( String name ) {
+            UI temp = DEFAULT;
 
-            for( UIButton s : UIButton.values() ) {
+            for( UI s : UI.values() ) {
                 if( s.btnName.equals( name ) ){
                     temp = s;
                     break;

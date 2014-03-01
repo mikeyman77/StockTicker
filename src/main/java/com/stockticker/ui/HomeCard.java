@@ -16,7 +16,7 @@ import javax.swing.border.EtchedBorder;
 public class HomeCard extends JPanel {
     private static final long serialVersionUID = 1L;
     private JPanel m_homeCard;
-    private BufferedImage m_splashImage;
+    //private BufferedImage m_splashImage;
     private GridBagConstraints m_constraints;
 
     public HomeCard() throws IOException {
