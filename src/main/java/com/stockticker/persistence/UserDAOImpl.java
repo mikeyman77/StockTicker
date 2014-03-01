@@ -14,7 +14,7 @@ import java.util.List;
 /**
  * Data Access methods for User related data
  *
- * @author: Stuart Connall
+ * @author Stuart Connall
  * @version 1.0 2/17/14.
  */
 public class UserDAOImpl implements UserDAO {
