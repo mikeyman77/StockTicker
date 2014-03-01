@@ -105,8 +105,9 @@ public class UserDAOImpl implements UserDAO {
         try {
             Statement statement = connection.createStatement();
             ResultSet result = statement.executeQuery("SELECT username FROM user WHERE username='"+username+"'");
-            if (result.next())
+            if (result.next()) {
                 userExists = true;
+            }
         }
         catch(SQLException e) {
             System.out.println(e.getMessage());
@@ -124,7 +125,7 @@ public class UserDAOImpl implements UserDAO {
     public boolean update(User user) {
         boolean updateSuccessful = false;
 
-            //Check if row exists, if not return false
+        //Check if row exists, if not return false
             if (exists(user.getUserName())) {
                 //Update the User table
                 try {
@@ -149,6 +150,7 @@ public class UserDAOImpl implements UserDAO {
                         //Update the UserInfo table
                         UserInfo userinfo = user.getUserInfo();
                         if (userinfo != null) {
+
                             prepared = connection.prepareStatement
                                     ("UPDATE userinfo SET firstName = ?, lastName = ? WHERE userInfoId = ?");
 
@@ -157,6 +159,7 @@ public class UserDAOImpl implements UserDAO {
                             prepared.setInt(3, userInfoId);
                             prepared.executeUpdate();
                         }
+
                         updateSuccessful = true;
                     }
                 }
@@ -218,6 +221,7 @@ public class UserDAOImpl implements UserDAO {
         int userInfoId = -1;
 
         try {
+            //Retrieve the user row
             Statement statement = connection.createStatement();
             ResultSet result = statement.executeQuery("SELECT * FROM user WHERE username='"+username+"'");
             if (result.next()) {
@@ -228,7 +232,7 @@ public class UserDAOImpl implements UserDAO {
                 user.setPassword(result.getString(4));
             }
 
-            //Create an empty userinfo row and retrieve the auto incremented row id
+            //Retrieve the userinfo row
             result = statement.executeQuery("SELECT * FROM userinfo WHERE userInfoId='"+userInfoId+"'");
             if (result.next()) {
                 UserInfo userinfo = new UserInfo();
@@ -253,37 +257,38 @@ public class UserDAOImpl implements UserDAO {
     public boolean delete(String username) {
         boolean deleteSuccessful = false;
 
-        try {
+        if (exists(username)) {
+            try {
+                //Retrieve the FK_userInfoId from the User table
+                int userId = -1;
+                int userInfoId = -1;
+                Statement statement = connection.createStatement();
+                ResultSet result = statement.executeQuery("SELECT userId, FK_userInfoId FROM user WHERE username='"+username+"'");
+                if (result.next()) {
+                    userId = result.getInt(1);
+                    userInfoId = result.getInt(2);
+                }
 
-            //Retrieve the FK_userInfoId from the User table
-            int userId = -1;
-            int userInfoId = -1;
-            Statement statement = connection.createStatement();
-            ResultSet result = statement.executeQuery("SELECT userId, FK_userInfoId FROM user WHERE username='"+username+"'");
-            if (result.next()) {
-                userId = result.getInt(1);
-                userInfoId = result.getInt(2);
+                //Delete the row in the user table with userId
+                PreparedStatement prepared = connection.prepareStatement
+                        ("DELETE FROM user WHERE userId = ?");
+                prepared.setInt(1, userId);
+                int rows = prepared.executeUpdate();
+
+                if (rows > 0) {
+                    //Delete the row in the userinfo table with userInfoId
+                    prepared = connection.prepareStatement
+                            ("DELETE FROM userinfo WHERE userInfoId = ?");
+                    prepared.setInt(1, userInfoId);
+                    prepared.executeUpdate();
+                    deleteSuccessful = true;
+                } else {
+                    deleteSuccessful = false;
+                }
             }
-
-            //Delete the row in the user table with userId
-            PreparedStatement prepared = connection.prepareStatement
-                    ("DELETE FROM user WHERE userId = ?");
-            prepared.setInt(1, userId);
-            int rows = prepared.executeUpdate();
-
-            if (rows > 0) {
-                //Delete the row in the userinfo table with userInfoId
-                prepared = connection.prepareStatement
-                        ("DELETE FROM userinfo WHERE userInfoId = ?");
-                prepared.setInt(1, userInfoId);
-                prepared.executeUpdate();
-                deleteSuccessful = true;
-            } else {
-                deleteSuccessful = false;
+            catch(SQLException e) {
+                System.out.println(e.getMessage());
             }
-        }
-        catch(SQLException e) {
-            System.out.println(e.getMessage());
         }
 
         return deleteSuccessful;
@@ -303,8 +308,9 @@ public class UserDAOImpl implements UserDAO {
                 //Check if user is logged in
                 Statement statement = connection.createStatement();
                 ResultSet result = statement.executeQuery("SELECT isLoggedIn FROM user WHERE username='"+username+"'");
-                if (result.next())
+                if (result.next()) {
                     isLoggedIn = result.getBoolean(1);
+                }
             }
         }
         catch(SQLException e) {
@@ -356,8 +362,9 @@ public class UserDAOImpl implements UserDAO {
             ResultSet result = statement.executeQuery("SELECT isLoggedIn, username FROM user WHERE isLoggedIn='TRUE'");
             if (result.next()) {
                 boolean isLoggedIn = result.getBoolean(1);
-                if (isLoggedIn)
+                if (isLoggedIn) {
                     users.add(result.getString(2));
+                }
             }
         }
         catch(SQLException e) {
