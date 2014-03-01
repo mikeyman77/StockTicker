@@ -1,5 +1,6 @@
 package com.stockticker;
 
+import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.Enumeration;
@@ -23,7 +24,7 @@ public class PropertiesFileReader {
      * @throws IOException
      */
     public PropertiesFileReader(String filename)
-        throws IOException {
+        throws FileNotFoundException, IOException  {
 
         //try {
             FileReader reader = new FileReader(filename);

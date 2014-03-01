@@ -6,6 +6,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
+import java.io.FileNotFoundException;
 import java.io.IOException;
 
 import static junit.framework.Assert.assertTrue;
@@ -50,11 +51,15 @@ public class PropertiesFileReaderTest {
      * Tests that an IOException occurred in the constructor
      */
     @Test
-    public void testPropertiesFileReaderConstructionGetsIOException() throws IOException {
+    public void testPropertiesFileReaderConstructionGetsFileNotFoundException() throws FileNotFoundException, IOException {
 
-        thrown.expect(IOException.class);
-        thrown.expectMessage("file not found");
-        PropertiesFileReader properties = new PropertiesFileReader("");
+        try {
+            thrown.expect(FileNotFoundException.class);
+            PropertiesFileReader properties = new PropertiesFileReader("");
+        }
+        catch (FileNotFoundException e) {
+            ; //do nothing, this is just a test
+        }
     }
 
     /**
