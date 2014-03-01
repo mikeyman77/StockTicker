@@ -1,7 +1,7 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
+/**
+ * GUI for Stock Ticker Portfolio Manager
+ * J308 Project
+ * Paul Wallace
  */
 
 package com.stockticker.ui;
@@ -14,6 +14,7 @@ import java.awt.Color;
  * @author prwallace
  */
 public interface IStockTicker_UIComponents {
+
 
     /**
      * Enumeration constants representing the buttons within the UI.  Provides a
@@ -55,6 +56,9 @@ public interface IStockTicker_UIComponents {
     }
 
 
-    
+    /**
+    *
+    *
+    */
     public void setStatus( Color color, String message, String tip );
 }

@@ -1,3 +1,9 @@
+/**
+ * GUI for Stock Ticker Portfolio Manager
+ * J308 Project
+ * Paul Wallace
+ */
+
 package com.stockticker.ui;
 
 import java.awt.Dimension;
@@ -5,7 +11,6 @@ import java.awt.Font;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
-import java.awt.image.BufferedImage;
 import java.io.IOException;
 
 import javax.swing.BorderFactory;
@@ -13,17 +18,31 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.border.EtchedBorder;
 
+/**
+* J308
+* @author prwallace
+*/
 public class HomeCard extends JPanel {
     private static final long serialVersionUID = 1L;
     private JPanel m_homeCard;
     //private BufferedImage m_splashImage;
     private GridBagConstraints m_constraints;
 
+
+    /**
+    *
+    *
+    */
     public HomeCard() throws IOException {
         m_constraints = new GridBagConstraints();
         setCard();
     }
 
+
+    /**
+    *
+    *
+    */
     public void setCard() throws IOException {
         m_homeCard = new JPanel(new GridBagLayout());
         m_homeCard.setPreferredSize(new Dimension(550, 520));
@@ -47,6 +66,11 @@ public class HomeCard extends JPanel {
         m_homeCard.add(name, m_constraints);
     }
 
+
+    /**
+    *
+    *
+    */
     public JPanel getCard() {
         return m_homeCard;
     }

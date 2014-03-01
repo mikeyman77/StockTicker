@@ -1,3 +1,9 @@
+/**
+ * GUI for Stock Ticker Portfolio Manager
+ * J308 Project
+ * Paul Wallace
+ */
+
 package com.stockticker.ui;
 
 import java.awt.Dimension;
@@ -13,6 +19,10 @@ import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.border.EtchedBorder;
 
+/**
+* J308
+* @author prwallace
+*/
 public class LoginCard extends JPanel {
     private static final long serialVersionUID = 1L;
     private JPanel m_loginCard;
@@ -22,12 +32,20 @@ public class LoginCard extends JPanel {
     private String m_password;
 
 
+    /**
+    *
+    *
+    */
     public LoginCard() {
         m_constraints = new GridBagConstraints();
         setCard();
     }
 
 
+    /**
+    *
+    *
+    */
     public final void setCard() {
         m_loginCard = new JPanel(new GridBagLayout());
         m_loginCard.setPreferredSize(new Dimension(550, 520));
@@ -90,6 +108,10 @@ public class LoginCard extends JPanel {
     }
 
 
+    /**
+    *
+    *
+    */
     public JPanel getCard() {
         return m_loginCard;
     }

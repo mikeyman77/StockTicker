@@ -1,7 +1,7 @@
-/*
- * 
- * 
- * 
+/**
+ * GUI for Stock Ticker Portfolio Manager
+ * J308 Project
+ * Paul Wallace
  */
 
 package com.stockticker.ui;
@@ -9,7 +9,7 @@ package com.stockticker.ui;
 
 
 /**
- *
+ * J308
  * @author prwallace
  */
 public class StockTicker_Main {

@@ -1,8 +1,7 @@
-/*
- * ViewStockTicker Class
- * Builds the GUI for the Stock Ticker Portfolio Manager
- * J308
- * 
+/**
+ * GUI for Stock Ticker Portfolio Manager
+ * J308 Project
+ * Paul Wallace
  */
 
 package com.stockticker.ui;
@@ -66,6 +65,7 @@ public class ViewStockTicker extends WindowAdapter implements ActionListener, IS
 
     private boolean m_isLoggedIn = false;
     private boolean m_isRegistered = false;
+    private boolean m_isTickerOpen = false;
 
     private int m_logInTries = 0;
     private int m_maxTries = 3;
@@ -331,8 +331,6 @@ public class ViewStockTicker extends WindowAdapter implements ActionListener, IS
                 break;
 
             case SUBMIT:
-                
-
                 if(m_isRegistered && !m_isLoggedIn) {
                     cardLayout.show(m_cardPanel, UI.LOGIN.getName());
                     m_isLoggedIn = true;   // temp place holder
@@ -341,11 +339,20 @@ public class ViewStockTicker extends WindowAdapter implements ActionListener, IS
                     cardLayout.show(m_cardPanel, UI.TICKER.getName());
                     this.resetLeftButton("Update");
                     this.resetRightButton("Logout");
+                    m_isTickerOpen = true;
                 }
                 break;
 
             case UPDATE:
-                cardLayout.show(m_cardPanel, UI.TICKER.getName());
+                if(m_isTickerOpen) {
+                    cardLayout.show(m_cardPanel, UI.DETAIL.getName());
+                    m_isTickerOpen = false;
+                }
+                else {
+                    cardLayout.show(m_cardPanel, UI.TICKER.getName());
+                    m_isTickerOpen = true;
+                }
+                
                 break;
 
             case LOGOUT:
@@ -354,6 +361,8 @@ public class ViewStockTicker extends WindowAdapter implements ActionListener, IS
                 this.setFlags();
                 cardLayout.show(m_cardPanel, UI.HOME.getName());
                 break;
+
+                
 
             default:
                 System.out.println("failed to select a key");

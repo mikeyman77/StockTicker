@@ -1,6 +1,11 @@
+/**
+ * GUI for Stock Ticker Portfolio Manager
+ * J308 Project
+ * Paul Wallace
+ */
+
 package com.stockticker.ui;
 
-import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
@@ -9,12 +14,15 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 import javax.swing.BorderFactory;
-import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.border.EtchedBorder;
 
+/**
+* J308
+* @author prwallace
+*/
 public class RegistrationCard extends JPanel {
     private static final long serialVersionUID = 1L;
 
@@ -32,12 +40,20 @@ public class RegistrationCard extends JPanel {
     private String m_lastName;
 
 
+    /**
+    *
+    *
+    */
     public RegistrationCard() {
         m_constraints = new GridBagConstraints();
         setCard();
     }
 
 
+    /**
+    *
+    *
+    */
     public final void setCard() {
         m_regCard = new JPanel(new GridBagLayout());
         m_regCard.setPreferredSize(new Dimension(550, 520));
@@ -159,6 +175,10 @@ public class RegistrationCard extends JPanel {
     }
 
 
+    /**
+    *
+    *
+    */
     public JPanel getCard() {
         return m_regCard;
     }

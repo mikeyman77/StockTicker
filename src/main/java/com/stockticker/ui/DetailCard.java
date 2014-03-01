@@ -1,3 +1,9 @@
+/**
+ * GUI for Stock Ticker Portfolio Manager
+ * J308 Project
+ * Paul Wallace
+ */
+
 package com.stockticker.ui;
 
 import java.awt.BorderLayout;
@@ -7,16 +13,30 @@ import javax.swing.BorderFactory;
 import javax.swing.JPanel;
 import javax.swing.border.EtchedBorder;
 
+/**
+ * J308
+ * @author prwallace
+ */
 public class DetailCard extends JPanel {
     private static final long serialVersionUID = 1L;
     private JPanel m_detailCard;
     //private JPanel m_detailPanel;
     private StockTable m_stocks;
-    
+
+
+    /**
+     *
+     *
+     */
     public DetailCard() {
         setCard();
     }
 
+
+    /**
+    *
+    *
+    */
     public void setCard() {
         
         m_detailCard = new JPanel();
@@ -30,6 +50,11 @@ public class DetailCard extends JPanel {
     }
 
 
+
+    /**
+    *
+    *
+    */
     public JPanel getCard() {
         return m_detailCard;
     }

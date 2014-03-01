@@ -1,3 +1,9 @@
+/**
+ * GUI for Stock Ticker Portfolio Manager
+ * J308 Project
+ * Paul Wallace
+ */
+
 package com.stockticker.ui;
 
 import java.awt.Dimension;
@@ -11,7 +17,7 @@ import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
 /**
-*
+* J308
 * @author prwallace
 */
 public class StockTable extends JPanel {

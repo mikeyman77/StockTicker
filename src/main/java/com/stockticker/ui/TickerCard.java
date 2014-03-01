@@ -1,11 +1,12 @@
 /**
- * 
+ * GUI for Stock Ticker Portfolio Manager
+ * J308 Project
+ * Paul Wallace
  */
 package com.stockticker.ui;
 
 import java.awt.BorderLayout;
 import java.awt.CardLayout;
-import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
@@ -28,8 +29,9 @@ import javax.swing.event.ListSelectionListener;
 import com.stockticker.ui.IStockTicker_UIComponents.UI;
 
 /**
- * @author prwallace
  * 
+ * J308 Project
+ * @author prwallace
  */
 public class TickerCard extends JPanel {
     private static final long serialVersionUID = 1L;
@@ -180,5 +182,4 @@ public class TickerCard extends JPanel {
     public void setCardLayout(JPanel panel) {
         m_cardPanel = panel;
     }
-
 }
