@@ -12,6 +12,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
+ * Data Access methods for User related data
+ *
  * @author: Stuart Connall
  * @version 1.0 2/17/14.
  */
@@ -19,6 +21,11 @@ public class UserDAOImpl implements UserDAO {
 
     private Connection connection;
 
+    /**
+     * Constructs the UserDAO implementation and stores a JDBC connection
+     *
+     * @param conn A JDBC connection
+     */
     public UserDAOImpl(Connection conn) {
         this.connection = conn;
     }
@@ -30,117 +37,144 @@ public class UserDAOImpl implements UserDAO {
      * @return the user id, -1 otherwise
      */
     public int getUserId(String username) {
+        int userId = -1;
         try {
             Statement statement = connection.createStatement();
             ResultSet result = statement.executeQuery("SELECT userId FROM user WHERE username='"+username+"'");
             if (result.next())
-                return result.getInt(1);
+                userId = result.getInt(1);
         }
         catch(SQLException e) {
             System.out.println(e.getMessage());
         }
 
-        return -1;
+        return userId;
     }
 
+    /**
+     * Create a row in the user table and stores the username and
+     * password.
+     *
+     * @param   username the name of the user
+     * @param   password the user's password
+     * @return  a new User with id, username, and password, null if creation failed
+     */
     public User create(String username, String password){
+        boolean userCreated = false;
         User user = null;
-        ResultSet rs;
 
-        try {
-            Statement statement = connection.createStatement();
-            ResultSet result = statement.executeQuery("SELECT username FROM user WHERE username='"+username+"'");
-            if (result.next())
-                return null;
+            //check if the user already exists
+            if (!exists(username)) {
+                try {
+                    //Create an empty userinfo row and retrieve the auto incremented row id
+                    Statement statement = connection.createStatement();
+                    statement.executeUpdate("INSERT INTO userinfo (firstName) VALUES ('')");
+                    ResultSet result = statement.executeQuery("CALL IDENTITY();");
+                    int id = -1;
+                    if (result.next())
+                        id = result.getInt(1);
 
-            //Create an empty userinfo row and retrieve the auto incremented row id
-            statement.executeUpdate("INSERT INTO userinfo (firstName) VALUES ('')");
-            result = statement.executeQuery("CALL IDENTITY();");
-            int id = -1;
-            if (result.next())
-                id = result.getInt(1);
+                    //insert the user row with username, password, and id from userinfo table insert
+                    statement.executeUpdate("INSERT INTO user (FK_userInfoId, username, password, joinedDate, isLoggedIn) VALUES ("+
+                            id+",'"+username+"','"+password+"','"+new Timestamp(System.currentTimeMillis())+"','FALSE')");
+                    result = statement.executeQuery("CALL IDENTITY();");
+                    if (result.next())
+                        id = result.getInt(1);
 
-            //insert the user row with username, password, and id from userinfo table insert
-            statement.executeUpdate("INSERT INTO user (FK_userInfoId, username, password, joinedDate, isLoggedIn) VALUES ("+
-                                    id+",'"+username+"','"+password+"','"+new Timestamp(System.currentTimeMillis())+"','FALSE')");
-            result = statement.executeQuery("CALL IDENTITY();");
-            if (result.next())
-                id = result.getInt(1);
-
-            //create and return new User object
-            user = new User(username, password);
-            user.setUserID(id);
-        }
-        catch(SQLException e) {
-            System.out.println(e.getMessage());
-        }
+                    //create and return new User object
+                    user = new User(username, password);
+                    user.setUserID(id);
+                }
+                catch(SQLException e) {
+                    System.out.println(e.getMessage());
+                }
+            }
 
         return user;
     }
 
+    /**
+     * Checks if the user exists
+     *
+     * @param username  the name of the user
+     * @return  true if exists, false otherwise
+     */
     public boolean exists(String username) {
+        boolean userExists = false;
 
         try {
             Statement statement = connection.createStatement();
             ResultSet result = statement.executeQuery("SELECT username FROM user WHERE username='"+username+"'");
             if (result.next())
-                return true;
+                userExists = true;
         }
         catch(SQLException e) {
             System.out.println(e.getMessage());
         }
 
-        return false;
+        return userExists;
     }
 
+    /**
+     * Updates the user data
+     *
+     * @param user  the User object to persist
+     * @return  true if updated, false otherwise
+     */
     public boolean update(User user) {
+        boolean updateSuccessful = false;
 
-        try {
             //Check if row exists, if not return false
-            Statement statement = connection.createStatement();
-            ResultSet result = statement.executeQuery("SELECT userId FROM user WHERE userId='"+user.getUserID()+"'");
-            if (!result.next())
-                return false;
+            if (exists(user.getUserName())) {
+                //Update the User table
+                try {
+                    PreparedStatement prepared = connection.prepareStatement
+                            ("UPDATE user SET username = ?, password = ?, isLoggedIn = ? WHERE userId = ?");
 
-            //Update the User table
-            PreparedStatement prepared = connection.prepareStatement
-                    ("UPDATE user SET username = ?, password = ?, isLoggedIn = ? WHERE userId = ?");
+                    prepared.setString(1, user.getUserName());
+                    prepared.setString(2, user.getPassword());
+                    prepared.setBoolean(3, user.isLoggedIn());
+                    prepared.setInt(4, user.getUserID());
+                    int rows = prepared.executeUpdate();
 
-            prepared.setString(1, user.getUserName());
-            prepared.setString(2, user.getPassword());
-            prepared.setBoolean(3, user.isLoggedIn());
-            prepared.setInt(4, user.getUserID());
-            int rows = prepared.executeUpdate();
+                    if (rows > 0) {
+                        //Retrieve the FK_userInfoId from the User table
+                        int userInfoId = -1;
+                        Statement statement = connection.createStatement();
+                        ResultSet result = statement.executeQuery("SELECT FK_userInfoId FROM user WHERE userId='"+user.getUserID()+"'");
+                        if (result.next()) {
+                            userInfoId = result.getInt(1);
+                        }
 
-            if (rows > 0) {
-                //Retrieve the FK_userInfoId from the User table
-                int userInfoId = -1;
-                statement = connection.createStatement();
-                result = statement.executeQuery("SELECT FK_userInfoId FROM user WHERE userId='"+user.getUserID()+"'");
-                if (result.next()) {
-                    userInfoId = result.getInt(1);
+                        //Update the UserInfo table
+                        UserInfo userinfo = user.getUserInfo();
+                        if (userinfo != null) {
+                            prepared = connection.prepareStatement
+                                    ("UPDATE userinfo SET firstName = ?, lastName = ? WHERE userInfoId = ?");
+
+                            prepared.setString(1, userinfo.getFirstName());
+                            prepared.setString(2, userinfo.getLastName());
+                            prepared.setInt(3, userInfoId);
+                            prepared.executeUpdate();
+                        }
+                        updateSuccessful = true;
+                    }
                 }
-
-                //Update the UserInfo table
-                UserInfo userinfo = user.getUserInfo();
-                if (userinfo != null) {
-                    prepared = connection.prepareStatement
-                            ("UPDATE userinfo SET firstName = ?, lastName = ? WHERE userInfoId = ?");
-
-                    prepared.setString(1, userinfo.getFirstName());
-                    prepared.setString(2, userinfo.getLastName());
-                    prepared.setInt(3, userInfoId);
-                    prepared.executeUpdate();
+                catch(SQLException e) {
+                    System.out.println(e.getMessage());
                 }
             }
-        }
-        catch(SQLException e) {
-            System.out.println(e.getMessage());
-        }
 
-        return true;
+        return updateSuccessful;
     }
 
+    /**
+     * Finds a user by row id
+     *
+     * @param userId  the user's row id
+     * @return  returns a User object, null if no user
+     */
+/*
     public User findByUserId(int userId) {
         User user = null;
         int userInfoId = -1;
@@ -171,7 +205,14 @@ public class UserDAOImpl implements UserDAO {
 
         return user;
     }
+*/
 
+    /**
+     * Gets the user row associated with the user name
+     *
+     * @param username the name of the user
+     * @return  a User object or null if it doesn't exist
+     */
     public User get(String username) {
         User user = null;
         int userInfoId = -1;
@@ -203,7 +244,14 @@ public class UserDAOImpl implements UserDAO {
         return user;
     }
 
+    /**
+     * Deletes the user row associated with the username
+     *
+     * @param username  the name of the user
+     * @return  true if delete successful, false otherwise
+     */
     public boolean delete(String username) {
+        boolean deleteSuccessful = false;
 
         try {
 
@@ -216,8 +264,6 @@ public class UserDAOImpl implements UserDAO {
                 userId = result.getInt(1);
                 userInfoId = result.getInt(2);
             }
-            else
-                return false;
 
             //Delete the row in the user table with userId
             PreparedStatement prepared = connection.prepareStatement
@@ -231,15 +277,24 @@ public class UserDAOImpl implements UserDAO {
                         ("DELETE FROM userinfo WHERE userInfoId = ?");
                 prepared.setInt(1, userInfoId);
                 prepared.executeUpdate();
+                deleteSuccessful = true;
+            } else {
+                deleteSuccessful = false;
             }
         }
         catch(SQLException e) {
             System.out.println(e.getMessage());
         }
 
-        return true;
+        return deleteSuccessful;
     }
 
+    /**
+     * Checks if the user is currently logged in
+     *
+     * @param username  the name of the user
+     * @return  true if logged in, false otherwise
+     */
     public boolean isLoggedIn(String username) {
         boolean isLoggedIn = false;
 
@@ -259,8 +314,15 @@ public class UserDAOImpl implements UserDAO {
         return isLoggedIn;
     }
 
+    /**
+     * Set a user's logged in status to true or false
+     *
+     * @param username  the name of the user
+     * @param status    login status, true or false
+     * @return  true if status set, false otherwise
+     */
     public boolean setLoginStatus(String username, boolean status) {
-        boolean isLoggedIn = false;
+        boolean statusSet = false;
 
         try {
             if (!username.isEmpty()) {
@@ -271,16 +333,21 @@ public class UserDAOImpl implements UserDAO {
                 prepared.setBoolean(1, status);
                 prepared.setString(2, username);
                 int rows = prepared.executeUpdate();
-                isLoggedIn = (rows > 0) ? true : false;
+                statusSet = (rows > 0) ? true : false;
             }
         }
         catch(SQLException e) {
             System.out.println(e.getMessage());
         }
 
-        return isLoggedIn;
+        return statusSet;
     }
 
+    /**
+     * Returns a list of logged in users.
+     *
+     * @return  list of logged in users
+     */
     public List<String> getLoggedInUsers() {
         List<String> users = new ArrayList<String>();
 
