@@ -23,7 +23,7 @@ public interface IStockTicker_UIComponents {
     public enum  UI {
 
         CLOSE("Close"), USER_REG("Registration"), TICKER("Ticker"), QUOTE("Quote"), HOME("Home"), DETAIL("Detail"),
-                LOGIN("Login"), SUBMIT("Submit"), DEFAULT("Default");
+                LOGIN("Login"), LOGOUT("Logout"), SUBMIT("Submit"), UPDATE("Update"), DEFAULT("Default");
 
         private final String btnName;
 

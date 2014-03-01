@@ -39,10 +39,17 @@ public class TickerCard extends JPanel {
     private JPanel m_cardPanel;
 
     private CardLayout m_cardLayout;
-    //private StockTable m_stocks;
     private GridBagConstraints m_constraints;
 
+    private String m_symbol;
 
+
+    /**
+     * Construct the TickerCard.
+     * Set the argument CardLayout to the main JPanel of this class.
+     *  
+     * @param cards     - JPanel containing a CardLayout
+     */
     public TickerCard(JPanel cards) {
         m_constraints = new GridBagConstraints();
         setCard();
@@ -50,24 +57,29 @@ public class TickerCard extends JPanel {
     }
 
 
+    /**
+     * 
+     * 
+     */
     public final JPanel setCard() {
         m_tickerCard = new JPanel();
         m_tickerCard.setPreferredSize(new Dimension(550, 520));
 
-        //m_stocks = new StockTable(true);
         setStockTable();
-        //m_stocks.setOpaque(true);
         m_tickerCard.setBorder(BorderFactory.createTitledBorder(BorderFactory.createEtchedBorder(EtchedBorder.LOWERED), "Stocks"));
-        //m_tickerCard.add(m_stocks);
         m_tickerCard.add(m_stockPanel);
 
         setButtonPanel();
         m_tickerCard.add(m_buttonPanel, BorderLayout.SOUTH);
-
+        
         return m_tickerCard;
     }
 
 
+    /**
+     * 
+     * 
+     */
     public void setStockTable() {
         m_stockPanel = new JPanel(new GridLayout(1, 0));
         m_stockPanel.setOpaque(true);
@@ -109,6 +121,10 @@ public class TickerCard extends JPanel {
     }
 
 
+    /**
+     * 
+     * 
+     */
     public void setButtonPanel() {
         m_buttonPanel = new JPanel(new GridBagLayout());
         m_buttonPanel.setPreferredSize(new Dimension(300, 100));
@@ -123,8 +139,8 @@ public class TickerCard extends JPanel {
         final JTextField quoteField = new JTextField(40);
         quoteField.addActionListener(new ActionListener() {
              public void actionPerformed(ActionEvent evt) {
-                 String symbol = quoteField.getText();
-                 System.out.println(symbol);
+                 m_symbol = quoteField.getText();
+                 System.out.println(m_symbol);
              }
         });
 
@@ -145,10 +161,22 @@ public class TickerCard extends JPanel {
         m_buttonPanel.add(quoteField, m_constraints);
     }
 
+
+
+    /**
+     * 
+     * 
+     */
     public JPanel getCard() {
         return m_tickerCard;
     }
-    
+
+
+    /**
+     * Sets the CardLayout from the argument JPanel to the main card JPanel of this
+     * class.
+     * @param panel     - sets panel to main JPanel of this class.
+     */
     public void setCardLayout(JPanel panel) {
         m_cardPanel = panel;
     }

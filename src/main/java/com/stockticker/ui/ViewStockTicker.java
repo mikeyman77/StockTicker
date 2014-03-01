@@ -1,6 +1,7 @@
 /*
- * 
- * 
+ * ViewStockTicker Class
+ * Builds the GUI for the Stock Ticker Portfolio Manager
+ * J308
  * 
  */
 
@@ -36,7 +37,8 @@ import javax.swing.ScrollPaneConstants;
 import com.stockticker.SymbolMap;
 
 /**
- * 
+ * GUI for Stock Ticker Portfolio Manager
+ * J308 Project
  * @author prwallace
  */
 public class ViewStockTicker extends WindowAdapter implements ActionListener, IStockTicker_UIComponents {
@@ -50,7 +52,6 @@ public class ViewStockTicker extends WindowAdapter implements ActionListener, IS
     private JPanel m_toolPanel;
     private JPanel m_topPanel;
     private JPanel m_sidePanel;
-    private JPanel m_btnPanel;
     private JPanel m_statusPanel;
 
     public JButton m_leftControlBtn;
@@ -71,7 +72,8 @@ public class ViewStockTicker extends WindowAdapter implements ActionListener, IS
     
 
     /**
-     *
+     * Construct a ViewStockTicker object
+     * 
      */
     public ViewStockTicker() {
         m_frame = new JFrame("Stock Ticker Portfolio Manager");
@@ -80,8 +82,8 @@ public class ViewStockTicker extends WindowAdapter implements ActionListener, IS
 
 
     /**
-     * Builds the main frame and provides a Window Listener to listen for close
-     * events.
+     * Builds the main frame and provides a Window Listener close events from
+     * the Title Bar.
      */
     public void build() {
         m_titleIcon = new ImageIcon(toolKit.getImage(m_icon)).getImage();
@@ -103,10 +105,13 @@ public class ViewStockTicker extends WindowAdapter implements ActionListener, IS
 
 
     /**
-     * Sets up the main panels on the UI and adds their associated fields. Calls
-     * setCardLayout to setup the panels and fields for the individual cards.
+     * Create/add the main panel of the UI and its child JPanel's.  Create/add
+     * the individual controls for the child JPanels and their ActionListener's.
+     * Create/add CardLayout and it's individual cards and controls.
      */
     public void setPanels() {
+        
+        // Create the individual JPanels that make up the main screen
         m_bottomPanel = new JPanel();
         m_bottomPanel.setPreferredSize(new Dimension(700, 80));
 
@@ -124,8 +129,9 @@ public class ViewStockTicker extends WindowAdapter implements ActionListener, IS
         m_cardPanel.setPreferredSize(new Dimension(550, 520));
         m_cardPanel.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createRaisedBevelBorder(), BorderFactory.createLoweredBevelBorder()));
 
-
-        JList stockList = new JList(SymbolMap.getSymbols().keySet().toArray());
+        
+        // Add controls for the Symbol list controls and their action listeners
+        JList<Object> stockList = new JList<>(SymbolMap.getSymbols().keySet().toArray());
         JScrollPane scrollPane = new JScrollPane(stockList);
         scrollPane.setSize(150, 20);
         scrollPane.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
@@ -158,6 +164,8 @@ public class ViewStockTicker extends WindowAdapter implements ActionListener, IS
         });
 
 
+        // Create/add child panels to the main frame JPanels and layout their
+        // individual controls using GridBagLayout.
         JPanel toolPanel = new JPanel();
         toolPanel.setPreferredSize(new Dimension(160, 180));
         JPanel midPanel = new JPanel(new GridBagLayout());
@@ -165,11 +173,14 @@ public class ViewStockTicker extends WindowAdapter implements ActionListener, IS
         JPanel btmPanel = new JPanel(new GridBagLayout());
         btmPanel.setPreferredSize(new Dimension(160, 50));
 
+        // Layout the JList JScrollPane
         m_constraints.gridx = 0;
         m_constraints.gridy = 0;
         m_constraints.ipadx = 10;
         m_constraints.insets = new Insets(50, 0, 0, 0);
         midPanel.add(scrollPane, m_constraints);
+        
+        // Layout the JList's set button
         m_constraints.insets = new Insets(0, 0, 30, 5);
         btmPanel.add(setButton, m_constraints);
         m_constraints.gridx = 1;
@@ -178,39 +189,47 @@ public class ViewStockTicker extends WindowAdapter implements ActionListener, IS
         m_statusPanel = new JPanel();
         m_statusPanel.setPreferredSize(new Dimension(650, 65));
 
+        // Create the JPanel containing the UI control buttons
         JPanel btnPanel = new JPanel(new GridBagLayout());
         btnPanel.setPreferredSize(new Dimension(200, 40));
         m_leftControlBtn = new JButton(UI.USER_REG.getName());
         m_rightControlBtn = new JButton(UI.LOGIN.getName());
 
+        // Layout the left control button
         m_constraints.gridx = 0;
         m_constraints.gridy = 0;
         m_constraints.anchor = GridBagConstraints.PAGE_START;
         m_constraints.insets = new Insets(0, 0, 10, 10);
         btnPanel.add(m_leftControlBtn, m_constraints);
 
+        // Layout the right control button
         m_constraints.gridx = 1;
         m_constraints.gridy = 0;
         m_constraints.insets = new Insets(0, 0, 0, 0);
         btnPanel.add(m_rightControlBtn, m_constraints);
-        m_constraints.insets = new Insets(0, 0, 0, 0);
+        //m_constraints.insets = new Insets(0, 0, 0, 0);
 
+        // Add action listeners to the control buttons
         m_leftControlBtn.addActionListener(this);
         m_rightControlBtn.addActionListener(this);
 
 
+        // Add all child JPanels their parent JPanel
         m_toolPanel.add(toolPanel, BorderLayout.NORTH);
         m_toolPanel.add(midPanel, BorderLayout.CENTER);
         m_toolPanel.add(btmPanel, BorderLayout.SOUTH);
         m_statusPanel.add(btnPanel, BorderLayout.NORTH);
         m_bottomPanel.add(m_statusPanel, BorderLayout.CENTER);
 
+        // Add all main JPanels to the main frame
         m_frame.getContentPane().add(m_bottomPanel, BorderLayout.SOUTH);
         m_frame.getContentPane().add(m_topPanel, BorderLayout.NORTH);
         m_frame.getContentPane().add(m_cardPanel, BorderLayout.CENTER);
         m_frame.getContentPane().add(m_toolPanel, BorderLayout.WEST);
         m_frame.getContentPane().add(m_sidePanel, BorderLayout.EAST);
 
+
+        // Layout the individual Card's and make GUI visiable
         setCardLayout();
         m_frame.setResizable(false);
         m_frame.setVisible(true);
@@ -218,7 +237,9 @@ public class ViewStockTicker extends WindowAdapter implements ActionListener, IS
 
 
     /**
-     *
+     * Layout the individual Cards (screens) of the UI.
+     * Instantiates the children JPanels that will make up the entire CardLayout.
+     * 
      */
     private void setCardLayout() {
         HomeCard homeCard = null;
@@ -247,6 +268,10 @@ public class ViewStockTicker extends WindowAdapter implements ActionListener, IS
     }
 
 
+    /**
+     * Gets an instance of the GUI, which provides the CardLayout to the user.
+     * 
+     */
     public static ViewStockTicker getInstance() {
         if(instance == null) {
             instance = new ViewStockTicker();
@@ -256,12 +281,20 @@ public class ViewStockTicker extends WindowAdapter implements ActionListener, IS
     }
 
 
-    public void reSetLeftButton(String name) {
+    /**
+     * Changes the name of the left control button on the main panel.
+     * @param name      - Name of left main panel button
+     */
+    public void resetLeftButton(String name) {
         m_leftControlBtn.setText(name);
     }
 
 
-    public void reSetRightButton(String name) {
+    /**
+     * Changes the name of the right control button on the main panel.
+     * @param name      - Name of right main panel button
+     */
+    public void resetRightButton(String name) {
         m_rightControlBtn.setText(name);
     }
 
@@ -284,20 +317,21 @@ public class ViewStockTicker extends WindowAdapter implements ActionListener, IS
 
             case USER_REG:
                 cardLayout.show(m_cardPanel, UI.USER_REG.getName());
-                this.reSetLeftButton(UI.SUBMIT.getName());
-                //m_rightControlBtn.setEnabled(false);
+                this.resetLeftButton(UI.SUBMIT.getName());
+                m_isRegistered = true;      // temp place holder for logic
                 break;
 
             case LOGIN:
                 cardLayout.show(m_cardPanel, UI.LOGIN.getName());
                 if(m_logInTries < m_maxTries && !m_isLoggedIn ) {
-
+                    this.resetLeftButton("Submit");
+                    m_isLoggedIn = true;    // temp place holder for logic
                 }
 
                 break;
 
             case SUBMIT:
-                m_isRegistered = true;  // temp place holder
+                
 
                 if(m_isRegistered && !m_isLoggedIn) {
                     cardLayout.show(m_cardPanel, UI.LOGIN.getName());
@@ -305,13 +339,36 @@ public class ViewStockTicker extends WindowAdapter implements ActionListener, IS
                 }
                 else if(m_isLoggedIn) {
                     cardLayout.show(m_cardPanel, UI.TICKER.getName());
+                    this.resetLeftButton("Update");
+                    this.resetRightButton("Logout");
                 }
+                break;
 
+            case UPDATE:
+                cardLayout.show(m_cardPanel, UI.TICKER.getName());
+                break;
+
+            case LOGOUT:
+                this.resetLeftButton("Registration");
+                this.resetRightButton("Login");
+                this.setFlags();
+                cardLayout.show(m_cardPanel, UI.HOME.getName());
                 break;
 
             default:
                 System.out.println("failed to select a key");
         }
+    }
+
+
+    /**
+     * Reset all flags to default state
+     * 
+     */
+    private void setFlags() {
+        m_isLoggedIn = false;
+        m_isRegistered = false;
+        m_logInTries = 0;
     }
 
 
@@ -330,6 +387,11 @@ public class ViewStockTicker extends WindowAdapter implements ActionListener, IS
     }
 
 
+    /**
+     * Prints details about GUI frame and panels to the screen.  Available for
+     * debugging purposes.
+     * 
+     */
     /*public void displayUIProperties() {
         System.out.println("frame: " + m_frame);
         System.out.println("bottom panel: " + m_bottomPanel);
