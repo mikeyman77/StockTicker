@@ -13,8 +13,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Data Access methods for the tracking of stocks that users
- * are interested in.
+ * Defines the Data Access methods that enables
+ * users to track stocks of interest.
  *
  * @author Stuart Connall
  * @version 1.0 02/27/2014
@@ -36,17 +36,18 @@ public class TrackedStocksDAOImpl implements TrackedStocksDAO {
      * @return the stock id, -1 otherwise
      */
     public int getStockId(String symbol) {
+        int stockId = -1;
         try {
             Statement statement = connection.createStatement();
             ResultSet result = statement.executeQuery("SELECT stockId FROM stock WHERE symbol='"+symbol+"'");
             if (result.next())
-                return result.getInt(1);
+                stockId = result.getInt(1);
         }
         catch(SQLException e) {
             System.out.println(e.getMessage());
         }
 
-        return -1;
+        return stockId;
     }
 
     /**
@@ -58,6 +59,7 @@ public class TrackedStocksDAOImpl implements TrackedStocksDAO {
      */
     @Override
     public boolean add(int userId, int stockId) {
+        boolean stockAdded = false;
         if (!exists(userId, stockId)
             && isValidId(userId)
             && isValidId(stockId)) {
@@ -73,14 +75,14 @@ public class TrackedStocksDAOImpl implements TrackedStocksDAO {
             catch(SQLException e) {
                 System.out.println(e.getMessage());
             }
-            return true;
+            stockAdded = true;
         }
 
-        return false;
+        return stockAdded;
     }
 
     /**
-     * Tests if the row matching the userId and stockId exists in the
+     * Checks if the row matching the userId and stockId exists in the
      * tracked stocks table
      *
      * @param userId  the id associated with the user row
@@ -89,19 +91,20 @@ public class TrackedStocksDAOImpl implements TrackedStocksDAO {
      */
     @Override
     public boolean exists(int userId, int stockId) {
+        boolean exists = false;
         try {
 
             Statement statement = connection.createStatement();
             ResultSet result = statement.executeQuery("SELECT trackId FROM tracked_stock WHERE userId='"+
                                                        userId+"' AND stockId='"+stockId+"'");
             if (result.next())
-                return true;
+                exists = true;
         }
         catch(SQLException e) {
             System.out.println(e.getMessage());
         }
 
-        return false;
+        return exists;
     }
 
     /**
@@ -139,6 +142,7 @@ public class TrackedStocksDAOImpl implements TrackedStocksDAO {
      */
     @Override
     public boolean delete(int userId, int stockId) {
+        boolean deleteSuccessful = true;
         try {
             //Update the User table
             PreparedStatement prepared = connection.prepareStatement
@@ -147,13 +151,13 @@ public class TrackedStocksDAOImpl implements TrackedStocksDAO {
             prepared.setInt(1, userId);
             prepared.setInt(2, stockId);
             if (prepared.executeUpdate() == 0)
-                return false;
+                deleteSuccessful = false;
         }
         catch(SQLException e) {
             System.out.println(e.getMessage());
         }
 
-        return true;
+        return deleteSuccessful;
     }
 
     /**
@@ -164,6 +168,7 @@ public class TrackedStocksDAOImpl implements TrackedStocksDAO {
      */
     @Override
     public boolean deleteAll(int userId) {
+        boolean deleteSuccessful = true;
         try {
             //Update the User table
             PreparedStatement prepared = connection.prepareStatement
@@ -171,13 +176,13 @@ public class TrackedStocksDAOImpl implements TrackedStocksDAO {
 
             prepared.setInt(1, userId);
             if (prepared.executeUpdate() == 0)
-                return false;
+                deleteSuccessful = false;
         }
         catch(SQLException e) {
             System.out.println(e.getMessage());
         }
 
-        return true;
+        return deleteSuccessful;
     }
 
     private boolean isValidId(int id) {

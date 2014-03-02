@@ -5,8 +5,8 @@ import com.stockticker.User;
 import java.util.List;
 
 /**
- * Interface that defines the Data Access methods for the
- * tracking of stocks that users are interested in.
+ * Interface that defines the Data Access methods that
+ * enables users to track stocks of interest.
  *
  * @author Stuart Connall
  * @version 1.0 02/27/2014
@@ -31,7 +31,7 @@ public interface TrackedStocksDAO {
     public boolean add(int userId, int stockId);
 
     /**
-     * Tests if the row matching the userId and stockId exists in the
+     * Checks if the row matching the userId and stockId exists in the
      * tracked stocks table
      *
      * @param userId  the id associated with the user row
