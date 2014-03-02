@@ -7,6 +7,8 @@ import java.sql.Statement;
 import java.util.List;
 
 /**
+ * Provides the interface for User related database actions
+ *
  * @author -  Stuart Connall
  * @version - 1.0 02/25/2014
  */

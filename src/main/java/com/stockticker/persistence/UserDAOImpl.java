@@ -9,6 +9,7 @@ import java.sql.Statement;
 import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -67,23 +68,40 @@ public class UserDAOImpl implements UserDAO {
             if (!exists(username)) {
                 try {
                     //Create an empty userinfo row and retrieve the auto incremented row id
-                    Statement statement = connection.createStatement();
-                    statement.executeUpdate("INSERT INTO userinfo (firstName) VALUES ('')");
-                    ResultSet result = statement.executeQuery("CALL IDENTITY();");
-                    int id = -1;
-                    if (result.next())
-                        id = result.getInt(1);
+                    //Statement statement = connection.createStatement();
+                    //statement.executeUpdate("INSERT INTO userinfo (firstName) VALUES ('')");
+                    //ResultSet result = statement.executeQuery("CALL IDENTITY();");
+                    int userInfoId = -1;
+                    //if (result.next())
+                    //    id = result.getInt(1);
+
+                    //Create an empty userinfo row and retrieve the auto increment row id
+                    PreparedStatement prepared = connection.prepareStatement("INSERT INTO userinfo (firstName) VALUES (?)", Statement.RETURN_GENERATED_KEYS);
+                    prepared.setString(1, "");
+                    prepared.execute();
+                    ResultSet result = prepared.getGeneratedKeys();
+                    if (result.next() ) {
+                        userInfoId = result.getInt(1);
+                    }
 
                     //insert the user row with username, password, and id from userinfo table insert
-                    statement.executeUpdate("INSERT INTO user (FK_userInfoId, username, password, joinedDate, isLoggedIn) VALUES ("+
-                            id+",'"+username+"','"+password+"','"+new Timestamp(System.currentTimeMillis())+"','FALSE')");
-                    result = statement.executeQuery("CALL IDENTITY();");
-                    if (result.next())
-                        id = result.getInt(1);
+                    int userId = -1;
+                    prepared = connection.prepareStatement("INSERT INTO user (FK_userInfoId, username, password, joinedDate, isLoggedIn) VALUES (?,?,?,?,?)", Statement.RETURN_GENERATED_KEYS);
+                    prepared.setInt(1, userInfoId);
+                    prepared.setString(2, username);
+                    prepared.setString(3, password);
+                    prepared.setTimestamp(4, new Timestamp(System.currentTimeMillis()));
+                    prepared.setBoolean(5, false);
+                    prepared.execute();
+                    result = prepared.getGeneratedKeys();
+                    if (result.next() ) {
+                        userId = result.getInt(1);
+                    }
 
                     //create and return new User object
                     user = new User(username, password);
-                    user.setUserID(id);
+                    user.setUserID(userId);
+                    user.setUserInfo(new UserInfo("", ""));
                 }
                 catch(SQLException e) {
                     System.out.println(e.getMessage());
@@ -126,7 +144,7 @@ public class UserDAOImpl implements UserDAO {
         boolean updateSuccessful = false;
 
         //Check if row exists, if not return false
-            if (exists(user.getUserName())) {
+            if (user != null && exists(user.getUserName())) {
                 //Update the User table
                 try {
                     PreparedStatement prepared = connection.prepareStatement
