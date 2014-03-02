@@ -54,3 +54,7 @@ nbproject/
 ###############
 data/*.db
 data/mem/*.db
+
+# JavaDoc Specific #
+####################
+doc/api/
