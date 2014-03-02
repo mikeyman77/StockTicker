@@ -3,13 +3,32 @@ package com.stockticker;
 import java.util.TreeMap;
 import java.util.Map;
 
+/**
+ * This map contains a lookup mechanism for all known NASDAQ stock
+ * symbols.
+ *
+ * @author Stuart Connall
+ * @version 1.0 3/01/14.
+ */
+
 public enum SymbolMap {
     INSTANCE;
 
+    /**
+     * Returns a Map of all known NASDAQ stock symbols
+     *
+     * @return map of NASDAQ stock symbols
+     */
     public final static Map<String, String> getSymbols() {
         return symbols;
     }
-    
+
+    /**
+     * Determines in a stock symbol is a valid NASDAQ stock symbol
+     *
+     * @param symbol  a NASDAQ symbol
+     * @return  true if it is a NASDAQ symbol, false otherwise
+     */
     public final static boolean isValidSymbol(String symbol) {
         return symbols.containsKey(symbol);
     }
