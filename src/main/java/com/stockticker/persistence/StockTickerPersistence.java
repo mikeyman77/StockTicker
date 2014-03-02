@@ -12,6 +12,9 @@ import com.stockticker.UserInfo;
 /**
  * Provides services to query and update User and Stock data from the
  * database
+ *
+ * @author Stuart Connall
+ * @version 1.0 3/01/2014
  */
 public enum StockTickerPersistence implements PersistenceService {
     INSTANCE;
@@ -52,6 +55,7 @@ public enum StockTickerPersistence implements PersistenceService {
      */
     @Override
     public boolean trackStock(String username, String stock, boolean track) {
+        boolean stockTracked = true;
 
         int userId = userDAO.getUserId(username);
         int stockId = trackedDAO.getStockId(stock);
@@ -64,10 +68,12 @@ public enum StockTickerPersistence implements PersistenceService {
             if (trackedDAO.exists(userId, stockId)) {
                 trackedDAO.delete(userId, stockId);
             }
-            else return false;
+            else {
+                stockTracked = false;
+            }
         }
 
-        return true;
+        return stockTracked;
     }
 
     /**
@@ -79,10 +85,8 @@ public enum StockTickerPersistence implements PersistenceService {
      */
     @Override
     public boolean isStockTracked(String username, String stock) {
-
         int userId = userDAO.getUserId(username);
         int stockId = trackedDAO.getStockId(stock);
-
         return trackedDAO.exists(userId, stockId);
     }
 
@@ -99,7 +103,7 @@ public enum StockTickerPersistence implements PersistenceService {
     }
 
     /**
-     * Creates a new user in the database
+     * Creates a new user in the database.
      *
      * @param username the name of the user
      * @param password the user's password
@@ -112,16 +116,15 @@ public enum StockTickerPersistence implements PersistenceService {
     }
 
     /**
-     * Updates the specified user's information
+     * Updates the specified user's information. Proper usage of this
+     * method requires call getUser first to obtain a valid User
+     * instance.
      *
      * @param user a User object instance
      * @return true if updated, false otherwise
      */
     @Override
     public boolean updateUser(User user) {
-        if (user == null)
-            return false;
-
         return userDAO.update(user);
     }
 
@@ -133,7 +136,6 @@ public enum StockTickerPersistence implements PersistenceService {
      */
     @Override
     public User getUser(String username) {
-
         return userDAO.get(username);
     }
 
@@ -145,7 +147,6 @@ public enum StockTickerPersistence implements PersistenceService {
      */
     @Override
     public boolean deleteUser(String username) {
-
         return userDAO.delete(username);
     }
 
@@ -157,7 +158,6 @@ public enum StockTickerPersistence implements PersistenceService {
      */
     @Override
     public boolean isLoggedIn(String username) {
-
         return userDAO.isLoggedIn(username);
     }
 
@@ -170,7 +170,6 @@ public enum StockTickerPersistence implements PersistenceService {
      */
     @Override
     public boolean setLoginStatus(String username, boolean status) {
-
         return userDAO.setLoginStatus(username, status);
     }
 
@@ -181,7 +180,6 @@ public enum StockTickerPersistence implements PersistenceService {
      */
     @Override
     public List<String> getLoggedInUsers() {
-
         return userDAO.getLoggedInUsers();
     }
 
@@ -193,7 +191,6 @@ public enum StockTickerPersistence implements PersistenceService {
      */
     @Override
     public UserInfo getUserInfo(String username) {
-
         User user = getUser(username);
         return user == null ? null : user.getUserInfo();
     }
@@ -205,6 +202,10 @@ public enum StockTickerPersistence implements PersistenceService {
     public static void main(String [] args) {
         PersistenceService ps = StockTickerPersistence.INSTANCE;
 
+        //User test calls go here
+        User sconnall = ps.createUser("connall", "password");
+
+        //Stock test calls go here
         User sconnall2 = ps.createUser("connall2", "password");
         ps.setLoginStatus(sconnall2.getUserName(), true);
         ps.trackStock(sconnall2.getUserName(), "GOOG", true);

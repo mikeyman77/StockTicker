@@ -53,7 +53,9 @@ public interface PersistenceService {
     public User createUser(String username, String password);
 
     /**
-     * Updates the current users information
+     * Updates the specified user's information. Proper usage of this
+     * method requires call getUser first to obtain a valid User
+     * instance.
      *
      * @param user a User object instance
      * @return true if updated, false otherwise
