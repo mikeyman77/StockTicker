@@ -81,10 +81,9 @@ public class ViewStockTicker extends WindowAdapter implements ActionListener,
 
     private int m_logInTries = 0;
     private int m_maxTries = 3;
-    
-    //private final PersistenceService persistentence = StockTickerPersistence.INSTANCE;
-    public UserInfo firstUser = new UserInfo("Paul", "Wallace");
-    AuthorizationService userAuth = UserAuthorization.INSTANCE;
+
+    private AuthorizationService userAuth = UserAuthorization.INSTANCE;
+    // private UserInfo firstUser = new UserInfo("Paul", "Wallace");
     
 
 
@@ -324,6 +323,7 @@ public class ViewStockTicker extends WindowAdapter implements ActionListener,
     public void actionPerformed(ActionEvent evt) {
         UI selection = UI.getType(evt.getActionCommand());
         cardLayout = (CardLayout) (m_cardPanel.getLayout());
+        UserInfo firstUser = new UserInfo("Paul", "Wallace");
 
         switch(selection) {
 
