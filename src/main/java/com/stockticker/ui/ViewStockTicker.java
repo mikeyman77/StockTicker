@@ -92,8 +92,7 @@ public class ViewStockTicker extends WindowAdapter implements ActionListener,
      * 
      */
     public ViewStockTicker() {
-        m_frame = new JFrame("Stock Ticker Portfolio Manager");
-
+        m_frame = new JFrame();
     }
 
     /**
@@ -283,13 +282,13 @@ public class ViewStockTicker extends WindowAdapter implements ActionListener,
      * Gets an instance of the GUI, which provides the CardLayout to the user.
      * 
      */
-    public static ViewStockTicker getInstance() {
+    /*public static ViewStockTicker getInstance() {
         if(instance == null) {
             instance = new ViewStockTicker();
         }
 
         return instance;
-    }
+    }*/
 
     /**
      * Changes the name of the left control button on the main panel.

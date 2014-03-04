@@ -1,7 +1,8 @@
 package com.stockticker.ui;
 
+import com.stockticker.ui.IStockTicker_UIComponents.UI;
 import static org.junit.Assert.assertEquals;
-import static junit.framework.Assert.assertEquals;
+//import static junit.framework.Assert.assertEquals;
 import org.junit.Test;
 
 
@@ -21,7 +22,6 @@ public class IStockTicker_UIComponentsTest {
         assertEquals("Equal to Submit", "Submit", UI.SUBMIT.getName());
         assertEquals("Equal to Update", "Update", UI.UPDATE.getName());
         assertEquals("Equal to Default", "Default", UI.DEFAULT.getName()); 
-        System.out.println("shouldn't have gotten this far.");
     }
 
 
