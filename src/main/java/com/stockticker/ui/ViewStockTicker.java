@@ -322,11 +322,6 @@ public class ViewStockTicker extends WindowAdapter implements ActionListener,
     @Override
     public void actionPerformed(ActionEvent evt) {
         UI selection = UI.getType(evt.getActionCommand());
-       AuthorizationService m_userAuth = UserAuthorization.INSTANCE;
-        User firstUser = new User("Paul Wallace", "1962Hunt");
-        //User user = persistentence.createUser(firstUser.getUserName(), firstUser.getPassword());
-        AuthorizationService m_authorization = null;
-
         cardLayout = (CardLayout) (m_cardPanel.getLayout());
 
         switch(selection) {
@@ -341,7 +336,7 @@ public class ViewStockTicker extends WindowAdapter implements ActionListener,
                 cardLayout.show(m_cardPanel, UI.LOGIN.getName());
                 if(m_logInTries < m_maxTries && !m_isLoggedIn) {
                     this.resetLeftButton("Submit");
-                    // m_isLoggedIn = true; // temp place holder for logic
+                    m_isLoggedIn = true; // temp place holder for logic
                 }
 
                 break;
@@ -349,16 +344,12 @@ public class ViewStockTicker extends WindowAdapter implements ActionListener,
             case SUBMIT:
                 String name;
                 String password;
-                if(!m_isLoggedIn) {// m_isRegistered &&
+                if(m_isRegistered && !m_isLoggedIn) {// m_isRegistered &&
                     cardLayout.show(m_cardPanel, UI.LOGIN.getName());
+                    m_isLoggedIn = true;
 
                     if((name = m_loginCard.getUsername()) != null && (password = m_loginCard.getPassword()) != null) {
                         System.out.println("name is " + name + "password: " + password);
-                        m_userAuth.logIn(name, password);
-                        /*if(m_authorization.logIn(name, password)) {
-                            m_isLoggedIn = true;
-                        }*/
-
                     }
 
                 } else if(m_isLoggedIn) {
