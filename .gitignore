@@ -17,8 +17,11 @@
 *.iso
 *.rar
 *.tar
- 
- 
+
+# OS Specific #
+###############
+*.bat
+*.sh
 
 # OS generated files #
 ######################
