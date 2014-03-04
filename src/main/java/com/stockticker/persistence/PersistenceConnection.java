@@ -21,8 +21,7 @@ public enum PersistenceConnection {
     private static final String H2_DRIVER = "org.h2.Driver";
     private static final String H2_URL = "jdbc:h2:";
     private static final String H2_SCRIPT = ";INIT=runscript from ";
-    //private static final String PROPERTIES_FILE = "./config/stockticker.properties";
-    private static final String PROPERTIES_FILE = "C:\\Users\\Hunter97\\Documents\\myJ308Project\\StockTicker\\config\\stockticker.properties";
+    private static final String PROPERTIES_FILE = "./config/stockticker.properties";
     private static final String SINGLE_QUOTE = "'";
     private static final String SEPARATOR = "/";
 
