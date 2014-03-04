@@ -20,17 +20,17 @@ import javax.swing.JTextField;
 import javax.swing.border.EtchedBorder;
 
 /**
-* J308
-* @author prwallace
-*/
+ * J308
+ * 
+ * @author prwallace
+ */
 public class LoginCard extends JPanel {
     private static final long serialVersionUID = 1L;
     private JPanel m_loginCard;
     private GridBagConstraints m_constraints;
-    
+
     private String m_userName;
     private String m_password;
-
 
     /**
     *
@@ -40,7 +40,6 @@ public class LoginCard extends JPanel {
         m_constraints = new GridBagConstraints();
         setCard();
     }
-
 
     /**
     *
@@ -52,7 +51,6 @@ public class LoginCard extends JPanel {
 
         JLabel userLbl = new JLabel("User Name:");
         JLabel passLbl = new JLabel("Password:");
-
 
         final JTextField userField = new JTextField(40);
         userField.addActionListener(new ActionListener() {
@@ -69,7 +67,6 @@ public class LoginCard extends JPanel {
                 System.out.println(m_password);
             }
         });
-
 
         JPanel compPanel = new JPanel(new GridBagLayout());
         compPanel.setPreferredSize(new Dimension(400, 150));
@@ -102,11 +99,10 @@ public class LoginCard extends JPanel {
         m_constraints.insets = new Insets(0, 120, 0, 30);
         compPanel.add(passwordField, m_constraints);
 
-
-        m_loginCard.setBorder(BorderFactory.createTitledBorder(BorderFactory.createEtchedBorder(EtchedBorder.LOWERED), "Login"));
+        m_loginCard.setBorder(BorderFactory.createTitledBorder(BorderFactory
+                .createEtchedBorder(EtchedBorder.LOWERED), "Login"));
         m_loginCard.add(compPanel, new GridBagConstraints());
     }
-
 
     /**
     *
@@ -114,5 +110,21 @@ public class LoginCard extends JPanel {
     */
     public JPanel getCard() {
         return m_loginCard;
+    }
+
+    /**
+    *
+    *
+    */
+    public String getUsername() {
+        return m_userName;
+    }
+
+    /**
+    *
+    *
+    */
+    public String getPassword() {
+        return m_password;
     }
 }
