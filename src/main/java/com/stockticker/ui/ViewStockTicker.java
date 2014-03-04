@@ -34,11 +34,10 @@ import javax.swing.JTextField;
 import javax.swing.ScrollPaneConstants;
 
 import com.stockticker.SymbolMap;
-import com.stockticker.User;
+import com.stockticker.UserInfo;
 import com.stockticker.logic.AuthorizationService;
 import com.stockticker.logic.UserAuthorization;
-import com.stockticker.persistence.PersistenceService;
-import com.stockticker.persistence.StockTickerPersistence;
+
 
 /**
  * GUI for Stock Ticker Portfolio Manager J308 Project
@@ -84,6 +83,8 @@ public class ViewStockTicker extends WindowAdapter implements ActionListener,
     private int m_maxTries = 3;
     
     //private final PersistenceService persistentence = StockTickerPersistence.INSTANCE;
+    public UserInfo firstUser = new UserInfo("Paul", "Wallace");
+    AuthorizationService userAuth = UserAuthorization.INSTANCE;
     
 
 
@@ -330,6 +331,7 @@ public class ViewStockTicker extends WindowAdapter implements ActionListener,
                 cardLayout.show(m_cardPanel, UI.USER_REG.getName());
                 this.resetLeftButton(UI.SUBMIT.getName());
                 m_isRegistered = true; // temp place holder for logic
+                userAuth.register("Hunter", "test", firstUser);
                 break;
 
             case LOGIN:
