@@ -6,12 +6,15 @@
 
 package com.stockticker.ui;
 
+import com.stockticker.UserInfo;
 import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.swing.BorderFactory;
 import javax.swing.JLabel;
@@ -34,10 +37,15 @@ public class RegistrationCard extends JPanel {
     private JTextField m_fistNameField;
     private JTextField m_lastNameField;
 
-    private String m_userName;
-    private String m_password;
-    private String m_firstName;
-    private String m_lastName;
+    private String m_username = null;
+    private String m_password = null;
+    private String m_firstName = null;
+    private String m_lastname = null;
+    
+    private List<String> m_regInfo = new ArrayList<String>();
+
+    //private UserInfo userRegistration;// = new UserInfo("Paul", "Wallace");
+    //private User userLogin;
 
 
     /**
@@ -67,8 +75,8 @@ public class RegistrationCard extends JPanel {
         m_userField = new JTextField(40);
         m_userField.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent evt) {
-                m_userName = m_userField.getText();
-                System.out.println(m_userName);
+                m_username = m_userField.getText();
+                System.out.println(m_username);
             }
         });
 
@@ -91,17 +99,10 @@ public class RegistrationCard extends JPanel {
         m_lastNameField = new JTextField(40);
         m_lastNameField.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent evt) {
-                m_lastName = m_lastNameField.getText();
-                System.out.println(m_lastName);
+                m_lastname = m_lastNameField.getText();
+                System.out.println(m_lastname);
             }
         });
-
-        /*final JButton submit = new JButton("Submit");
-        submit.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent evt) {
-                System.out.println(submit.getText());
-            }
-        });*/
 
 
         JPanel compPanel = new JPanel(new GridBagLayout());
@@ -161,21 +162,14 @@ public class RegistrationCard extends JPanel {
         m_constraints.insets = new Insets(0, 120, 0, 30);
         compPanel.add(m_lastNameField, m_constraints);
 
-        /*m_constraints.gridx = 1;
-        m_constraints.gridy = 4;
-        //m_constraints.weightx = 1.0;
-        m_constraints.fill = GridBagConstraints.NONE;
-        m_constraints.insets = new Insets(50, 0, 0, 120);
-        compPanel.add(submit, m_constraints);*/
-
-        
+        // Add this main panel to the main Card panel
         m_regCard.setBorder(BorderFactory.createTitledBorder(BorderFactory.createEtchedBorder(EtchedBorder.LOWERED), "Registration"));
         m_regCard.add(compPanel, new GridBagConstraints());
 
     }
 
 
-    /**
+   /**
     *
     *
     */
@@ -184,19 +178,38 @@ public class RegistrationCard extends JPanel {
     }
 
 
-    /**
+   /**
     *
     *
     */
     public String getfirstName() {
-        return m_userName;
+        return m_firstName;
     }
+
+
+   /**
+    *
+    *
+    */
+    public String getLastName() {
+        return m_lastname;
+    }
+
 
     /**
     *
     *
     */
-    public String getLastName() {
+    public String getUsername() {
+        return m_username;
+    }
+
+
+    /**
+    *
+    *
+    */
+    public String getPassword() {
         return m_password;
     }
 }

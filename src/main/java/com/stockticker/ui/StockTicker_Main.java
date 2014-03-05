@@ -10,7 +10,6 @@ import com.stockticker.logic.AuthorizationService;
 import com.stockticker.logic.UserAuthorization;
 
 
-
 /**
  * J308
  * @author prwallace
