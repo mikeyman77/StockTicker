@@ -353,6 +353,8 @@ public class ViewStockTicker extends WindowAdapter implements ActionListener,
                                 if(m_userAuth.register(username, password, m_userInfo)) {
                                     System.out.println("user registered");
                                     m_regSelect = true;
+                                    cardLayout.show(m_cardPanel, UI.LOGIN.getName());
+                                    m_rightControlBtn.setEnabled(true);
                                 }
                                 else {
                                     System.err.println("Problem occured, unable to register user");
