@@ -77,7 +77,13 @@ public class ViewStockTicker extends WindowAdapter implements ActionListener,
 
     private boolean m_logInSelect = false;
     private boolean m_regSelect = false;
-    private boolean m_tickerShowing = false;
+    private boolean m_tickerSelect = false;
+    private boolean m_cancelSelect = false;
+
+    private String m_username = null;
+    private String m_password = null;
+    private String m_firstname = null;
+    private String m_lastname = null;
 
     private int m_logInTries = 0;
     private int m_maxTries = 3;
@@ -307,80 +313,68 @@ public class ViewStockTicker extends WindowAdapter implements ActionListener,
     public void actionPerformed(ActionEvent evt) {
         UI selection = UI.getType(evt.getActionCommand());
         cardLayout = (CardLayout) (m_cardPanel.getLayout());
-        String firstname;
-        String lastname;
-        String username;
-        String password;
+        /*String firstname = null;
+        String lastname = null;
+        String username = null;
+        String password = null;*/
+
 
         switch(selection) {
 
             case USER_REG:
                 cardLayout.show(m_cardPanel, UI.USER_REG.getName());
                 this.resetLeftButton(UI.SUBMIT.getName());
+                this.resetRightButton("Cancel");
                 m_regSelect = true;
                 m_logInSelect = false;
-                m_rightControlBtn.setEnabled(false);
                 break;
 
 
             case LOGIN:
                 cardLayout.show(m_cardPanel, UI.LOGIN.getName());
                 if(!m_logInSelect) {
-                    this.resetRightButton("Submit");
-                    m_logInSelect = true; // temp place holder for logic
+                    this.resetLeftButton("Submit");
+                    this.resetRightButton("Cancel");
+                    m_logInSelect = true;
+                    m_regSelect = false;
                 }
-
                 break;
 
 
             case SUBMIT:
-                if(m_regSelect) {// m_isRegistered &&
-                    if((firstname = m_regCard.getfirstName())!= null) {
-                        if((lastname = m_regCard.getLastName()) != null ) {
-                            m_userInfo = new UserInfo(firstname, lastname);
+                if(m_regSelect) {
+                    if((m_firstname = m_regCard.getfirstName())!= null) {
+                        if((m_lastname = m_regCard.getLastName()) != null ) {
+                            m_userInfo = new UserInfo(m_firstname, m_lastname);
                         }
                         else {
                             System.out.println("Lastname field is blank");
-                        }     
-                    }
-                    else {
-                        System.out.println("Firstname field is blank");
-                    }
+                        }
 
-                    if((username = m_regCard.getUsername()) != null) {
-                        if((password = m_regCard.getPassword()) != null) {
-                            if(!m_userAuth.isRegistered(username)) {
-                                if(m_userAuth.register(username, password, m_userInfo)) {
-                                    System.out.println("user registered");
-                                    m_regSelect = true;
-                                    cardLayout.show(m_cardPanel, UI.LOGIN.getName());
-                                    m_rightControlBtn.setEnabled(true);
-                                }
-                                else {
-                                    System.err.println("Problem occured, unable to register user");
-                                }     
+                        if((m_username = m_regCard.getUsername()) != null) {
+                            if((m_password = m_regCard.getPassword()) != null) {
+                                this.registerUser(m_username, m_password);
                             }
                             else {
-                                System.out.println("User is already registered, attempting to login...");
-                                this.logInUser(username, password);
+                                System.out.println("password field if blank");
                             }
                         }
                         else {
-                            System.out.println("password field if blank");
+                            System.out.println("username field is blank");
                         }
                     }
                     else {
-                        System.out.println("username field is blank");
-                    }
+                        System.out.println("Firstname field is blank");
+                    } 
                 }
-                else if(m_logInSelect) { // User pressed log in
-                    if((username = m_regCard.getUsername()) != null) {
-                        if((password = m_regCard.getPassword()) != null) {
-                            if(m_userAuth.isRegistered(username)) {
-                                this.logInUser(username, password); 
+                else if(m_logInSelect) {
+                    if((m_username = m_regCard.getUsername()) != null) {
+                        if((m_password = m_regCard.getPassword()) != null) {
+                            if(m_userAuth.isRegistered(m_username)) {
+                                this.logInUser(m_username, m_password); 
                             }
                             else {
-                                System.out.println("user is not registered");
+                                System.out.println("user is not registered; need to register before logon");
                             }
                         }
                         else {
@@ -395,21 +389,32 @@ public class ViewStockTicker extends WindowAdapter implements ActionListener,
 
 
             case UPDATE:
-                if(m_tickerShowing) {
+                if(m_tickerSelect) {
                     cardLayout.show(m_cardPanel, UI.DETAIL.getName());
-                    m_tickerShowing = false;
+                    m_tickerSelect = false;
                 } else {
                     cardLayout.show(m_cardPanel, UI.TICKER.getName());
-                    m_tickerShowing = true;
+                    m_tickerSelect = true;
                 }
 
                 break;
 
+            case CANCEL:
+                m_cancelSelect = true;
             case LOGOUT:
+                if(!m_cancelSelect) {
+                    if(m_userAuth.logOut(m_username)) {
+                        System.out.println("user is logged out");
+                    }
+                    else {
+                        System.out.println("unable to log user out");
+                    }
+                }
                 this.resetLeftButton("Registration");
                 this.resetRightButton("Login");
-                this.setFlags();
+                this.resetFlags();
                 cardLayout.show(m_cardPanel, UI.HOME.getName());
+                m_cancelSelect = false;
                 break;
 
             default:
@@ -419,31 +424,51 @@ public class ViewStockTicker extends WindowAdapter implements ActionListener,
 
 
     public void logInUser(String username, String password) {
-        //m_logInSelect = true;
-
         if(!m_userAuth.isLoggedIn(username)) {
             if(m_userAuth.logIn(username, password)) {
-                System.out.println("user is logged in");
+                System.out.println("user successfully logged in");
             }
             else {
-                //m_logInSelect = false;
-                System.out.println("user unable to logIn");
+                System.out.println("user login failed");
             }
         }
         else {
-            System.out.println("user loggin in");
+            System.out.println("user is already logged in");
         }
 
-        cardLayout.show(m_cardPanel, UI.TICKER.getName());
+        m_logInSelect = false;
         this.resetLeftButton("Update");
         this.resetRightButton("Logout");
         m_rightControlBtn.setEnabled(true);
-        m_tickerShowing = true;
+        m_tickerSelect = true;
+        cardLayout.show(m_cardPanel, UI.TICKER.getName());
     }
 
 
-    public void registerUser() {
+    public void registerUser(String username, String password) {
         
+        if(!m_userAuth.isRegistered(username)) {
+            if(m_userAuth.register(username, password, m_userInfo)) {
+                System.out.println("user successfully registered");
+                m_regSelect = false;
+                m_logInSelect = true;
+                this.logInUser(username, password);
+            }
+            else {
+                System.err.println("Problem occured, unable to register user");
+                this.resetFlags();
+            }   
+        }
+        else {
+            if(m_userAuth.isLoggedIn(username)) {
+                System.out.println("User is already a registered user, attempting to login...");
+                this.logInUser(username, password);
+            }
+            else {
+                System.out.println("User is registered and logged in");
+            }
+            m_regSelect = false;
+        }
     }
 
 
@@ -451,7 +476,7 @@ public class ViewStockTicker extends WindowAdapter implements ActionListener,
      * Reset all flags to default state
      * 
      */
-    private void setFlags() {
+    private void resetFlags() {
         m_logInSelect = false;
         m_regSelect = false;
         m_logInTries = 0;
