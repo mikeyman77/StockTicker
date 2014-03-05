@@ -327,6 +327,9 @@ public class ViewStockTicker extends WindowAdapter implements ActionListener,
                 cardLayout.show(m_cardPanel, UI.USER_REG.getName());
                 this.resetLeftButton(UI.SUBMIT.getName());
                 m_isRegistered = true; // temp place holder for logic
+                if(m_regCard.getfirstName() != null) {
+                    
+                }
                 userAuth.register("Hunter", "test", firstUser);
                 break;
 

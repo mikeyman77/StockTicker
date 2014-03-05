@@ -182,4 +182,21 @@ public class RegistrationCard extends JPanel {
     public JPanel getCard() {
         return m_regCard;
     }
+
+
+    /**
+    *
+    *
+    */
+    public String getfirstName() {
+        return m_userName;
+    }
+
+    /**
+    *
+    *
+    */
+    public String getLastName() {
+        return m_password;
+    }
 }
