@@ -12,7 +12,7 @@ import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
-import java.awt.Image;
+//import java.awt.Image;
 import java.awt.Insets;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
@@ -24,7 +24,7 @@ import java.awt.event.WindowEvent;
 import java.io.IOException;
 
 import javax.swing.BorderFactory;
-import javax.swing.ImageIcon;
+//import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JList;
@@ -47,7 +47,7 @@ import com.stockticker.logic.UserAuthorization;
 public class ViewStockTicker extends WindowAdapter implements ActionListener,
         IStockTicker_UIComponents {
 
-    private static ViewStockTicker instance;
+    //private static ViewStockTicker instance;
     private static CardLayout cardLayout;
     private static JPanel m_cardPanel;
 
@@ -64,7 +64,7 @@ public class ViewStockTicker extends WindowAdapter implements ActionListener,
     private final Toolkit toolKit = Toolkit.getDefaultToolkit();
     private final Dimension screenSize = toolKit.getScreenSize();
     private GridBagConstraints m_constraints;
-    private Image m_titleIcon;
+    //private Image m_titleIcon;
 
     private HomeCard m_homeCard;
     private DetailCard m_detailCard;
@@ -73,7 +73,7 @@ public class ViewStockTicker extends WindowAdapter implements ActionListener,
     private RegistrationCard m_regCard;
     private LoginCard m_loginCard;
 
-    private final String m_icon = "images\\stock_ticker.png";
+    //private final String m_icon = "images\\stock_ticker.png";
 
     private boolean m_isLoggedIn = false;
     private boolean m_isRegistered = false;
@@ -84,7 +84,6 @@ public class ViewStockTicker extends WindowAdapter implements ActionListener,
 
     private AuthorizationService userAuth = UserAuthorization.INSTANCE;
     // private UserInfo firstUser = new UserInfo("Paul", "Wallace");
-    
 
 
     /**
@@ -100,8 +99,8 @@ public class ViewStockTicker extends WindowAdapter implements ActionListener,
      * the Title Bar.
      */
     public void build() {
-        m_titleIcon = new ImageIcon(toolKit.getImage(m_icon)).getImage();
-        m_frame.setIconImage(m_titleIcon);
+        //m_titleIcon = new ImageIcon(toolKit.getImage(m_icon)).getImage();
+        //m_frame.setIconImage(m_titleIcon);
         m_frame.setSize(920, 600);
         m_frame.setLocation(screenSize.width / 4, screenSize.height / 4);
         JFrame.setDefaultLookAndFeelDecorated(true);
@@ -153,7 +152,6 @@ public class ViewStockTicker extends WindowAdapter implements ActionListener,
                 .setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
 
         final JButton setButton = new JButton();
-        ;
         setButton.setName("Set");
         setButton.setPreferredSize(new Dimension(10, 10));
         setButton.setActionCommand("Set");
@@ -258,8 +256,7 @@ public class ViewStockTicker extends WindowAdapter implements ActionListener,
         try {
             m_homeCard = new HomeCard();
         } catch(IOException ex) {
-            System.err
-                    .println("Exception attempting to load or retrieve splash image");
+            System.err.println("Exception attempting to load or retrieve splash image");
             System.err.println(ex.getMessage());
         }
 
