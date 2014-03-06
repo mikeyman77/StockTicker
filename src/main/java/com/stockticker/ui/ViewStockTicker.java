@@ -23,8 +23,8 @@ import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.IOException;
 
-import javax.swing.BorderFactory;
 //import javax.swing.ImageIcon;
+import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JList;
@@ -34,9 +34,15 @@ import javax.swing.JTextField;
 import javax.swing.ScrollPaneConstants;
 
 import com.stockticker.SymbolMap;
+import com.stockticker.User;
 import com.stockticker.UserInfo;
 import com.stockticker.logic.AuthorizationService;
+import com.stockticker.logic.StockTicker;
+import com.stockticker.logic.StockTickerService;
 import com.stockticker.logic.UserAuthorization;
+
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
 
 
 /**
@@ -44,8 +50,7 @@ import com.stockticker.logic.UserAuthorization;
  * 
  * @author prwallace
  */
-public class ViewStockTicker extends WindowAdapter implements ActionListener,
-        IStockTicker_UIComponents {
+public class ViewStockTicker extends WindowAdapter implements ActionListener, ListSelectionListener, IStockTicker_UIComponents {
 
     //private static ViewStockTicker instance;
     private static CardLayout cardLayout;
@@ -72,24 +77,28 @@ public class ViewStockTicker extends WindowAdapter implements ActionListener,
     private TickerCard m_tickerCard;
     private RegistrationCard m_regCard;
     private LoginCard m_loginCard;
-
     //private final String m_icon = "images\\stock_ticker.png";
 
     private boolean m_logInSelect = false;
     private boolean m_regSelect = false;
     private boolean m_tickerSelect = false;
     private boolean m_cancelSelect = false;
+    private boolean m_isRegistered = false;
 
     private String m_username = null;
     private String m_password = null;
     private String m_firstname = null;
     private String m_lastname = null;
+    private String m_symbol = null;
 
     private int m_logInTries = 0;
     private int m_maxTries = 3;
+    private int m_index;
 
     private AuthorizationService m_userAuth = UserAuthorization.INSTANCE;
+    private StockTickerService stockTicker =  StockTicker.INSTANCE;
     private UserInfo m_userInfo;
+    private User m_user;
 
 
     /**
@@ -99,6 +108,7 @@ public class ViewStockTicker extends WindowAdapter implements ActionListener,
     public ViewStockTicker() {
         m_frame = new JFrame();
     }
+
 
     /**
      * Builds the main frame and provides a Window Listener close events from
@@ -121,6 +131,7 @@ public class ViewStockTicker extends WindowAdapter implements ActionListener,
             }
         });
     }
+
 
     /**
      * Create/add the main panel of the UI and its child JPanel's. Create/add
@@ -147,37 +158,62 @@ public class ViewStockTicker extends WindowAdapter implements ActionListener,
         m_cardPanel.setPreferredSize(new Dimension(550, 520));
         m_cardPanel.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createRaisedBevelBorder(), BorderFactory.createLoweredBevelBorder()));
 
-        // Add controls for the Symbol list controls and their action listeners
-        JList<Object> stockList = new JList<>(SymbolMap.getSymbols().keySet()
-                .toArray());
+
+        final JList<Object> stockList = new JList<>(SymbolMap.getSymbols().keySet().toArray());
         JScrollPane scrollPane = new JScrollPane(stockList);
         scrollPane.setSize(150, 20);
         scrollPane.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
+
+        final JTextField symbolField = new JTextField(5);
+        symbolField.setEditable(true);
 
         final JButton setButton = new JButton();
         setButton.setName("Set");
         setButton.setPreferredSize(new Dimension(10, 10));
         setButton.setActionCommand("Set");
-        setButton.addActionListener(this);
+        
+
         stockList.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
-                if(e.getClickCount() == 2) {
-                    setButton.doClick();
+                if(e.getClickCount() == 2 && m_userAuth.isLoggedIn(m_username)) {
+                    m_symbol = stockList.getSelectedValue().toString();
+                    if(m_symbol != null && stockTicker.trackStock(m_username, m_symbol, true)) {
+                        System.out.println("User is tracking symbol " + m_symbol);
+                    }
                 }
             }
         });
 
-        final JTextField symbolName = new JTextField(5);
-        symbolName.setEditable(true);
-        symbolName.addActionListener(new ActionListener() {
+        
+        symbolField.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                // String name = symbolName.getText();
+                m_symbol = symbolField.getText().toUpperCase();
+                stockList.setSelectedValue(m_symbol, true);
+                symbolField.requestFocusInWindow();
+                symbolField.setText("");
+                System.out.println(symbolField.getText());
+            }
+        });
 
-                // Reset the text field.
-                symbolName.requestFocusInWindow();
-                symbolName.setText("");
+        stockList.addListSelectionListener(new ListSelectionListener() {
+            @Override
+            public void valueChanged(ListSelectionEvent e) {
+                if(e.getValueIsAdjusting()) {
+                    String selection = stockList.getSelectedValue().toString();
+                    m_index = stockList.getSelectedIndex();
+                    symbolField.setText(selection);
+                }
+            }
+        });
+
+        setButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent evt) {
+                if(m_symbol != null && stockTicker.trackStock(m_username, m_symbol, true)) {
+                        System.out.println("User is tracking symbol " + m_symbol);
+                }
             }
         });
 
@@ -201,7 +237,7 @@ public class ViewStockTicker extends WindowAdapter implements ActionListener,
         m_constraints.insets = new Insets(0, 0, 30, 5);
         btmPanel.add(setButton, m_constraints);
         m_constraints.gridx = 1;
-        btmPanel.add(symbolName, m_constraints);
+        btmPanel.add(symbolField, m_constraints);
         m_constraints.insets = new Insets(0, 0, 0, 0);
         m_statusPanel = new JPanel();
         m_statusPanel.setPreferredSize(new Dimension(650, 65));
@@ -249,6 +285,7 @@ public class ViewStockTicker extends WindowAdapter implements ActionListener,
         m_frame.setResizable(false);
         m_frame.setVisible(true);
     }
+
 
     /**
      * Layout the individual Cards (screens) of the UI. Instantiates the
@@ -313,11 +350,6 @@ public class ViewStockTicker extends WindowAdapter implements ActionListener,
     public void actionPerformed(ActionEvent evt) {
         UI selection = UI.getType(evt.getActionCommand());
         cardLayout = (CardLayout) (m_cardPanel.getLayout());
-        /*String firstname = null;
-        String lastname = null;
-        String username = null;
-        String password = null;*/
-
 
         switch(selection) {
 
@@ -451,6 +483,8 @@ public class ViewStockTicker extends WindowAdapter implements ActionListener,
                 System.out.println("user successfully registered");
                 m_regSelect = false;
                 m_logInSelect = true;
+                m_isRegistered = true;
+                //m_user = new User(username, password);
                 this.logInUser(username, password);
             }
             else {
@@ -494,6 +528,11 @@ public class ViewStockTicker extends WindowAdapter implements ActionListener,
     @Override
     public void setStatus(Color color, String message, String tip) {
 
+    }
+
+    @Override
+    public void valueChanged(ListSelectionEvent e) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
     /**
