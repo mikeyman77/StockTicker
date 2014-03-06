@@ -368,8 +368,8 @@ public class ViewStockTicker extends WindowAdapter implements ActionListener,
                     } 
                 }
                 else if(m_logInSelect) {
-                    if((m_username = m_regCard.getUsername()) != null) {
-                        if((m_password = m_regCard.getPassword()) != null) {
+                    if((m_username = m_loginCard.getUsername()) != null) {
+                        if((m_password = m_loginCard.getPassword()) != null) {
                             if(m_userAuth.isRegistered(m_username)) {
                                 this.logInUser(m_username, m_password); 
                             }
@@ -414,7 +414,6 @@ public class ViewStockTicker extends WindowAdapter implements ActionListener,
                 this.resetRightButton("Login");
                 this.resetFlags();
                 cardLayout.show(m_cardPanel, UI.HOME.getName());
-                m_cancelSelect = false;
                 break;
 
             default:
@@ -480,6 +479,7 @@ public class ViewStockTicker extends WindowAdapter implements ActionListener,
         m_logInSelect = false;
         m_regSelect = false;
         m_logInTries = 0;
+        m_cancelSelect = false;
     }
 
     /**
