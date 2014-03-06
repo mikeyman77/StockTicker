@@ -66,17 +66,4 @@ public interface IStockTicker_UIComponents {
         }
     }
 
-    /**
-     * Displays a status message in the GUI. The Color argument is based on the
-     * the type of status, error or non-error. Also provides a Tooltip if
-     * needed; this field can be set to null.
-     * 
-     * @param Color
-     *            color - color to display text
-     * @param String
-     *            message - Message to display in status box
-     * @param String
-     *            tip - Tooltip message
-     */
-    public void setStatus(Color color, String message, String tip);
 }

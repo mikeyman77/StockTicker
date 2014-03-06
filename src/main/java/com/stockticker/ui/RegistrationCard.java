@@ -32,21 +32,12 @@ public class RegistrationCard extends JPanel {
     private GridBagConstraints m_constraints;
     private JPanel m_regCard;
 
-    private JTextField m_userField;
+    private JTextField m_usernameField;
     private JTextField m_passwordField;
-    private JTextField m_fistNameField;
-    private JTextField m_lastNameField;
-
-    private String m_username = null;
-    private String m_password = null;
-    private String m_firstName = null;
-    private String m_lastname = null;
+    private JTextField m_firstmameField;
+    private JTextField m_lastnameField;
     
     private List<String> m_regInfo = new ArrayList<String>();
-
-    //private UserInfo userRegistration;// = new UserInfo("Paul", "Wallace");
-    //private User userLogin;
-
 
     /**
     *
@@ -71,39 +62,11 @@ public class RegistrationCard extends JPanel {
         JLabel fistNameLbl = new JLabel("First name:");
         JLabel lastNameLbl = new JLabel("Last name:");
 
-
-        m_userField = new JTextField(40);
-        m_userField.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent evt) {
-                m_username = m_userField.getText();
-                System.out.println(m_username);
-            }
-        });
-
+        m_usernameField = new JTextField(40);
         m_passwordField = new JTextField(40);
-        m_passwordField.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent evt) {
-                m_password = m_passwordField.getText();
-                System.out.println(m_password);
-            }
-        });
-
-        m_fistNameField = new JTextField(40);
-        m_fistNameField.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent evt) {
-                m_firstName = m_fistNameField.getText();
-                System.out.println(m_firstName);
-            }
-        });
-
-        m_lastNameField = new JTextField(40);
-        m_lastNameField.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent evt) {
-                m_lastname = m_lastNameField.getText();
-                System.out.println(m_lastname);
-            }
-        });
-
+        m_passwordField.setText("");
+        m_firstmameField = new JTextField(40);
+        m_lastnameField = new JTextField(40);
 
         JPanel compPanel = new JPanel(new GridBagLayout());
         compPanel.setPreferredSize(new Dimension(400, 250));
@@ -121,7 +84,7 @@ public class RegistrationCard extends JPanel {
         m_constraints.weightx = 1.0;
         m_constraints.fill = GridBagConstraints.HORIZONTAL;
         m_constraints.insets = new Insets(0, 120, 0, 30);
-        compPanel.add(m_userField, m_constraints);
+        compPanel.add(m_usernameField, m_constraints);
 
         m_constraints.gridx = 0;
         m_constraints.gridy = 1;
@@ -147,7 +110,7 @@ public class RegistrationCard extends JPanel {
         m_constraints.weightx = 1.0;
         m_constraints.fill = GridBagConstraints.HORIZONTAL;
         m_constraints.insets = new Insets(0, 120, 0, 30);
-        compPanel.add(m_fistNameField, m_constraints);
+        compPanel.add(m_firstmameField, m_constraints);
 
         m_constraints.gridx = 0;
         m_constraints.gridy = 3;
@@ -160,7 +123,7 @@ public class RegistrationCard extends JPanel {
         m_constraints.weightx = 1.0;
         m_constraints.fill = GridBagConstraints.HORIZONTAL;
         m_constraints.insets = new Insets(0, 120, 0, 30);
-        compPanel.add(m_lastNameField, m_constraints);
+        compPanel.add(m_lastnameField, m_constraints);
 
         // Add this main panel to the main Card panel
         m_regCard.setBorder(BorderFactory.createTitledBorder(BorderFactory.createEtchedBorder(EtchedBorder.LOWERED), "Registration"));
@@ -183,7 +146,7 @@ public class RegistrationCard extends JPanel {
     *
     */
     public String getfirstName() {
-        return m_firstName;
+        return m_firstmameField.getText();
     }
 
 
@@ -192,7 +155,7 @@ public class RegistrationCard extends JPanel {
     *
     */
     public String getLastName() {
-        return m_lastname;
+        return m_lastnameField.getText();
     }
 
 
@@ -201,7 +164,7 @@ public class RegistrationCard extends JPanel {
     *
     */
     public String getUsername() {
-        return m_username;
+        return m_usernameField.getText();
     }
 
 
@@ -210,6 +173,14 @@ public class RegistrationCard extends JPanel {
     *
     */
     public String getPassword() {
-        return m_password;
+        return m_passwordField.getText();
+    }
+
+
+    public void clearTextFields() {
+        m_usernameField.setText("");
+        m_passwordField.setText("");
+        m_firstmameField.setText("");
+        m_lastnameField.setText("");
     }
 }
