@@ -5,16 +5,22 @@
     <property name="src.dir" value="src${file.separator}main${file.separator}java" description="project source code"/>
     <property name="src-test.dir" value="src${file.separator}test${file.separator}java" description="project test code"/>
     <property name="lib.dir" value="lib" description="project libraries are found here"/>
+    <property name="images.dir" value="images" description="project image files are found here"/>
+    <property name="sql.dir" value="sql" description="project sql schema files"/>
+    <property name="config.dir" value="config" description="project configuration property files"/>
     <property name="build.dir" value="build"
               description="anything this build script generates goes under this directory"/>
     <property name="classes.dir" value="${build.dir}${file.separator}classes"
               description="Java class files compiled by this build script  go here"/>
+    <property name="doc.dir" value="doc" description="root of doc directory"/>
     <property name="doc.api.dir" value="doc${file.separator}api"
               description="Java class files compiled by this build script  go here"/>
     <property name="report.dir" value="${build.dir}${file.separator}report"
               description="this directory is for all reports - xml and html"/>
     <property name="report.junit.dir" value="${report.dir}${file.separator}junit"
               description="this directory is used by JUnit. Test results are placed here in a nice HTML format"/>
+    <!-- Currently, the inmemory db is being persisted to disk, but wiped out each time clean is run. Switch to
+         using init_cached.sql and data dir for persistent persistence. -->
     <property name="inmemory.db.dir" value="data/mem" description="location of inmemory db files wiped out each run" />
 
     <!-- cobertura properties -->
@@ -27,8 +33,8 @@
     <property name="cobertura.data.file" value="cobertura.ser" />
     <property name="cobertura.jar.file" value="${lib.dir}${file.separator}cobertura-2.0.3.jar" />
 
-    <!-- this sets up the classpath for the project. Whenever you a .jar to the lib directory it will automatically be
-        be added to the classpath
+    <!-- this sets up the classpath for the project. Whenever you add a .jar to the lib directory it will
+         automatically be added to the classpath
     -->
     <path id="project.classpath" description="the project's class path all third party libs are on it. ">
         <pathelement path="${classes.dir}"/>
@@ -37,13 +43,14 @@
         </fileset>
     </path>
 
-
-    <!-- targets follow - each target does one thing in the compile, run, test and build process -->
+    <!-- TARGETS BEGIN HERE -->
 
     <target name="clean" description="deletes all build artifacts (anything created by this build file)">
         <delete dir="${classes.dir}"/>
         <delete dir="${inmemory.db.dir}"/>
         <delete dir="${doc.api.dir}"/>
+        <delete file="stockticker.jar"/>
+        <delete file="stockticker-all.zip"/>
     </target>
 
     <target name="init" description="Build initialization - create output directories" depends="clean">
@@ -52,8 +59,9 @@
         <mkdir dir="${doc.api.dir}"/>
     </target>
 
+    <!-- Compiles all source - main and test -->
     <target name="compile" description="Compile all the code; produce classes" depends="init">
-        <javac destdir="${classes.dir}" debug="true" fork="true" debuglevel="vars,lines,source" deprecation="on" includeantruntime="false">
+        <javac destdir="${classes.dir}" fork="true" deprecation="on" includeantruntime="false">
             <src path="${src.dir}"/>
             <src path="${src-test.dir}"/>
             <classpath refid="project.classpath"/>
@@ -61,7 +69,57 @@
         </javac>
     </target>
 
-    <target name="javadoc" description="Generate source JavaDoc" depends="compile">
+    <!-- Compiles all source with debug options - main only, test is non-debug -->
+    <target name="debug" description="Compile all the code with debug options; produce classes" depends="init">
+        <javac destdir="${classes.dir}" debug="true" fork="true" debuglevel="vars,lines,source" deprecation="on" includeantruntime="false">
+            <src path="${src.dir}"/>
+            <classpath refid="project.classpath"/>
+            <compilerarg line="-Xlint:unchecked" />
+        </javac>
+        <javac destdir="${classes.dir}" fork="true" deprecation="on" includeantruntime="false">
+            <src path="${src-test.dir}"/>
+            <classpath refid="project.classpath"/>
+            <compilerarg line="-Xlint:unchecked" />
+        </javac>
+    </target>
+
+    <!-- Creates a jar file -->
+    <target name="jar" depends="compile" description="generates the jar file" >
+        <manifest file="${basedir}/META-INF/MANIFEST.MF">
+            <attribute name="Main-Class" value="com.stockticker.ui.StockTicker_Main"/>
+            <attribute name="Class-Path" value="./lib/h2-1.3.175.jar" />
+        </manifest>
+        <jar manifest="${basedir}/META-INF/MANIFEST.MF" destfile="stockticker.jar" basedir="${classes.dir}" excludes="">
+            <fileset dir="${basedir}">
+                <include name="META-INF/MANIFEST.MF"/>
+                <include name="README.md"/>
+                <exclude name="build/instrumented/**"/>
+                <exclude name="build/report/**"/>
+            </fileset>
+        </jar>
+    </target>
+
+    <!-- Creates a distribution zip file -->
+    <target name="dist" depends="jar"  description="generates the distribution zip file" >
+        <zip destfile="stockticker-all.zip" basedir="."
+             excludes=".idea/,build/**,data/**,lib/**,resources/**,META-INF/**,src/**,build.xml,cobertura.ser,**/*.pdf">
+
+            <zipfileset dir="${lib.dir}" prefix="lib">
+                <include name="h2-1.3.175.jar"/>
+                <include name="jackson-annotations-2.2.3.jar"/>
+                <include name="jackson-core-2.2.3.jar"/>
+                <include name="jackson-databind-2.2.3.jar"/>
+            </zipfileset>
+        </zip>
+    </target>
+
+    <target name="run" depends="jar">
+        <java jar="stockticker.jar" fork="true" classpath="project.classpath">
+            <arg value=""/>
+        </java>
+    </target>
+
+    <target name="javadoc" depends="init" description="Generate source JavaDoc">
         <javadoc packagenames="com.stockticker.*"
                  classpathref="project.classpath"
                  sourcepath="src/main/java"
@@ -79,7 +137,7 @@
             <group title="Stock Ticker User Interface Classes" packages="com.stockticker.ui*"/>
             <group title="Stock Ticker Business Logic Classes" packages="com.stockticker.logic*"/>
             <group title="Stock Ticker Persistence Classes" packages="com.stockticker.persistence*"/>
-            <link offline="true" href="http://docs.oracle.com/javase/7/docs/api/" packagelistLoc="\temp:\tmp"/>
+            <link offline="true" href="http://docs.oracle.com/javase/7/docs/api/" packagelistLoc="/temp:/tmp"/>
             <link href="http://docs.oracle.com/javase/7/docs/api/"/>
         </javadoc>
     </target>
@@ -116,6 +174,7 @@
 
     </target>
 
+    <!-- Cobertura code coverage -->
     <target name="coverage" depends="compile">
 
         <delete dir="${cobertura.instrumented.dir}"/>
@@ -127,6 +186,7 @@
         <mkdir dir="${cobertura.junit.html.dir}" />
         <mkdir dir="${cobertura.coverage.html.dir}" />
 
+        <!-- set up the Cobertura classpath -->
         <path id="cobertura.classpath">
             <fileset dir="${cobertura.home}">
                 <include name="cobertura-2.0.3.jar"/>
@@ -136,8 +196,10 @@
                 <include name="**/*.jar"/>
             </fileset>
         </path>
+        <!-- Cobertura task definition -->
         <taskdef classpathref="cobertura.classpath" resource="tasks.properties"/>
 
+        <!-- Instrumentation starts here -->
         <cobertura-instrument todir="${cobertura.instrumented.dir}" datafile="${cobertura.data.file}" ignoreTrivial="true" >
             <ignore regex="org.apache.log4j.*" />
             <fileset dir="${classes.dir}">
@@ -147,6 +209,7 @@
             </fileset>
         </cobertura-instrument>
 
+        <!-- Executes the Cobertura junit tests -->
         <junit showoutput="true" printsummary="withOutAndErr" fork="true" forkmode="once" failureproperty="test.failed">
             <classpath refid="cobertura.classpath" />
             <sysproperty key="net.sourceforge.cobertura.datafile" file="${cobertura.data.file}" />
@@ -163,6 +226,7 @@
             </batchtest>
         </junit>
 
+        <!-- Generates the Cobertura junit xml reports -->
         <junitreport todir="${cobertura.junit.html.dir}">
             <fileset dir="${cobertura.junit.xml.dir}">
                 <include name="TEST-*.xml"/>
@@ -170,6 +234,7 @@
             <report format="frames" todir="${cobertura.junit.html.dir}"/>
         </junitreport>
 
+        <!-- Generates the Cobertura junit html reports -->
         <cobertura-report format="html" destdir="${cobertura.coverage.html.dir}" datafile="${cobertura.data.file}">
             <fileset dir="${src.dir}">
                 <include name="**/*.java" />
@@ -179,8 +244,7 @@
     </target>
 
     <!-- this is the default target - it does everything -->
-<!--    <target name="all" depends="init, clean, compile, test, instrument, cover-test, coverage-report"-->
-    <target name="all" depends="init, clean, compile, javadoc, test, coverage"
-            description="deletes previous work, compiles new class, runs hello program"/>
+    <target name="all" depends="init, clean, compile, javadoc, jar, dist, run, test, coverage"
+            description="deletes previous work, compiles new classes, runs stock ticker program, runs junit tests, etc."/>
 
 </project>

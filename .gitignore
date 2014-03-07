@@ -61,3 +61,8 @@ data/mem/*.db
 # JavaDoc Specific #
 ####################
 doc/api/
+
+# Project Specific #
+####################
+stockticker.jar
+stockticker-all.zip

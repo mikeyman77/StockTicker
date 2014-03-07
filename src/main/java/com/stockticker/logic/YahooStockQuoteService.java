@@ -4,6 +4,7 @@ package com.stockticker.logic;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.stockticker.StockQuote;
+import com.stockticker.SymbolMap;
 import com.stockticker.YahooStockQuote;
 import java.io.IOException;
 import java.io.InputStream;
@@ -51,10 +52,13 @@ public enum YahooStockQuoteService implements StockQuoteService {
         for (int i = 0; i < symbols.size(); i++) {
             String stockSymbol = symbols.get(i);
             
-            if (i != 0)
-                symbolString.append(comma);
+            if (SymbolMap.isValidSymbol(stockSymbol)) {
+
+                if (!symbolString.toString().isEmpty())
+                    symbolString.append(comma);
             
-            symbolString.append(quotationMark).append(stockSymbol).append(quotationMark);
+                symbolString.append(quotationMark).append(stockSymbol).append(quotationMark);
+            }
         }
         
         // construct yahoo query url
