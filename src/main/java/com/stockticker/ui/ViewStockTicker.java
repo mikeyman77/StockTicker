@@ -83,7 +83,7 @@ public class ViewStockTicker extends WindowAdapter implements IStockTicker_UICom
     private boolean m_regSelect = false;
     private boolean m_tickerSelect = false;
     private boolean m_cancelSelect = false;
-    private boolean m_isRegistered = false;
+    //private boolean m_isRegistered = false;
 
     private String m_username = null;
     private String m_password = null;
@@ -91,14 +91,14 @@ public class ViewStockTicker extends WindowAdapter implements IStockTicker_UICom
     private String m_lastname = null;
     private String m_symbol = null;
 
-    private int m_logInTries = 0;
-    private int m_maxTries = 3;
-    private int m_index;
+    //private int m_logInTries = 0;
+    //private int m_maxTries = 3;
+    //private int m_index;
 
-    private AuthorizationService m_userAuth = UserAuthorization.INSTANCE;
-    private StockTickerService stockTicker =  StockTicker.INSTANCE;
+    private final AuthorizationService m_userAuth = UserAuthorization.INSTANCE;
+    private final StockTickerService stockTicker =  StockTicker.INSTANCE;
     private UserInfo m_userInfo;
-    private User m_user;
+    //private User m_user;
 
 
     /**
@@ -176,10 +176,15 @@ public class ViewStockTicker extends WindowAdapter implements IStockTicker_UICom
         stockList.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
-                if(e.getClickCount() == 2 && m_userAuth.isLoggedIn(m_username)) {
-                    m_symbol = stockList.getSelectedValue().toString();
-                    if(m_symbol != null && stockTicker.trackStock(m_username, m_symbol, true)) {
-                        System.out.println("User is tracking symbol " + m_symbol);
+                if(e.getClickCount() == 2 && m_username != null) {
+                    if(m_userAuth.isLoggedIn(m_username)) {
+                        m_symbol = stockList.getSelectedValue().toString();
+                        if(m_symbol != null && stockTicker.trackStock(m_username, m_symbol, true)) {
+                            System.out.println("Now tracking symbol " + m_symbol);
+                        }
+                    }
+                    else {
+                        System.out.println("Unable to track symbol; user may not be logged in");
                     }
                 }
             }
@@ -191,8 +196,6 @@ public class ViewStockTicker extends WindowAdapter implements IStockTicker_UICom
             public void actionPerformed(ActionEvent e) {
                 m_symbol = symbolField.getText().toUpperCase();
                 stockList.setSelectedValue(m_symbol, true);
-                symbolField.requestFocusInWindow();
-                //symbolField.setText("");
                 System.out.println(symbolField.getText());
             }
         });
@@ -201,8 +204,7 @@ public class ViewStockTicker extends WindowAdapter implements IStockTicker_UICom
             @Override
             public void valueChanged(ListSelectionEvent e) {
                 if(e.getValueIsAdjusting()) {
-                    String selection = stockList.getSelectedValue().toString();
-                    m_index = stockList.getSelectedIndex();
+                    String selection = stockList.getSelectedValue().toString();;
                     symbolField.setText(selection);
                 }
             }
@@ -213,14 +215,18 @@ public class ViewStockTicker extends WindowAdapter implements IStockTicker_UICom
             public void actionPerformed(ActionEvent evt) {
                 if(m_symbol != null && m_username != null) {
                     if(m_userAuth.isLoggedIn(m_username) && stockTicker.trackStock(m_username, m_symbol, true)) {
-                        System.out.println("User is tracking symbol " + m_symbol);
+                        System.out.println("Now tracking symbol " + m_symbol);
+                    }
+                    else {
+                        System.out.println("Unable to track symbol; user may not be logged in");
                     }
                 }
                 else {
-                    System.out.println("symbol not selected");
+                    System.out.println("The symbol was not selected; user may not be logged in");
                 }
             }
         });
+
 
         // Create/add child panels to the main frame JPanels and layout their
         // individual controls using GridBagLayout.
@@ -322,13 +328,15 @@ public class ViewStockTicker extends WindowAdapter implements IStockTicker_UICom
     }
 
 
-
+    /**
+     *
+     */
     public class OperateStockTicker implements ActionListener {
+
         /**
          * Changes the name of the left control button on the main panel.
-         * 
-         * @param name
-         *            - Name of left main panel button
+         *  
+         * @param name      - Name of left main panel button
          */
         public void resetLeftButton(String name) {
             m_leftControlBtn.setText(name);
@@ -338,8 +346,7 @@ public class ViewStockTicker extends WindowAdapter implements IStockTicker_UICom
         /**
          * Changes the name of the right control button on the main panel.
          * 
-         * @param name
-         *            - Name of right main panel button
+         * @param name      - Name of right main panel button
          */
         public void resetRightButton(String name) {
             m_rightControlBtn.setText(name);
@@ -351,13 +358,14 @@ public class ViewStockTicker extends WindowAdapter implements IStockTicker_UICom
          * a button press. Determines which event occurred and takes the appropriate
          * action.
          * 
-         * @param evt
-         *            Registered event
+         * @param evt       - Registered event
          */
         @Override
         public void actionPerformed(ActionEvent evt) {
             UI selection = UI.getType(evt.getActionCommand());
             cardLayout = (CardLayout) (m_cardPanel.getLayout());
+            boolean isEmpty = false;
+
 
             switch(selection) {
 
@@ -367,7 +375,7 @@ public class ViewStockTicker extends WindowAdapter implements IStockTicker_UICom
                     this.resetLeftButton(UI.SUBMIT.getName());
                     this.resetRightButton("Cancel");
                     m_regSelect = true;
-                    m_logInSelect = false;
+                    //m_logInSelect = false;
                     break;
 
 
@@ -385,47 +393,52 @@ public class ViewStockTicker extends WindowAdapter implements IStockTicker_UICom
 
                 case SUBMIT:
                     if(m_regSelect) {
-                        if((m_firstname = m_regCard.getfirstName())!= null) {
-                            if((m_lastname = m_regCard.getLastName()) != null ) {
-                                m_userInfo = new UserInfo(m_firstname, m_lastname);
-                            }
-                            else {
-                                System.out.println("Lastname field is blank");
-                            }
-
-                            if((m_username = m_regCard.getUsername()) != null) {
-                                if((m_password = m_regCard.getPassword()) != null) {
-                                    this.registerUser(m_username, m_password);
-                                }
-                                else {
-                                    System.out.println("password field if blank");
-                                }
-                            }
-                            else {
-                                System.out.println("username field is blank");
-                            }
-                        }
-                        else {
+                        if((m_firstname = m_regCard.getfirstName()).equals("")) {
                             System.out.println("Firstname field is blank");
+                            isEmpty = true;
+                        }
+
+                        if((m_lastname = m_regCard.getLastName()).equals("")) {
+                            System.out.println("Lastname field is blank");
+                            isEmpty = true;
+                        }
+
+                        if((m_username = m_regCard.getUsername()).equals("")) {
+                            System.out.println("Username field is blank");
+                            isEmpty = true;
                         } 
+
+                        if((m_password = m_regCard.getPassword()).equals("")) {
+                            System.out.println("Password field is blank");
+                            isEmpty = true;
+                        }
+
+                        // Registration selcted; register user
+                        if(!isEmpty) {
+                            m_userInfo = new UserInfo(m_firstname, m_lastname);
+                            this.registerUser(m_username, m_password);
+                        }
                     }
                     else if(m_logInSelect) {
-                        if((m_username = m_loginCard.getUsername()) != null) {
-                            if((m_password = m_loginCard.getPassword()) != null) {
-                                if(m_userAuth.isRegistered(m_username)) {
-                                    this.logInUser(m_username, m_password); 
-                                }
-                                else {
-                                    System.out.println("user is not registered; need to register before logon");
-                                }
+                        if((m_username = m_loginCard.getUsername()).equals("")) {
+                            System.out.println("Username field is blank");
+                            isEmpty = true;
+                        }
+
+                        if((m_password = m_loginCard.getPassword()).equals("")) {
+                            System.out.println("Password field is blank");
+                            isEmpty = true;
+                        }
+
+                        // User is registered; login user
+                        if(!isEmpty) {
+                            if(m_userAuth.isRegistered(m_username)) {
+                                this.logInUser(m_username, m_password);
                             }
                             else {
-                                System.out.println("password field is blank");
+                                System.out.println("Not a recognized user, check username or register");
                             }
-                        }
-                        else {
-                            System.out.println("user field is blank");
-                        }
+                        } 
                     }
                     break;
 
@@ -446,10 +459,10 @@ public class ViewStockTicker extends WindowAdapter implements IStockTicker_UICom
                 case LOGOUT:
                     if(!m_cancelSelect) {
                         if(m_userAuth.logOut(m_username)) {
-                            System.out.println("user is logged out");
+                            System.out.println("User is logged out");
                         }
                         else {
-                            System.out.println("unable to log user out");
+                            System.out.println("Unable to log user out");
                         }
                     }
                     this.resetLeftButton("Registration");
@@ -459,42 +472,54 @@ public class ViewStockTicker extends WindowAdapter implements IStockTicker_UICom
                     break;
 
                 default:
-                    System.out.println("failed to select a key");
+                    System.out.println("Failed to select a key");
             }
         }
 
 
-        public void logInUser(String username, String password) {
+        /**
+         *
+         * @param username
+         * @param password
+         */
+        private void logInUser(String username, String password) {
             if(!m_userAuth.isLoggedIn(username)) {
                 if(m_userAuth.logIn(username, password)) {
-                    System.out.println("user successfully logged in");
+                    System.out.println("User successfully logged in");
+                    this.resetFlags();
                 }
                 else {
-                    System.out.println("user login failed");
+                    System.out.println("User login failed, please check password");
                 }
             }
             else {
-                System.out.println("user is already logged in");
+                System.out.println("User is already logged in");
+                this.resetFlags();
             }
 
-            m_logInSelect = false;
-            this.resetLeftButton("Update");
-            this.resetRightButton("Logout");
-            m_rightControlBtn.setEnabled(true);
-            m_tickerSelect = true;
-            cardLayout.show(m_cardPanel, UI.TICKER.getName());
+            // User is logged in,  switch screen to ticker
+            if(!m_logInSelect && !m_regSelect) { 
+                this.resetLeftButton("Update");
+                this.resetRightButton("Logout");
+                m_rightControlBtn.setEnabled(true);
+                m_tickerSelect = true;
+                cardLayout.show(m_cardPanel, UI.TICKER.getName());
+            }
         }
 
 
-        public void registerUser(String username, String password) {
-
+        /**
+         *
+         * @param username
+         * @param password
+         */
+        private void registerUser(String username, String password) {
             if(!m_userAuth.isRegistered(username)) {
                 if(m_userAuth.register(username, password, m_userInfo)) {
-                    System.out.println("user successfully registered");
+                    System.out.println("User successfully registered");
                     m_regSelect = false;
                     m_logInSelect = true;
-                    m_isRegistered = true;
-                    //m_user = new User(username, password);
+                    //m_isRegistered = true;
                     this.logInUser(username, password);
                 }
                 else {
@@ -503,15 +528,44 @@ public class ViewStockTicker extends WindowAdapter implements IStockTicker_UICom
                 }   
             }
             else {
-                if(m_userAuth.isLoggedIn(username)) {
-                    System.out.println("User is already a registered user, attempting to login...");
-                    this.logInUser(username, password);
+                if(this.checkValidUser(m_username)) {
+                    if(!m_userAuth.isLoggedIn(username)) {
+                        System.out.println("User is already a registered user, attempting to login...");
+                        this.logInUser(username, password);
+                    }
+                    else {
+                        System.out.println("User is registered and logged in");
+                        this.resetLeftButton("Update");
+                        this.resetRightButton("Logout");
+                        this.resetFlags();
+                        m_tickerSelect = true;
+                        //m_regSelect = false;
+                        cardLayout.show(m_cardPanel, UI.TICKER.getName());
+                    }
                 }
                 else {
-                    System.out.println("User is registered and logged in");
-                }
-                m_regSelect = false;
+                    System.out.println("Username is already taken, please choose another");
+                }  
             }
+        }
+
+
+        /**
+         * Verify username is not already in registered to another User
+         * 
+         * @param username
+         * @return
+         */
+        private boolean checkValidUser(String username) {
+            UserInfo verifyUsr;
+            boolean isExists = false;
+
+            verifyUsr = m_userAuth.getUserInfo(username);
+            if(m_firstname.equals(verifyUsr.getFirstName()) && m_lastname.equals(verifyUsr.getLastName())) {
+                isExists = true;
+            }
+
+            return isExists;
         }
 
 
@@ -522,7 +576,7 @@ public class ViewStockTicker extends WindowAdapter implements IStockTicker_UICom
         private void resetFlags() {
             m_logInSelect = false;
             m_regSelect = false;
-            m_logInTries = 0;
+            //m_logInTries = 0;
             m_cancelSelect = false;
         }
 

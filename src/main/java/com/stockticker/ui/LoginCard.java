@@ -32,18 +32,15 @@ public class LoginCard extends JPanel {
     private JTextField m_usernameField;
     private JTextField m_passwordField;
 
-
     /**
-    *
-    *
-    */
+     *
+     */
     public LoginCard() {
         m_constraints = new GridBagConstraints();
         setCard();
     }
 
-    /**
-    *
+   /**
     *
     */
     public final void setCard() {
@@ -55,6 +52,8 @@ public class LoginCard extends JPanel {
 
         m_usernameField = new JTextField(40);
         m_passwordField = new JTextField(40);
+        m_usernameField.setText(null);
+        m_passwordField.setText(null);
 
         JPanel compPanel = new JPanel(new GridBagLayout());
         compPanel.setPreferredSize(new Dimension(400, 150));
@@ -92,31 +91,37 @@ public class LoginCard extends JPanel {
         m_loginCard.add(compPanel, new GridBagConstraints());
     }
 
+
     /**
-    *
-    *
-    */
+     *
+     * @return
+     */
     public JPanel getCard() {
         return m_loginCard;
     }
 
+
     /**
-    *
-    *
-    */
+     *
+     * @return
+     */
     public String getUsername() {
         return m_usernameField.getText();
     }
 
+
     /**
-    *
-    *
-    */
+     *
+     * @return
+     */
     public String getPassword() {
         return m_passwordField.getText();
     }
 
 
+    /**
+     *
+     */
     public void clearTextFields() {
         m_usernameField.setText("");
         m_passwordField.setText("");

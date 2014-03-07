@@ -23,36 +23,34 @@ import javax.swing.JTextField;
 import javax.swing.border.EtchedBorder;
 
 /**
-* J308
-* @author prwallace
-*/
+ * J308
+ * @author prwallace
+ */
 public class RegistrationCard extends JPanel {
     private static final long serialVersionUID = 1L;
 
-    private GridBagConstraints m_constraints;
+    private final GridBagConstraints m_constraints;
     private JPanel m_regCard;
 
     private JTextField m_usernameField;
     private JTextField m_passwordField;
-    private JTextField m_firstmameField;
+    private JTextField m_firstnameField;
     private JTextField m_lastnameField;
     
     private List<String> m_regInfo = new ArrayList<String>();
 
+
     /**
-    *
-    *
-    */
+     *
+     */
     public RegistrationCard() {
         m_constraints = new GridBagConstraints();
         setCard();
     }
 
-
     /**
-    *
-    *
-    */
+     *
+     */
     public final void setCard() {
         m_regCard = new JPanel(new GridBagLayout());
         m_regCard.setPreferredSize(new Dimension(550, 520));
@@ -64,9 +62,12 @@ public class RegistrationCard extends JPanel {
 
         m_usernameField = new JTextField(40);
         m_passwordField = new JTextField(40);
-        m_passwordField.setText("");
-        m_firstmameField = new JTextField(40);
+        m_firstnameField = new JTextField(40);
         m_lastnameField = new JTextField(40);
+        m_usernameField.setText(null);
+        m_passwordField.setText(null);
+        m_firstnameField.setText(null);
+        m_lastnameField.setText(null);
 
         JPanel compPanel = new JPanel(new GridBagLayout());
         compPanel.setPreferredSize(new Dimension(400, 250));
@@ -110,7 +111,7 @@ public class RegistrationCard extends JPanel {
         m_constraints.weightx = 1.0;
         m_constraints.fill = GridBagConstraints.HORIZONTAL;
         m_constraints.insets = new Insets(0, 120, 0, 30);
-        compPanel.add(m_firstmameField, m_constraints);
+        compPanel.add(m_firstnameField, m_constraints);
 
         m_constraints.gridx = 0;
         m_constraints.gridy = 3;
@@ -132,55 +133,57 @@ public class RegistrationCard extends JPanel {
     }
 
 
-   /**
-    *
-    *
-    */
+    /**
+     *
+     *
+     * @return 
+     */
     public JPanel getCard() {
         return m_regCard;
     }
 
 
-   /**
-    *
-    *
-    */
+    /**
+     *
+     *
+     * @return 
+     */
     public String getfirstName() {
-        return m_firstmameField.getText();
+        return m_firstnameField.getText();
     }
 
-
-   /**
-    *
-    *
-    */
+    /**
+     *
+     * @return
+     */
     public String getLastName() {
         return m_lastnameField.getText();
     }
 
-
     /**
-    *
-    *
-    */
+     *
+     * @return
+     */
     public String getUsername() {
         return m_usernameField.getText();
     }
 
-
     /**
-    *
-    *
-    */
+     *
+     * @return
+     */
     public String getPassword() {
         return m_passwordField.getText();
     }
 
 
+    /**
+     *
+     */
     public void clearTextFields() {
         m_usernameField.setText("");
         m_passwordField.setText("");
-        m_firstmameField.setText("");
+        m_firstnameField.setText("");
         m_lastnameField.setText("");
     }
 }
