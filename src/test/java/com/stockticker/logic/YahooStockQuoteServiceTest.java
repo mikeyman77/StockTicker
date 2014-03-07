@@ -23,15 +23,85 @@ public class YahooStockQuoteServiceTest {
      * Test of getURL method with one valid symbol.
      */
     @Test
-    public void testGetURL() throws Exception {
+    public void testGetURLWithOneValidSymbol() throws Exception {
+        List<String> symbols = new ArrayList<>();
+        symbols.add("GOOG");
+        
+        URL url = instance.getURL(symbols);
+        String urlStr = url.toString();
+        boolean result = urlStr.contains("\"GOOG\"");
+        
+        assertTrue(result);
+    }
+    
+    /**
+     * Test of getURL method with two valid symbols.
+     */
+    @Test
+    public void testGetURLWithTwoValidSymbol() throws Exception {
         List<String> symbols = new ArrayList<>();
         symbols.add("GOOG");
         symbols.add("AAPL");
         
         URL url = instance.getURL(symbols);
-        String symbolStr = "\"GOOG\",\"AAPL\"";
         String urlStr = url.toString();
-        boolean result = urlStr.contains(symbolStr);
+        boolean result = urlStr.contains("\"GOOG\",\"AAPL\"");
+        
+        assertTrue(result);
+    }
+    
+    /**
+     * Test of getURL method with an invalid symbol at the beginning of the 
+     * list, and a valid symbol at the end.
+     */
+    @Test
+    public void testGetURLWithOneInvalidSymbolAndOneValidSymbol() throws Exception {
+        List<String> symbols = new ArrayList<>();
+        symbols.add("XXXX");
+        symbols.add("AAPL");
+        
+        URL url = instance.getURL(symbols);
+        String urlStr = url.toString();
+        boolean result = urlStr.contains("\"AAPL\"") 
+                && !urlStr.contains("XXXX");
+        
+        assertTrue(result);
+    }
+    
+    /**
+     * Test of getURL method with a valid symbol at the beginning of the 
+     * list, and an invalid symbol at the end.
+     */
+    @Test
+    public void testGetURLWithOnevalidSymbolAndOneInvalidSymbol() throws Exception {
+        List<String> symbols = new ArrayList<>();
+        symbols.add("AAPL");
+        symbols.add("XXXX");
+        
+        URL url = instance.getURL(symbols);
+        String urlStr = url.toString();
+        boolean result = urlStr.contains("\"AAPL\"") 
+                && !urlStr.contains("XXXX");
+        
+        assertTrue(result);
+    }
+    
+    /**
+     * Test of getURL method with multiple valid and invalid symbols in the list.
+     */
+    @Test
+    public void testGetURLWithMultipleInvalidSymbols() throws Exception {
+        List<String> symbols = new ArrayList<>();
+        symbols.add("AAPL");
+        symbols.add("XXXX");
+        symbols.add("GOOG");
+        symbols.add("YYYY");
+        
+        URL url = instance.getURL(symbols);
+        String urlStr = url.toString();
+        boolean result = urlStr.contains("\"AAPL\",\"GOOG\"") 
+                && !urlStr.contains("XXXX")
+                && !urlStr.contains("YYYY");
         
         assertTrue(result);
     }
