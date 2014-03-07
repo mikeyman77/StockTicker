@@ -40,9 +40,15 @@ import com.stockticker.logic.AuthorizationService;
 import com.stockticker.logic.StockTicker;
 import com.stockticker.logic.StockTickerService;
 import com.stockticker.logic.UserAuthorization;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
+import java.util.Collections;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
+import javax.swing.text.BadLocationException;
 
 
 /**
@@ -65,6 +71,7 @@ public class ViewStockTicker extends WindowAdapter implements IStockTicker_UICom
 
     public JButton m_leftControlBtn;
     public JButton m_rightControlBtn;
+    private JTextField m_symbolField;
 
     private final Toolkit toolKit = Toolkit.getDefaultToolkit();
     private final Dimension screenSize = toolKit.getScreenSize();
@@ -164,8 +171,8 @@ public class ViewStockTicker extends WindowAdapter implements IStockTicker_UICom
         scrollPane.setSize(150, 20);
         scrollPane.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
 
-        final JTextField symbolField = new JTextField(5);
-        symbolField.setEditable(true);
+        m_symbolField = new JTextField(5);
+        m_symbolField.setEditable(true);
 
         final JButton setButton = new JButton();
         setButton.setName("Set");
@@ -193,17 +200,49 @@ public class ViewStockTicker extends WindowAdapter implements IStockTicker_UICom
                         System.out.println("Unable to track symbol; user may not be logged in");
                     }
                 }
+                else {
+                    if(e.getClickCount() == 2) {
+                        System.out.println("Unable to track symbol; user may not be logged in");
+                    }
+                }
             }
         });
 
         // Get entered text from text field after user presses enter. Select this entry in the list.
-        symbolField.addActionListener(new ActionListener() {
+        m_symbolField.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                m_symbol = symbolField.getText().toUpperCase();
+                m_symbol = m_symbolField.getText().toUpperCase();
                 stockList.setSelectedValue(m_symbol, true);
-                System.out.println(symbolField.getText());
+                System.out.println(m_symbolField.getText());
             }
+        });
+
+        m_symbolField.addKeyListener(new KeyAdapter() {
+            public void keyReleased(KeyEvent evt) {
+                String text;
+                try {
+                    int offset = evt.getKeyLocation();
+                    text = m_symbolField.getText(0, offset + 1);
+                    if(!text.equals("")) {
+                        //setButton.setEnabled(true);
+                        String prefix = text.substring(0).toUpperCase();
+                        System.out.println(text);
+                        //int itr = Collections.binarySearch(stockList, prefix);
+                        //stockList.
+                        int index = stockList.locationToIndex(m_symbolField.getLocation());
+                        System.out.println("index " + index);
+                    }
+                    else {
+                        setButton.setEnabled(false);
+                        
+                    }
+                } catch (BadLocationException ex) {
+                    //System.err.println("Exception in symbol text field " + ex.getMessage());
+                }
+            }
+            
+            
         });
 
         // Get selected symbol from list and diplay in text field.
@@ -212,7 +251,7 @@ public class ViewStockTicker extends WindowAdapter implements IStockTicker_UICom
             public void valueChanged(ListSelectionEvent e) {
                 if(e.getValueIsAdjusting()) {
                     String selection = stockList.getSelectedValue().toString();;
-                    symbolField.setText(selection);
+                    m_symbolField.setText(selection);
                 }
             }
         });
@@ -257,7 +296,7 @@ public class ViewStockTicker extends WindowAdapter implements IStockTicker_UICom
         m_constraints.insets = new Insets(0, 0, 30, 5);
         listPanel.add(setButton, m_constraints);
         m_constraints.gridx = 1;
-        listPanel.add(symbolField, m_constraints);
+        listPanel.add(m_symbolField, m_constraints);
         m_constraints.insets = new Insets(0, 0, 0, 0);
         m_statusPanel = new JPanel();
         m_statusPanel.setPreferredSize(new Dimension(650, 65));
@@ -513,6 +552,7 @@ public class ViewStockTicker extends WindowAdapter implements IStockTicker_UICom
                 m_rightControlBtn.setEnabled(true);
                 m_tickerSelect = true;
                 cardLayout.show(m_cardPanel, UI.TICKER.getName());
+                m_symbolField.requestFocusInWindow();
             }
         }
 
@@ -550,6 +590,7 @@ public class ViewStockTicker extends WindowAdapter implements IStockTicker_UICom
                         m_tickerSelect = true;
                         //m_regSelect = false;
                         cardLayout.show(m_cardPanel, UI.TICKER.getName());
+                        m_symbolField.requestFocusInWindow();
                     }
                 }
                 else {
