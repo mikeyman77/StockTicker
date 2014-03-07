@@ -172,7 +172,8 @@ public class ViewStockTicker extends WindowAdapter implements IStockTicker_UICom
         setButton.setPreferredSize(new Dimension(10, 10));
         setButton.setActionCommand("Set");
         
-
+        // Select symbol in list after a double mouse click and track this symbol.  
+        // Verify user is signed in
         stockList.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
@@ -187,10 +188,15 @@ public class ViewStockTicker extends WindowAdapter implements IStockTicker_UICom
                         System.out.println("Unable to track symbol; user may not be logged in");
                     }
                 }
+                else {
+                    if(e.getClickCount() == 2) {
+                        System.out.println("Unable to track symbol; user may not be logged in");
+                    }
+                }
             }
         });
 
-        
+        // Get entered text from text field after user presses enter. Select this entry in the list.
         symbolField.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -200,6 +206,7 @@ public class ViewStockTicker extends WindowAdapter implements IStockTicker_UICom
             }
         });
 
+        // Get selected symbol from list and diplay in text field.
         stockList.addListSelectionListener(new ListSelectionListener() {
             @Override
             public void valueChanged(ListSelectionEvent e) {
@@ -210,6 +217,8 @@ public class ViewStockTicker extends WindowAdapter implements IStockTicker_UICom
             }
         });
 
+        // Select highligthed symbol from list when button is clicked and track this symbol.
+        // Verify user is logged in.
         setButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent evt) {
