@@ -1,12 +1,6 @@
 package com.stockticker;
 
-import junit.framework.Assert;
-import org.junit.Before;
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
-
-import java.io.FileNotFoundException;
 import java.io.IOException;
 
 import static junit.framework.Assert.assertTrue;
@@ -22,14 +16,14 @@ import static junit.framework.Assert.assertNull;
  */
 public class PropertiesFileReaderTest {
 
-    private PropertiesFileReader properties;
+    private final PropertiesFileReader properties;
     private static final String PROP_FILE = "./config/stockticker.properties";
     private static final String DUMMY_PROP_FILE = "./config/junittest.properties";
 
     /**
      * Constructs PropertiesFileReader using stockticker.properties file
      */
-    public PropertiesFileReaderTest() throws IOException {
+    public PropertiesFileReaderTest() {
         properties = new PropertiesFileReader(PROP_FILE);
     }
 
@@ -39,27 +33,6 @@ public class PropertiesFileReaderTest {
     @Test
     public void testPropertiesFileReaderConstructionValid() {
         assertNotNull("valid properties file", properties);
-    }
-
-    /**
-     * Defines a rule for expected exceptions
-     */
-    //@Rule
-    public ExpectedException thrown = ExpectedException.none();
-
-    /**
-     * Tests that an IOException occurred in the constructor
-     */
-    @Test
-    public void testPropertiesFileReaderConstructionGetsFileNotFoundException() throws FileNotFoundException, IOException {
-
-        try {
-            thrown.expect(FileNotFoundException.class);
-            PropertiesFileReader properties = new PropertiesFileReader("");
-        }
-        catch (FileNotFoundException e) {
-            ; //do nothing, this is just a test
-        }
     }
 
     /**

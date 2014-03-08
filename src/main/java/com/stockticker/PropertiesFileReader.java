@@ -1,6 +1,5 @@
 package com.stockticker;
 
-import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.Enumeration;
@@ -20,24 +19,22 @@ public class PropertiesFileReader {
      * Constructs a Properties object using the contents
      * of filename argument.
      *
-     * @param filename
-     * @throws IOException
+     * @param filename property file name
      */
-    public PropertiesFileReader(String filename)
-        throws FileNotFoundException, IOException  {
+    public PropertiesFileReader(String filename) {
 
-        //try {
+        try {
             FileReader reader = new FileReader(filename);
             properties = new Properties();
             properties.load(reader);
-        //}
-        //catch (IOException e) {
-        //   System.out.println(e.getMessage());
-        //}
+        }
+        catch (IOException e) {
+           System.out.println(e.getMessage());
+        }
     }
 
     /**
-     * Returns an enumuration of property keys
+     * Returns an enumeration of property keys
      *
      * @return property keys
      */
@@ -57,17 +54,10 @@ public class PropertiesFileReader {
 
     public static void main(String [] args) {
 
-        try {
-            String key = null;
-            PropertiesFileReader properties = new PropertiesFileReader("./config/stockticker.properties");
-            for (Enumeration<?> property = properties.getPropertyNames(); property.hasMoreElements();) {
-                key = (String) property.nextElement();
-                System.out.println(key+"="+properties.getProperty(key));
-            }
+        PropertiesFileReader properties = new PropertiesFileReader("./config/stockticker.properties");
+        for (Enumeration<?> property = properties.getPropertyNames(); property.hasMoreElements();) {
+             String key = (String) property.nextElement();
+             System.out.println(key+"="+properties.getProperty(key));
         }
-        catch (IOException e) {
-            e.printStackTrace();
-        }
-
     }
 }

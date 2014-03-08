@@ -1,9 +1,9 @@
 package com.stockticker;
 
-import java.util.Map;
-import org.junit.Before;
 import org.junit.Test;
 import static junit.framework.Assert.assertEquals;
+import static junit.framework.Assert.assertFalse;
+import static junit.framework.Assert.assertTrue;
 
 /**
  * SymbolMap junit test case.
@@ -14,24 +14,29 @@ import static junit.framework.Assert.assertEquals;
 
 public class SymbolMapTest {
 
-    private SymbolMap symbolMap;
     private static final long NUMBER_OF_SYMBOLS = 2799;
-
-    /**
-     * Sets up each test before they run
-     */
-    @Before
-    public void setUp() {
-        symbolMap = SymbolMap.INSTANCE;
-    }
 
     /**
      * Tests the getSymbols method
      */
     @Test
     public void testGetSymbols() {
-        Map<String, String> symbols = symbolMap.getSymbols();
-        assertEquals("map size", NUMBER_OF_SYMBOLS, symbols.size());
+        assertEquals("map size", NUMBER_OF_SYMBOLS, SymbolMap.getSymbols().size());
     }
 
+    /**
+     * Tests the isValidSymbol method true
+     */
+    @Test
+    public void testIsValidSymbol() {
+        assertTrue("is valid symbol", SymbolMap.isValidSymbol("GOOG"));
+    }
+
+    /**
+     * Tests the isValidSymbol method false
+     */
+    @Test
+    public void testIsNotValidSymbol() {
+        assertFalse("is NOT valid symbol", SymbolMap.isValidSymbol("XXXX"));
+    }
 }

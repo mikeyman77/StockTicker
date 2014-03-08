@@ -1,11 +1,6 @@
 package com.stockticker.persistence;
 
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.Map;
-import java.util.TreeMap;
 import java.util.List;
-import com.stockticker.Stock;
 import com.stockticker.User;
 import com.stockticker.UserInfo;
 
@@ -19,16 +14,15 @@ import com.stockticker.UserInfo;
 public enum StockTickerPersistence implements PersistenceService {
     INSTANCE;
 
-    private PersistenceConnection persistence;
-    private TrackedStocksDAO trackedDAO;
-    private UserDAO userDAO;
+    private final TrackedStocksDAO trackedDAO;
+    private final UserDAO userDAO;
 
     /**
      * Default no-args constructor that gets an instance of the
      * PersistenceConnection interface.
      */
     private StockTickerPersistence() {
-        persistence = PersistenceConnection.INSTANCE;
+        PersistenceConnection persistence = PersistenceConnection.INSTANCE;
         userDAO = new UserDAOImpl(persistence.getConnection());
         trackedDAO = new TrackedStocksDAOImpl(persistence.getConnection());
     }
@@ -50,7 +44,7 @@ public enum StockTickerPersistence implements PersistenceService {
      *
      * @param username name of user
      * @param stock    stock symbol to track
-     * @param track    true to track, false to untrack
+     * @param track    true to track, false to un-track
      * @return true or false
      */
     @Override
@@ -204,6 +198,7 @@ public enum StockTickerPersistence implements PersistenceService {
 
         //User test calls go here
         User sconnall = ps.createUser("connall", "password");
+        ps.setLoginStatus(sconnall.getUserName(), true);
 
         //Stock test calls go here
         User sconnall2 = ps.createUser("connall2", "password");
@@ -215,6 +210,16 @@ public enum StockTickerPersistence implements PersistenceService {
         ps.trackStock(sconnall2.getUserName(), "MSFT", false);
         ps.isStockTracked(sconnall2.getUserName(), "MSFT");
         List<String> tracked = ps.getTrackedStocks(sconnall2.getUserName());
+        System.out.println("The following stocks are currently being tracked :");
+        int i = 0;
+        int numTracked = tracked.size();
+        for (String stock : tracked) {
+            i++;
+            System.out.println(stock);
+            if (i < numTracked-1) {
+                System.out.print(",");
+            }
+        }
         System.out.println("");
         System.exit(0);
     }

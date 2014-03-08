@@ -5,9 +5,7 @@ import com.stockticker.UserInfo;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-
 import java.sql.Connection;
-import java.sql.SQLException;
 import java.util.List;
 
 import static junit.framework.Assert.*;
@@ -27,7 +25,6 @@ public class UserDAOTest {
     private static final String MALONE = "malone";
     private static final String BOJACKSON = "bojackson";
     private static final String PASSWORD = "bugsy";
-    private int userId;
 
     /**
      * Sets up the required values in the database before each test
@@ -37,7 +34,7 @@ public class UserDAOTest {
         User user = userDAO.create(MALONE, PASSWORD);
         user.setUserInfo(new UserInfo("bugsy", "malone"));
         userDAO.update(user);
-        userId = userDAO.getUserId(MALONE);
+        int userId = userDAO.getUserId(MALONE);
     }
 
     /**

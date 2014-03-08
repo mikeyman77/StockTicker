@@ -1,7 +1,6 @@
 package com.stockticker.persistence;
 
 import java.sql.Connection;
-import java.sql.PreparedStatement;
 import org.junit.Before;
 import org.junit.Test;
 import static junit.framework.Assert.assertNotNull;

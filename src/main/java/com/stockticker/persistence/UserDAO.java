@@ -2,8 +2,6 @@ package com.stockticker.persistence;
 
 import com.stockticker.User;
 
-import java.sql.ResultSet;
-import java.sql.Statement;
 import java.util.List;
 
 /**

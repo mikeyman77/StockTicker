@@ -125,7 +125,6 @@ public class PersistenceServiceTest {
      */
     @Test
     public void testUserExistsFalse() {
-        User connall = new User(CONNALL, PASSWORD);
         assertFalse("user doesn't exist", persistence.userExists(CONNALL));
     }
 

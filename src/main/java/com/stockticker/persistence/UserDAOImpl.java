@@ -9,7 +9,6 @@ import java.sql.Statement;
 import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 /**
@@ -20,7 +19,7 @@ import java.util.List;
  */
 public class UserDAOImpl implements UserDAO {
 
-    private Connection connection;
+    private final Connection connection;
 
     /**
      * Constructs the UserDAO implementation and stores a JDBC connection
@@ -61,21 +60,13 @@ public class UserDAOImpl implements UserDAO {
      * @return  a new User with id, username, and password, null if creation failed
      */
     public User create(String username, String password){
-        boolean userCreated = false;
         User user = null;
 
             //check if the user already exists
             if (!exists(username)) {
                 try {
-                    //Create an empty userinfo row and retrieve the auto incremented row id
-                    //Statement statement = connection.createStatement();
-                    //statement.executeUpdate("INSERT INTO userinfo (firstName) VALUES ('')");
-                    //ResultSet result = statement.executeQuery("CALL IDENTITY();");
-                    int userInfoId = -1;
-                    //if (result.next())
-                    //    id = result.getInt(1);
-
                     //Create an empty userinfo row and retrieve the auto increment row id
+                    int userInfoId = -1;
                     PreparedStatement prepared = connection.prepareStatement("INSERT INTO userinfo (firstName) VALUES (?)", Statement.RETURN_GENERATED_KEYS);
                     prepared.setString(1, "");
                     prepared.execute();
@@ -256,6 +247,7 @@ public class UserDAOImpl implements UserDAO {
                 UserInfo userinfo = new UserInfo();
                 userinfo.setFirstName(result.getString(2));
                 userinfo.setLastName(result.getString(3));
+                assert user != null;
                 user.setUserInfo(userinfo);
             }
         }
@@ -357,7 +349,7 @@ public class UserDAOImpl implements UserDAO {
                 prepared.setBoolean(1, status);
                 prepared.setString(2, username);
                 int rows = prepared.executeUpdate();
-                statusSet = (rows > 0) ? true : false;
+                statusSet = (rows > 0);
             }
         }
         catch(SQLException e) {
@@ -373,7 +365,7 @@ public class UserDAOImpl implements UserDAO {
      * @return  list of logged in users
      */
     public List<String> getLoggedInUsers() {
-        List<String> users = new ArrayList<String>();
+        List<String> users = new ArrayList<>();
 
         try {
             Statement statement = connection.createStatement();
