@@ -1,7 +1,5 @@
 package com.stockticker.persistence;
 
-import com.stockticker.Stock;
-import com.stockticker.User;
 import java.util.List;
 
 /**

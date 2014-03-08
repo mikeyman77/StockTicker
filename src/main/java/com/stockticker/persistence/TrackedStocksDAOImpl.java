@@ -1,9 +1,5 @@
 package com.stockticker.persistence;
 
-import com.stockticker.SymbolMap;
-
-import com.stockticker.Stock;
-import com.stockticker.User;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -21,12 +17,10 @@ import java.util.List;
  */
 public class TrackedStocksDAOImpl implements TrackedStocksDAO {
 
-    private Connection connection;
-    private UserDAO userDAO;
+    private final Connection connection;
 
     public TrackedStocksDAOImpl(Connection conn) {
         this.connection = conn;
-        userDAO = new UserDAOImpl(connection);
     }
 
     /**
@@ -70,7 +64,6 @@ public class TrackedStocksDAOImpl implements TrackedStocksDAO {
                 prepared.setInt(1, userId);
                 prepared.setInt(2, stockId);
                 prepared.execute();
-                //trackId = prepared.getGeneratedKeys();
             }
             catch(SQLException e) {
                 System.out.println(e.getMessage());
@@ -115,7 +108,7 @@ public class TrackedStocksDAOImpl implements TrackedStocksDAO {
      */
     @Override
     public List<String> get(int userId) {
-        List<String> trackedStocks = new ArrayList<String>();
+        List<String> trackedStocks = new ArrayList<>();
 
         try {
             Statement statement = connection.createStatement();
@@ -186,7 +179,7 @@ public class TrackedStocksDAOImpl implements TrackedStocksDAO {
     }
 
     private boolean isValidId(int id) {
-        return (id > 0) ? true : false;
+        return (id > 0);
     }
 
 }

@@ -11,15 +11,14 @@ import java.util.Map;
  * @version 1.0 3/01/14.
  */
 
-public enum SymbolMap {
-    INSTANCE;
+public class SymbolMap {
 
     /**
      * Returns a Map of all known NASDAQ stock symbols
      *
      * @return map of NASDAQ stock symbols
      */
-    public final static Map<String, String> getSymbols() {
+    public static Map<String, String> getSymbols() {
         return symbols;
     }
 
@@ -29,7 +28,7 @@ public enum SymbolMap {
      * @param symbol  a NASDAQ symbol
      * @return  true if it is a NASDAQ symbol, false otherwise
      */
-    public final static boolean isValidSymbol(String symbol) {
+    public static boolean isValidSymbol(String symbol) {
         return symbols.containsKey(symbol);
     }
 

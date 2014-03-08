@@ -1,8 +1,6 @@
 package com.stockticker.persistence;
 
 import java.util.List;
-import java.util.Map;
-import com.stockticker.Stock;
 import com.stockticker.User;
 import com.stockticker.UserInfo;
 
@@ -21,7 +19,7 @@ public interface PersistenceService {
      *
      * @param username name of user
      * @param stock    stock symbol to track
-     * @param track    true to track, false to untrack
+     * @param track    true to track, false to un-track
      * @return true or false
      */
     public boolean trackStock(String username, String stock, boolean track);
