@@ -12,7 +12,7 @@ import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
-import java.awt.Image;
+//import java.awt.Image;
 import java.awt.Insets;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
@@ -22,8 +22,10 @@ import java.awt.event.MouseEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.IOException;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
 
-import javax.swing.ImageIcon;
+//import javax.swing.ImageIcon;
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JFrame;
@@ -32,6 +34,12 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextField;
 import javax.swing.ScrollPaneConstants;
+import javax.swing.AbstractAction;
+import javax.swing.Action;
+import javax.swing.KeyStroke;
+import javax.swing.ListModel;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
 
 import com.stockticker.SymbolMap;
 import com.stockticker.User;
@@ -40,12 +48,6 @@ import com.stockticker.logic.AuthorizationService;
 import com.stockticker.logic.StockTicker;
 import com.stockticker.logic.StockTickerService;
 import com.stockticker.logic.UserAuthorization;
-import java.awt.event.KeyAdapter;
-import java.awt.event.KeyEvent;
-import javax.swing.ListModel;
-
-import javax.swing.event.ListSelectionEvent;
-import javax.swing.event.ListSelectionListener;
 
 
 /**
@@ -54,6 +56,9 @@ import javax.swing.event.ListSelectionListener;
  * @author prwallace
  */
 public class ViewStockTicker extends WindowAdapter implements IStockTicker_UIComponents {
+    private static final String ENTER = "ENTER";
+    private static final String ENTER_PRESSED = "ENTER_RELEASED";
+    private static final int ROW_OFFSET = 7;
 
     private static CardLayout cardLayout;
     private static JPanel m_cardPanel;
@@ -72,7 +77,7 @@ public class ViewStockTicker extends WindowAdapter implements IStockTicker_UICom
     private final Toolkit toolKit = Toolkit.getDefaultToolkit();
     private final Dimension screenSize = toolKit.getScreenSize();
     private GridBagConstraints m_constraints;
-    private Image m_titleIcon;
+    //private Image m_titleIcon;
 
     private HomeCard m_homeCard;
     private DetailCard m_detailCard;
@@ -80,18 +85,20 @@ public class ViewStockTicker extends WindowAdapter implements IStockTicker_UICom
     private TickerCard m_tickerCard;
     private RegistrationCard m_regCard;
     private LoginCard m_loginCard;
-    private final String m_icon = "images\\stock_ticker.png";
+    //private final String m_icon = "images\\stock_ticker.png";
 
     private boolean m_logInSelect = false;
     private boolean m_regSelect = false;
     private boolean m_tickerSelect = false;
     private boolean m_cancelSelect = false;
-    private boolean m_isEnteringText = false;
+    //private boolean m_hasPosChanged = false;
+    //private boolean m_isEnteringText = false;
 
     private String m_username = null;
     private String m_password = null;
     private String m_firstname = null;
     private String m_lastname = null;
+    private String m_symbol = null;
 
     private final AuthorizationService m_userAuth = UserAuthorization.INSTANCE;
     private final StockTickerService stockTicker =  StockTicker.INSTANCE;
@@ -113,8 +120,8 @@ public class ViewStockTicker extends WindowAdapter implements IStockTicker_UICom
      * the Title Bar.
      */
     public void build() {
-        m_titleIcon = new ImageIcon(toolKit.getImage(m_icon)).getImage();
-        m_frame.setIconImage(m_titleIcon);
+        //m_titleIcon = new ImageIcon(toolKit.getImage(m_icon)).getImage();
+        //m_frame.setIconImage(m_titleIcon);
         m_frame.setSize(920, 600);
         m_frame.setLocation(screenSize.width / 4, screenSize.height / 4);
         JFrame.setDefaultLookAndFeelDecorated(true);
@@ -159,15 +166,14 @@ public class ViewStockTicker extends WindowAdapter implements IStockTicker_UICom
 
         final JList<Object> stockList = new JList<>(SymbolMap.getSymbols().keySet().toArray());
         stockList.setToolTipText("Double click to track, single click to select in text field");
-        stockList.ensureIndexIsVisible(60);
-        JScrollPane scrollPane = new JScrollPane(stockList);
+        stockList.setVisibleRowCount(8);
+        final JScrollPane scrollPane = new JScrollPane(stockList);
         scrollPane.setSize(150, 20);
         scrollPane.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
 
         m_symbolField = new JTextField(6);
         m_symbolField.setEditable(true);
         m_symbolField.setToolTipText("Press enter to track selected symbol");
-
 
         // Select symbol in list after a double mouse click and track this symbol.  
         // Verify user is signed in
@@ -202,13 +208,47 @@ public class ViewStockTicker extends WindowAdapter implements IStockTicker_UICom
             }
         });
 
-
-        // Get entered text from text field after user presses enter. Select this entry in the list.
-        m_symbolField.addActionListener(new ActionListener() {
+        m_symbolField.addKeyListener(new KeyAdapter() {
             @Override
-            public void actionPerformed(ActionEvent e) {
+            public void keyReleased(KeyEvent evt) {
+                String userInput;
+
+                int row_pose = stockList.getSelectedIndex();
+                stockList.ensureIndexIsVisible(row_pose + ROW_OFFSET);
+                userInput = m_symbolField.getText();
+
+                if(!userInput.equals("")) {
+                    String key = m_symbolField.getText().toUpperCase();
+                    ListModel listModel = stockList.getModel();
+
+                    for(int i = 0; i < listModel.getSize(); i++) {
+                        listModel.getElementAt(i);
+                        if(listModel.getElementAt(i).toString().startsWith(key)) {             
+                            stockList.setSelectedValue(listModel.getElementAt(i), true);  
+                            break;
+                        }
+                    }
+                }
+            } 
+        });
+
+        // Get selected symbol from list and diplay in text field.
+        stockList.addListSelectionListener(new ListSelectionListener() {
+            @Override
+            public void valueChanged(ListSelectionEvent evt) { 
+                int row_pos = stockList.getSelectedIndex();
+                stockList.ensureIndexIsVisible(row_pos + ROW_OFFSET);
+            }
+        });
+        
+        Action enterAction = new AbstractAction() {
+            @Override
+            public void actionPerformed(ActionEvent actionEvent) {
                 String symbol = stockList.getSelectedValue().toString();
                 m_symbolField.setText(symbol);
+
+                int row_pos = stockList.getSelectedIndex();
+                stockList.ensureIndexIsVisible(row_pos + ROW_OFFSET);
 
                 if(m_username == null) {
                     System.out.println("User not logged in or register");
@@ -229,45 +269,13 @@ public class ViewStockTicker extends WindowAdapter implements IStockTicker_UICom
                     System.err.println("Unable to track selected stock");
                 }
             }
-        });
+        };
 
-        m_symbolField.addKeyListener(new KeyAdapter() {
-            @Override
-            public void keyReleased(KeyEvent evt) {
-                String userInput;
-                m_isEnteringText = false;
 
-                userInput = m_symbolField.getText();
-                if(!userInput.equals("")) {
-                    String key = m_symbolField.getText().toUpperCase();
-                    ListModel listModel = stockList.getModel();
-
-                    for(int i = 0; i < listModel.getSize(); i++) {
-                        listModel.getElementAt(i);
-                        if(listModel.getElementAt(i).toString().startsWith(key)) {
-                            m_isEnteringText = true;
-                            stockList.setValueIsAdjusting(true);
-                            stockList.setSelectedValue(listModel.getElementAt(i), true);
-                            stockList.setValueIsAdjusting(false);                               
-                            break;
-                        }
-                    }
-                }
-            } 
-        });
-
-        // Get selected symbol from list and diplay in text field.
-        stockList.addListSelectionListener(new ListSelectionListener() {
-            @Override
-            public void valueChanged(ListSelectionEvent e) {
-                if(e.getValueIsAdjusting() && !m_isEnteringText) {
-                    stockList.setValueIsAdjusting(true);
-                    String symbol = stockList.getSelectedValue().toString();;
-                    m_symbolField.setText(symbol);
-                    stockList.setValueIsAdjusting(false);
-                }
-            }
-        });
+        m_symbolField.getInputMap().put(KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, 0, true), ENTER_PRESSED);
+        m_symbolField.getActionMap().put(ENTER_PRESSED, enterAction);
+        stockList.getInputMap().put(KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, 0, true), ENTER_PRESSED);
+        stockList.getActionMap().put(ENTER_PRESSED, enterAction);
 
 
         // Create/add child panels to the main frame JPanels and layout their
