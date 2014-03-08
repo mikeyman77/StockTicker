@@ -48,7 +48,6 @@ cobertura.ser
 
 # Netbeans Specific #
 #####################
-manifest.mf
 nbbuild.xml
 dist/
 nbproject/
