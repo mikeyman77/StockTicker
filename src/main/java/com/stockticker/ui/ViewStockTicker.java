@@ -12,7 +12,7 @@ import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
-//import java.awt.Image;
+import java.awt.Image;
 import java.awt.Insets;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
@@ -23,7 +23,7 @@ import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.IOException;
 
-//import javax.swing.ImageIcon;
+import javax.swing.ImageIcon;
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JFrame;
@@ -55,7 +55,6 @@ import javax.swing.event.ListSelectionListener;
  */
 public class ViewStockTicker extends WindowAdapter implements IStockTicker_UIComponents {
 
-    //private static ViewStockTicker instance;
     private static CardLayout cardLayout;
     private static JPanel m_cardPanel;
 
@@ -73,7 +72,7 @@ public class ViewStockTicker extends WindowAdapter implements IStockTicker_UICom
     private final Toolkit toolKit = Toolkit.getDefaultToolkit();
     private final Dimension screenSize = toolKit.getScreenSize();
     private GridBagConstraints m_constraints;
-    //private Image m_titleIcon;
+    private Image m_titleIcon;
 
     private HomeCard m_homeCard;
     private DetailCard m_detailCard;
@@ -81,14 +80,13 @@ public class ViewStockTicker extends WindowAdapter implements IStockTicker_UICom
     private TickerCard m_tickerCard;
     private RegistrationCard m_regCard;
     private LoginCard m_loginCard;
-    //private final String m_icon = "images\\stock_ticker.png";
+    private final String m_icon = "images\\stock_ticker.png";
 
     private boolean m_logInSelect = false;
     private boolean m_regSelect = false;
     private boolean m_tickerSelect = false;
     private boolean m_cancelSelect = false;
     private boolean m_isEnteringText = false;
-    //private boolean m_isRegistered = false;
 
     private String m_username = null;
     private String m_password = null;
@@ -115,8 +113,8 @@ public class ViewStockTicker extends WindowAdapter implements IStockTicker_UICom
      * the Title Bar.
      */
     public void build() {
-        //m_titleIcon = new ImageIcon(toolKit.getImage(m_icon)).getImage();
-        //m_frame.setIconImage(m_titleIcon);
+        m_titleIcon = new ImageIcon(toolKit.getImage(m_icon)).getImage();
+        m_frame.setIconImage(m_titleIcon);
         m_frame.setSize(920, 600);
         m_frame.setLocation(screenSize.width / 4, screenSize.height / 4);
         JFrame.setDefaultLookAndFeelDecorated(true);
@@ -421,7 +419,6 @@ public class ViewStockTicker extends WindowAdapter implements IStockTicker_UICom
                     this.resetLeftButton(UI.SUBMIT.getName());
                     this.resetRightButton("Cancel");
                     m_regSelect = true;
-                    //m_logInSelect = false;
                     break;
 
 
@@ -550,7 +547,6 @@ public class ViewStockTicker extends WindowAdapter implements IStockTicker_UICom
                 m_rightControlBtn.setEnabled(true);
                 m_tickerSelect = true;
                 cardLayout.show(m_cardPanel, UI.TICKER.getName());
-                //m_symbolField.requestFocusInWindow();
             }
         }
 
@@ -567,7 +563,6 @@ public class ViewStockTicker extends WindowAdapter implements IStockTicker_UICom
                     System.out.println("User successfully registered");
                     m_regSelect = false;
                     m_logInSelect = true;
-                    //m_isRegistered = true;
                     this.logInUser(username, password);
                 }
                 else {
@@ -587,7 +582,6 @@ public class ViewStockTicker extends WindowAdapter implements IStockTicker_UICom
                         this.resetRightButton("Logout");
                         this.resetFlags();
                         m_tickerSelect = true;
-                        //m_regSelect = false;
                         cardLayout.show(m_cardPanel, UI.TICKER.getName());
                         m_symbolField.requestFocusInWindow();
                     }
@@ -625,7 +619,6 @@ public class ViewStockTicker extends WindowAdapter implements IStockTicker_UICom
         private void resetFlags() {
             m_logInSelect = false;
             m_regSelect = false;
-            //m_logInTries = 0;
             m_cancelSelect = false;
         }
 

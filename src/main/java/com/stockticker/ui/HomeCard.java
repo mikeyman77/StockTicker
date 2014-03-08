@@ -11,9 +11,13 @@ import java.awt.Font;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
+import java.awt.image.BufferedImage;
+import java.io.File;
 import java.io.IOException;
+import javax.imageio.ImageIO;
 
 import javax.swing.BorderFactory;
+import javax.swing.ImageIcon;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.border.EtchedBorder;
@@ -25,14 +29,15 @@ import javax.swing.border.EtchedBorder;
 public class HomeCard extends JPanel {
     private static final long serialVersionUID = 1L;
     private JPanel m_homeCard;
-    //private BufferedImage m_splashImage;
+    private BufferedImage m_splashImage;
     private GridBagConstraints m_constraints;
 
 
     /**
-    *
-    *
-    */
+     *
+     *
+     * @throws java.io.IOException
+     */
     public HomeCard() throws IOException {
         m_constraints = new GridBagConstraints();
         setCard();
@@ -40,17 +45,17 @@ public class HomeCard extends JPanel {
 
 
     /**
-    *
-    *
-    */
+     *
+     *
+     */
     public void setCard() throws IOException {
         m_homeCard = new JPanel(new GridBagLayout());
         m_homeCard.setPreferredSize(new Dimension(550, 520));
         m_homeCard.setBorder(BorderFactory.createTitledBorder(BorderFactory
                 .createEtchedBorder(EtchedBorder.LOWERED), "Home"));
 
-        // m_splashImage = ImageIO.read(new File("images\\naskaqImage.jpg"));
-        // JLabel imageLbl = new JLabel(new ImageIcon(m_splashImage));
+        //m_splashImage = ImageIO.read(new File("./images/naskaqImage.jpg"));
+        //JLabel imageLbl = new JLabel(new ImageIcon(m_splashImage));
         JLabel name = new JLabel("Stock Ticker Portfolio Manager");
         name.setFont(new Font("Serif", Font.PLAIN, 40));
 
