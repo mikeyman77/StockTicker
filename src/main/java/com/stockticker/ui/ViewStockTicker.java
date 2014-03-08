@@ -38,8 +38,6 @@ import javax.swing.AbstractAction;
 import javax.swing.Action;
 import javax.swing.KeyStroke;
 import javax.swing.ListModel;
-import javax.swing.event.ListSelectionEvent;
-import javax.swing.event.ListSelectionListener;
 
 import com.stockticker.SymbolMap;
 import com.stockticker.User;
@@ -91,14 +89,11 @@ public class ViewStockTicker extends WindowAdapter implements IStockTicker_UICom
     private boolean m_regSelect = false;
     private boolean m_tickerSelect = false;
     private boolean m_cancelSelect = false;
-    //private boolean m_hasPosChanged = false;
-    //private boolean m_isEnteringText = false;
 
     private String m_username = null;
     private String m_password = null;
     private String m_firstname = null;
     private String m_lastname = null;
-    private String m_symbol = null;
 
     private final AuthorizationService m_userAuth = UserAuthorization.INSTANCE;
     private final StockTickerService stockTicker =  StockTicker.INSTANCE;
@@ -232,14 +227,6 @@ public class ViewStockTicker extends WindowAdapter implements IStockTicker_UICom
             } 
         });
 
-        // Get selected symbol from list and diplay in text field.
-        stockList.addListSelectionListener(new ListSelectionListener() {
-            @Override
-            public void valueChanged(ListSelectionEvent evt) { 
-                int row_pos = stockList.getSelectedIndex();
-                stockList.ensureIndexIsVisible(row_pos + ROW_OFFSET);
-            }
-        });
         
         Action enterAction = new AbstractAction() {
             @Override
