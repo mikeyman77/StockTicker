@@ -8,13 +8,15 @@ import org.junit.Test;
 
 import static junit.framework.Assert.assertTrue;
 import static junit.framework.Assert.assertFalse;
-import static junit.framework.Assert.assertEquals;
+import org.jasypt.util.password.BasicPasswordEncryptor;
 import org.junit.After;
+import org.junit.Before;
 
 public class UserAuthorizationTest {
 
     private final PersistenceService persistentence = StockTickerPersistence.INSTANCE;
     private final AuthorizationService userAuth = UserAuthorization.INSTANCE;
+    private BasicPasswordEncryptor passwordEncryptor = new BasicPasswordEncryptor();
 
     private final String wrongPassword = "none";
     private final String newPassword = "newPass";
@@ -22,6 +24,15 @@ public class UserAuthorizationTest {
     private final User testUser = new User("test", "testpass");
     private final UserInfo testUserInfo = new UserInfo("Test", "User");
     private final User otherUser = new User("other", "otherpass");
+    private final User anotherUser = new User("anotherUser", "anotherPassword");
+    
+    @Before
+    public void setUp() {
+        persistentence.createUser(testUser.getUserName(), 
+                passwordEncryptor.encryptPassword(testUser.getPassword()));
+        persistentence.createUser(otherUser.getUserName(), 
+                passwordEncryptor.encryptPassword(otherUser.getPassword()));
+    }
     
     @After
     public void tearDown() {
@@ -31,47 +42,40 @@ public class UserAuthorizationTest {
     
     @Test
     public void testLogIn() throws Exception {
-        User user = persistentence.createUser(testUser.getUserName(), testUser.getPassword());
-        boolean result = userAuth.logIn(user.getUserName(), user.getPassword());
+        boolean result = userAuth.logIn(testUser.getUserName(), 
+                testUser.getPassword());
         assertTrue("Successful Login Test", result);
     }
 
     @Test
     public void testFailedLogIn() throws Exception {
-        User user = persistentence.createUser(testUser.getUserName(), testUser.getPassword());
-        boolean result = userAuth.logIn(user.getUserName(), "");
+        boolean result = userAuth.logIn(testUser.getUserName(), "");
         assertFalse("Failed Login Test", result);
     }
     
     @Test
     public void testLoginWithMultipleUsersLoggedIn() throws Exception {
-        persistentence.createUser(otherUser.getUserName(), otherUser.getPassword());
         persistentence.setLoginStatus(otherUser.getUserName(), true);
-        User user = persistentence.createUser(testUser.getUserName(), testUser.getPassword());
-        boolean result = userAuth.logIn(user.getUserName(), user.getPassword());
+        boolean result = userAuth.logIn(testUser.getUserName(), testUser.getPassword());
         assertTrue("Successful Login Test with multiple users logged in", result);
     }
     
     @Test
     public void testLoginWithMultipleUsersLoggedInAndUserLoggedIn() throws Exception {
-        persistentence.createUser(otherUser.getUserName(), otherUser.getPassword());
         persistentence.setLoginStatus(otherUser.getUserName(), true);
-        User user = persistentence.createUser(testUser.getUserName(), testUser.getPassword());
         persistentence.setLoginStatus(testUser.getUserName(), true);
-        boolean result = userAuth.logIn(user.getUserName(), user.getPassword());
+        boolean result = userAuth.logIn(testUser.getUserName(), testUser.getPassword());
         assertTrue("Successful Login Test with multiple users logged in", result);
     }
     
     @Test
     public void testNonRegisteredLogIn() {
-        boolean result = userAuth.logIn(testUser.getUserName(), 
-                                        testUser.getPassword());
+        boolean result = userAuth.logIn(anotherUser.getUserName(), anotherUser.getPassword());
         assertFalse("Log in with non registered user test", result);
     }
 
     @Test
     public void testLogOut() throws Exception {
-        persistentence.createUser(testUser.getUserName(), testUser.getPassword());
         persistentence.setLoginStatus(testUser.getUserName(), true);
         boolean result = userAuth.logOut(testUser.getUserName());
         assertTrue("Log out test", result);
@@ -79,22 +83,19 @@ public class UserAuthorizationTest {
     
     @Test
     public void testLogOutWhileNotLoggedIn() throws Exception {
-        persistentence.createUser(otherUser.getUserName(), otherUser.getPassword());
         persistentence.setLoginStatus(otherUser.getUserName(), true);
-        persistentence.createUser(testUser.getUserName(), testUser.getPassword());
         boolean result = userAuth.logOut(testUser.getUserName());
         assertFalse("Log out test when not logged in", result);
     }
     
     @Test
     public void testFailedLogOut() throws Exception {
-        boolean result = userAuth.logOut(testUser.getUserName());
+        boolean result = userAuth.logOut(anotherUser.getUserName());
         assertFalse("Failed log out test", result);
     }
 
     @Test
     public void testIsLoggedIn() throws Exception {
-        persistentence.createUser(testUser.getUserName(), testUser.getPassword());
         persistentence.setLoginStatus(testUser.getUserName(), true);
         boolean result = userAuth.isLoggedIn(testUser.getUserName());
         assertTrue("Is logged in test", result);
@@ -102,7 +103,6 @@ public class UserAuthorizationTest {
 
     @Test
     public void testIsNotLoggedIn() throws Exception {
-        persistentence.createUser(testUser.getUserName(), testUser.getPassword());
         persistentence.setLoginStatus(testUser.getUserName(), false);
         boolean result = userAuth.isLoggedIn(testUser.getUserName());
         assertFalse("Is not logged in test", result);
@@ -110,10 +110,10 @@ public class UserAuthorizationTest {
 
     @Test
     public void testRegister() throws Exception {
-        UserInfo userInfo = new UserInfo("test", "name");
-        boolean result = userAuth.register(testUser.getUserName(), 
-                                            testUser.getPassword(),
-                                            testUserInfo);
+        UserInfo anotherUserInfo = new UserInfo("Another", "User");
+        boolean result = userAuth.register(anotherUser.getUserName(), 
+                                            anotherUser.getPassword(), 
+                                            anotherUserInfo);
         assertTrue("Register test", result);
     }
     
@@ -135,26 +135,25 @@ public class UserAuthorizationTest {
     
     @Test
     public void testFailedUnRegister() throws Exception {
-        boolean result = userAuth.unRegister(testUser.getUserName());
+        boolean result = userAuth.unRegister(anotherUser.getUserName());
         assertFalse("Unregister failed test", result);
     }
 
     @Test
     public void testIsRegistered() throws Exception {
-        persistentence.createUser(testUser.getUserName(), testUser.getPassword());
         boolean result = userAuth.isRegistered(testUser.getUserName());
         assertTrue("User is registered test", result);
     }
     
     @Test
     public void testIsNotRegistered() throws Exception {
-        boolean result = userAuth.isRegistered(testUser.getUserName());
+        boolean result = userAuth.isRegistered(anotherUser.getUserName());
         assertFalse("User is not registered test", result);
     }
 
     @Test
     public void testGetUserInfo() throws Exception {
-        User user = persistentence.createUser(testUser.getUserName(), testUser.getPassword());
+        User user = persistentence.getUser(testUser.getUserName());
         user.setUserInfo(testUserInfo);
         persistentence.updateUser(user);
         UserInfo userInfo = userAuth.getUserInfo(testUser.getUserName());
