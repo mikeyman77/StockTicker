@@ -50,7 +50,7 @@ CREATE CACHED TABLE IF NOT EXISTS user (
   userId     int NOT NULL AUTO_INCREMENT,
   FK_userInfoId int DEFAULT NOT NULL,
   username     varchar(20) DEFAULT NULL,
-  password     varchar(12) DEFAULT NULL,
+  password     varchar(100 DEFAULT NULL,
   joinedDate datetime DEFAULT NULL,
   isLoggedIn  boolean,
   PRIMARY KEY (userId),
