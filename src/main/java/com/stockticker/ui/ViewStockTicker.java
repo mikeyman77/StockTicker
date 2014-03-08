@@ -42,13 +42,10 @@ import com.stockticker.logic.StockTickerService;
 import com.stockticker.logic.UserAuthorization;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
-import java.util.Collections;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import javax.swing.ListModel;
 
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
-import javax.swing.text.BadLocationException;
 
 
 /**
@@ -90,22 +87,18 @@ public class ViewStockTicker extends WindowAdapter implements IStockTicker_UICom
     private boolean m_regSelect = false;
     private boolean m_tickerSelect = false;
     private boolean m_cancelSelect = false;
+    private boolean m_isEnteringText = false;
     //private boolean m_isRegistered = false;
 
     private String m_username = null;
     private String m_password = null;
     private String m_firstname = null;
     private String m_lastname = null;
-    private String m_symbol = null;
-
-    //private int m_logInTries = 0;
-    //private int m_maxTries = 3;
-    //private int m_index;
 
     private final AuthorizationService m_userAuth = UserAuthorization.INSTANCE;
     private final StockTickerService stockTicker =  StockTicker.INSTANCE;
     private UserInfo m_userInfo;
-    //private User m_user;
+    private User m_user;
 
 
     /**
@@ -167,110 +160,113 @@ public class ViewStockTicker extends WindowAdapter implements IStockTicker_UICom
 
 
         final JList<Object> stockList = new JList<>(SymbolMap.getSymbols().keySet().toArray());
+        stockList.setToolTipText("Double click to track, single click to select in text field");
+        stockList.ensureIndexIsVisible(60);
         JScrollPane scrollPane = new JScrollPane(stockList);
         scrollPane.setSize(150, 20);
         scrollPane.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
 
-        m_symbolField = new JTextField(5);
+        m_symbolField = new JTextField(6);
         m_symbolField.setEditable(true);
+        m_symbolField.setToolTipText("Press enter to track selected symbol");
 
-        final JButton setButton = new JButton();
-        setButton.setName("Set");
-        setButton.setPreferredSize(new Dimension(10, 10));
-        setButton.setActionCommand("Set");
-        
+
         // Select symbol in list after a double mouse click and track this symbol.  
         // Verify user is signed in
         stockList.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
-                if(e.getClickCount() == 2 && m_username != null) {
-                    if(m_userAuth.isLoggedIn(m_username)) {
-                        m_symbol = stockList.getSelectedValue().toString();
-                        if(m_symbol != null && stockTicker.trackStock(m_username, m_symbol, true)) {
-                            System.out.println("Now tracking symbol " + m_symbol);
-                        }
+                if(e.getClickCount() == 2) {
+                    String symbol = stockList.getSelectedValue().toString();
+
+                    if(m_username == null) {
+                        System.out.println("User not logged in or register");
+                    }
+                    else if(!m_userAuth.isLoggedIn(m_user.getUserName())) {
+                        System.err.println("User exists but is not logged in");
+                    }
+                    else if(symbol == null) {
+                        System.err.println("Symbol was not properly selected");
+                    }
+                    else if(stockTicker.trackStock(m_username, symbol, true)) {
+                        System.out.println("Trcking symbol " + symbol);
                     }
                     else {
-                        System.out.println("Unable to track symbol; user may not be logged in");
+                        System.out.println("Unable to track selected stock");
                     }
                 }
                 else {
-                    if(e.getClickCount() == 2) {
-                        System.out.println("Unable to track symbol; user may not be logged in");
-                    }
-                }
-                else {
-                    if(e.getClickCount() == 2) {
-                        System.out.println("Unable to track symbol; user may not be logged in");
+                    if(e.getClickCount() == 1) {
+                        String selection = stockList.getSelectedValue().toString();;
+                        m_symbolField.setText(selection);
                     }
                 }
             }
         });
+
 
         // Get entered text from text field after user presses enter. Select this entry in the list.
         m_symbolField.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                m_symbol = m_symbolField.getText().toUpperCase();
-                stockList.setSelectedValue(m_symbol, true);
-                System.out.println(m_symbolField.getText());
+                String symbol = stockList.getSelectedValue().toString();
+                m_symbolField.setText(symbol);
+
+                if(m_username == null) {
+                    System.out.println("User not logged in or register");
+                }
+                else if(symbol == null) {
+                    System.err.println("Symbol was not properly selected");
+                }
+                else if(!m_symbolField.getText().equals(symbol)) {
+                    System.err.println("Unable to read symbol from text field");
+                }
+                else if(!m_userAuth.isLoggedIn(m_user.getUserName())) {
+                    System.err.println("User exists but is not logged in");
+                }
+                else if(stockTicker.trackStock(m_user.getUserName(), symbol, true)) {
+                    System.out.println("Trcking symbol " + symbol);
+                }
+                else {
+                    System.err.println("Unable to track selected stock");
+                }
             }
         });
 
         m_symbolField.addKeyListener(new KeyAdapter() {
+            @Override
             public void keyReleased(KeyEvent evt) {
-                String text;
-                try {
-                    int offset = evt.getKeyLocation();
-                    text = m_symbolField.getText(0, offset + 1);
-                    if(!text.equals("")) {
-                        //setButton.setEnabled(true);
-                        String prefix = text.substring(0).toUpperCase();
-                        System.out.println(text);
-                        //int itr = Collections.binarySearch(stockList, prefix);
-                        //stockList.
-                        int index = stockList.locationToIndex(m_symbolField.getLocation());
-                        System.out.println("index " + index);
+                String userInput;
+                m_isEnteringText = false;
+
+                userInput = m_symbolField.getText();
+                if(!userInput.equals("")) {
+                    String key = m_symbolField.getText().toUpperCase();
+                    ListModel listModel = stockList.getModel();
+
+                    for(int i = 0; i < listModel.getSize(); i++) {
+                        listModel.getElementAt(i);
+                        if(listModel.getElementAt(i).toString().startsWith(key)) {
+                            m_isEnteringText = true;
+                            stockList.setValueIsAdjusting(true);
+                            stockList.setSelectedValue(listModel.getElementAt(i), true);
+                            stockList.setValueIsAdjusting(false);                               
+                            break;
+                        }
                     }
-                    else {
-                        setButton.setEnabled(false);
-                        
-                    }
-                } catch (BadLocationException ex) {
-                    //System.err.println("Exception in symbol text field " + ex.getMessage());
                 }
-            }
-            
-            
+            } 
         });
 
         // Get selected symbol from list and diplay in text field.
         stockList.addListSelectionListener(new ListSelectionListener() {
             @Override
             public void valueChanged(ListSelectionEvent e) {
-                if(e.getValueIsAdjusting()) {
-                    String selection = stockList.getSelectedValue().toString();;
-                    m_symbolField.setText(selection);
-                }
-            }
-        });
-
-        // Select highligthed symbol from list when button is clicked and track this symbol.
-        // Verify user is logged in.
-        setButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent evt) {
-                if(m_symbol != null && m_username != null) {
-                    if(m_userAuth.isLoggedIn(m_username) && stockTicker.trackStock(m_username, m_symbol, true)) {
-                        System.out.println("Now tracking symbol " + m_symbol);
-                    }
-                    else {
-                        System.out.println("Unable to track symbol; user may not be logged in");
-                    }
-                }
-                else {
-                    System.out.println("The symbol was not selected; user may not be logged in");
+                if(e.getValueIsAdjusting() && !m_isEnteringText) {
+                    stockList.setValueIsAdjusting(true);
+                    String symbol = stockList.getSelectedValue().toString();;
+                    m_symbolField.setText(symbol);
+                    stockList.setValueIsAdjusting(false);
                 }
             }
         });
@@ -293,9 +289,11 @@ public class ViewStockTicker extends WindowAdapter implements IStockTicker_UICom
         midPanel.add(scrollPane, m_constraints);
 
         // Layout the JList's set button
-        m_constraints.insets = new Insets(0, 0, 30, 5);
-        listPanel.add(setButton, m_constraints);
         m_constraints.gridx = 1;
+        m_constraints.weighty = 0.1;
+        m_constraints.anchor = GridBagConstraints.NORTH;
+        //m_constraints.ipadx = 0;
+        m_constraints.insets = new Insets(0, 0, 0, 0);
         listPanel.add(m_symbolField, m_constraints);
         m_constraints.insets = new Insets(0, 0, 0, 0);
         m_statusPanel = new JPanel();
@@ -552,7 +550,7 @@ public class ViewStockTicker extends WindowAdapter implements IStockTicker_UICom
                 m_rightControlBtn.setEnabled(true);
                 m_tickerSelect = true;
                 cardLayout.show(m_cardPanel, UI.TICKER.getName());
-                m_symbolField.requestFocusInWindow();
+                //m_symbolField.requestFocusInWindow();
             }
         }
 
@@ -565,6 +563,7 @@ public class ViewStockTicker extends WindowAdapter implements IStockTicker_UICom
         private void registerUser(String username, String password) {
             if(!m_userAuth.isRegistered(username)) {
                 if(m_userAuth.register(username, password, m_userInfo)) {
+                    m_user = new User(username, password);
                     System.out.println("User successfully registered");
                     m_regSelect = false;
                     m_logInSelect = true;
