@@ -5,23 +5,26 @@ import com.stockticker.UserInfo;
 import com.stockticker.persistence.PersistenceService;
 import com.stockticker.persistence.StockTickerPersistence;
 import java.util.List;
+import org.jasypt.util.password.BasicPasswordEncryptor;
 
 public enum UserAuthorization implements AuthorizationService {
     INSTANCE;
 
-    private PersistenceService persistence = StockTickerPersistence.INSTANCE;
+    private final PersistenceService persistence = StockTickerPersistence.INSTANCE;
+    private final BasicPasswordEncryptor passwordEncryptor = new BasicPasswordEncryptor();
 
     @Override
     public boolean logIn(String username, String password) {
-        User user = null;
+        User user;
         boolean successful = false;
         
         // check if user exists
-        if (persistence.userExists(username))
+        if (persistence.userExists(username)) {
             user = persistence.getUser(username);
-        
-        else
+        }
+        else {
             return successful;
+        }
         
         // get all logged in users
         List<String> loggedInUsers = persistence.getLoggedInUsers();
@@ -66,25 +69,28 @@ public enum UserAuthorization implements AuthorizationService {
 
     @Override
     public boolean register(String username, String password, UserInfo userInfo) {
+        boolean successful = false;
+        String encryptedPassword = passwordEncryptor.encryptPassword(password);
         
-        User user = persistence.createUser(username, password);
+        User user = persistence.createUser(username, encryptedPassword);
         
         if (user != null) {
             user.setUserInfo(userInfo);
-            return persistence.updateUser(user);
+            successful = persistence.updateUser(user);
         }
 
-        return false;
+        return successful;
     }
 
     @Override
     public boolean unRegister(String username) {
+        boolean successful = false;
         
         if (persistence.userExists(username)) {
-            return persistence.deleteUser(username);
+            successful = persistence.deleteUser(username);
         }
         
-        return false;
+        return successful;
     }
 
     @Override
@@ -117,25 +123,29 @@ public enum UserAuthorization implements AuthorizationService {
     
     @Override
     public boolean updateUserInfo(String username, UserInfo userInfo) {
+        boolean successful = false;
         List<String> loggedInUsers = persistence.getLoggedInUsers();
         
         if (loggedInUsers.isEmpty())
-            return false;
+            return successful;
         
         if (loggedInUsers.contains(username)) {
             User user = persistence.getUser(username);
             user.setUserInfo(userInfo);
-            return persistence.updateUser(user);
+            successful = persistence.updateUser(user);
         }
         
-        return false;
+        return successful;
     }
     
     // helper method to check password for user
-    private boolean checkPassword(String password, String userPassword) {
-        if (password.equals(userPassword))
-            return true;
-        else
-            return false;
+    private boolean checkPassword(String password, String encryptedPassword) {
+        boolean successful = false;
+        
+        if (passwordEncryptor.checkPassword(password, encryptedPassword)) {
+            successful = true;
+        }
+        
+        return successful;
     }
 }
