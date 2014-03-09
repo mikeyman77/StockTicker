@@ -11,13 +11,13 @@ import java.awt.Font;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
-import java.awt.image.BufferedImage;
-import java.io.File;
+//import java.awt.image.BufferedImage;
+//import java.io.File;
 import java.io.IOException;
-import javax.imageio.ImageIO;
+//import javax.imageio.ImageIO;
 
 import javax.swing.BorderFactory;
-import javax.swing.ImageIcon;
+//import javax.swing.ImageIcon;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.border.EtchedBorder;
@@ -26,11 +26,11 @@ import javax.swing.border.EtchedBorder;
 * J308
 * @author prwallace
 */
-public class HomeCard extends JPanel {
+public final class HomeCard extends JPanel {
     private static final long serialVersionUID = 1L;
     private JPanel m_homeCard;
-    private BufferedImage m_splashImage;
-    private GridBagConstraints m_constraints;
+    //private BufferedImage m_splashImage;
+    private final GridBagConstraints m_constraints;
 
 
     /**
@@ -48,7 +48,7 @@ public class HomeCard extends JPanel {
      *
      *
      */
-    public void setCard() throws IOException {
+    public void setCard()  {
         m_homeCard = new JPanel(new GridBagLayout());
         m_homeCard.setPreferredSize(new Dimension(550, 520));
         m_homeCard.setBorder(BorderFactory.createTitledBorder(BorderFactory
@@ -75,6 +75,7 @@ public class HomeCard extends JPanel {
     /**
     *
     *
+     * @return 
     */
     public JPanel getCard() {
         return m_homeCard;

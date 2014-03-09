@@ -10,8 +10,6 @@ import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 
 import javax.swing.BorderFactory;
 import javax.swing.JLabel;
@@ -27,7 +25,7 @@ import javax.swing.border.EtchedBorder;
 public class LoginCard extends JPanel {
     private static final long serialVersionUID = 1L;
     private JPanel m_loginCard;
-    private GridBagConstraints m_constraints;
+    private final GridBagConstraints m_constraints;
 
     private JTextField m_usernameField;
     private JTextField m_passwordField;
@@ -52,8 +50,8 @@ public class LoginCard extends JPanel {
 
         m_usernameField = new JTextField(40);
         m_passwordField = new JTextField(40);
-        m_usernameField.setText(null);
-        m_passwordField.setText(null);
+        m_usernameField.setText("");
+        m_passwordField.setText("");
 
         JPanel compPanel = new JPanel(new GridBagLayout());
         compPanel.setPreferredSize(new Dimension(400, 150));

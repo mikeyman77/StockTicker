@@ -59,6 +59,7 @@ public class StockTable extends JPanel {
         ListSelectionModel rowSelection = stockTable.getSelectionModel();
         rowSelection.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         rowSelection.addListSelectionListener(new ListSelectionListener() {
+            @Override
             public void valueChanged(ListSelectionEvent evt) {
                 System.out.println("Selection in table");
             }

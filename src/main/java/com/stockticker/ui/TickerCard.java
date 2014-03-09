@@ -41,7 +41,7 @@ public class TickerCard extends JPanel {
     private JPanel m_cardPanel;
 
     private CardLayout m_cardLayout;
-    private GridBagConstraints m_constraints;
+    private final GridBagConstraints m_constraints;
 
     private String m_symbol;
 
@@ -62,6 +62,7 @@ public class TickerCard extends JPanel {
     /**
      * 
      * 
+     * @return 
      */
     public final JPanel setCard() {
         m_tickerCard = new JPanel();
@@ -116,6 +117,7 @@ public class TickerCard extends JPanel {
         ListSelectionModel rowSelection = table.getSelectionModel();
         rowSelection.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         rowSelection.addListSelectionListener(new ListSelectionListener() {
+            @Override
             public void valueChanged(ListSelectionEvent evt) {
                 System.out.println("Selection in table");
             }
@@ -133,6 +135,7 @@ public class TickerCard extends JPanel {
 
         JButton quote = new JButton("Quote");
         quote.addActionListener(new ActionListener() {
+            @Override
             public void actionPerformed(ActionEvent evt) {
                 m_cardLayout = (CardLayout) m_cardPanel.getLayout();
                 m_cardLayout.show(m_cardPanel, UI.QUOTE.getName());
@@ -140,6 +143,7 @@ public class TickerCard extends JPanel {
         });
         final JTextField quoteField = new JTextField(40);
         quoteField.addActionListener(new ActionListener() {
+             @Override
              public void actionPerformed(ActionEvent evt) {
                  m_symbol = quoteField.getText();
                  System.out.println(m_symbol);
@@ -167,7 +171,7 @@ public class TickerCard extends JPanel {
 
     /**
      * 
-     * 
+     * @return 
      */
     public JPanel getCard() {
         return m_tickerCard;

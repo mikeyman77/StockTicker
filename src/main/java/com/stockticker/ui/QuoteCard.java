@@ -17,7 +17,7 @@ import javax.swing.border.EtchedBorder;
 * J308
 * @author prwallace
 */
-public class QuoteCard extends JPanel {
+public final class QuoteCard extends JPanel {
     private static final long serialVersionUID = 1L;
     private JPanel m_quoteCard;
     private StockTable m_stocks;
@@ -50,6 +50,7 @@ public class QuoteCard extends JPanel {
     /**
     *
     *
+     * @return 
     */
     public JPanel getCard() {
         return m_quoteCard;

@@ -54,9 +54,9 @@ import com.stockticker.logic.UserAuthorization;
  * @author prwallace
  */
 public class ViewStockTicker extends WindowAdapter implements IStockTicker_UIComponents {
-    private static final String ENTER = "ENTER";
     private static final String ENTER_PRESSED = "ENTER_RELEASED";
     private static final int ROW_OFFSET = 7;
+    private static final String SPACE = " ";
 
     private static CardLayout cardLayout;
     private static JPanel m_cardPanel;
@@ -90,10 +90,10 @@ public class ViewStockTicker extends WindowAdapter implements IStockTicker_UICom
     private boolean m_tickerSelect = false;
     private boolean m_cancelSelect = false;
 
-    private String m_username = null;
-    private String m_password = null;
-    private String m_firstname = null;
-    private String m_lastname = null;
+    private String m_username = "";
+    private String m_password = "";
+    private String m_firstname = "";
+    private String m_lastname = "";
 
     private final AuthorizationService m_userAuth = UserAuthorization.INSTANCE;
     private final StockTickerService stockTicker =  StockTicker.INSTANCE;
@@ -178,14 +178,14 @@ public class ViewStockTicker extends WindowAdapter implements IStockTicker_UICom
                 if(e.getClickCount() == 2) {
                     String symbol = stockList.getSelectedValue().toString();
 
-                    if(m_username == null) {
-                        System.out.println("User not logged in or register");
+                    if(m_username.isEmpty() || m_username.startsWith(SPACE)) {
+                        System.out.println("User has not logged in");
                     }
-                    else if(!m_userAuth.isLoggedIn(m_user.getUserName())) {
-                        System.err.println("User exists but is not logged in");
+                    else if(!m_userAuth.isLoggedIn(m_username)) {
+                        System.err.println("User not logged in");
                     }
                     else if(symbol == null) {
-                        System.err.println("Symbol was not properly selected");
+                        System.err.println("Unable to read symbol");
                     }
                     else if(stockTicker.trackStock(m_username, symbol, true)) {
                         System.out.println("Trcking symbol " + symbol);
@@ -196,7 +196,7 @@ public class ViewStockTicker extends WindowAdapter implements IStockTicker_UICom
                 }
                 else {
                     if(e.getClickCount() == 1) {
-                        String selection = stockList.getSelectedValue().toString();;
+                        String selection = stockList.getSelectedValue().toString();
                         m_symbolField.setText(selection);
                     }
                 }
@@ -206,13 +206,13 @@ public class ViewStockTicker extends WindowAdapter implements IStockTicker_UICom
         m_symbolField.addKeyListener(new KeyAdapter() {
             @Override
             public void keyReleased(KeyEvent evt) {
-                String userInput;
+                String userInput = null;
 
                 int row_pose = stockList.getSelectedIndex();
                 stockList.ensureIndexIsVisible(row_pose + ROW_OFFSET);
                 userInput = m_symbolField.getText();
 
-                if(!userInput.equals("")) {
+                if(userInput != null) {
                     String key = m_symbolField.getText().toUpperCase();
                     ListModel listModel = stockList.getModel();
 
@@ -237,19 +237,19 @@ public class ViewStockTicker extends WindowAdapter implements IStockTicker_UICom
                 int row_pos = stockList.getSelectedIndex();
                 stockList.ensureIndexIsVisible(row_pos + ROW_OFFSET);
 
-                if(m_username == null) {
-                    System.out.println("User not logged in or register");
+                if(m_username.isEmpty() || m_username.startsWith(SPACE)) {
+                    System.out.println("User has not logged in");
                 }
-                else if(symbol == null) {
-                    System.err.println("Symbol was not properly selected");
+                else if(symbol.isEmpty()) {
+                    System.err.println("Unable to select symbol");
                 }
                 else if(!m_symbolField.getText().equals(symbol)) {
                     System.err.println("Unable to read symbol from text field");
                 }
-                else if(!m_userAuth.isLoggedIn(m_user.getUserName())) {
-                    System.err.println("User exists but is not logged in");
+                else if(!m_userAuth.isLoggedIn(m_username)) {
+                    System.err.println("User is not logged in");
                 }
-                else if(stockTicker.trackStock(m_user.getUserName(), symbol, true)) {
+                else if(stockTicker.trackStock(m_username, symbol, true)) {
                     System.out.println("Trcking symbol " + symbol);
                 }
                 else {
@@ -431,40 +431,49 @@ public class ViewStockTicker extends WindowAdapter implements IStockTicker_UICom
 
                 case SUBMIT:
                     if(m_regSelect) {
-                        if((m_firstname = m_regCard.getfirstName()).equals("")) {
+                        if((m_firstname = m_regCard.getfirstName()).isEmpty() || m_regCard.getfirstName().startsWith(SPACE)) {
                             System.out.println("Firstname field is blank");
+                            m_firstname = "";
                             isEmpty = true;
                         }
 
-                        if((m_lastname = m_regCard.getLastName()).equals("")) {
+                        if((m_lastname = m_regCard.getLastName()).isEmpty() || m_regCard.getLastName().startsWith(SPACE)) {
                             System.out.println("Lastname field is blank");
+                            m_lastname = "";
                             isEmpty = true;
                         }
 
-                        if((m_username = m_regCard.getUsername()).equals("")) {
+                        if((m_username = m_regCard.getUsername()).isEmpty() || m_regCard.getUsername().startsWith(SPACE)) {
                             System.out.println("Username field is blank");
+                            m_username = "";
                             isEmpty = true;
                         } 
 
-                        if((m_password = m_regCard.getPassword()).equals("")) {
+                        if((m_password = m_regCard.getPassword()).isEmpty() || m_regCard.getPassword().startsWith(SPACE)) {
                             System.out.println("Password field is blank");
+                            m_password = "";
                             isEmpty = true;
                         }
 
                         // Registration selcted; register user
                         if(!isEmpty) {
-                            m_userInfo = new UserInfo(m_firstname, m_lastname);
+                            //m_userInfo = new UserInfo(m_firstname, m_lastname);
                             this.registerUser(m_username, m_password);
                         }
+                        /*else {
+                            m_regCard.clearTextFields();
+                        }*/
                     }
                     else if(m_logInSelect) {
-                        if((m_username = m_loginCard.getUsername()).equals("")) {
+                        if((m_username = m_loginCard.getUsername()).isEmpty() || m_loginCard.getUsername().startsWith(SPACE)) {
                             System.out.println("Username field is blank");
+                            m_username = "";
                             isEmpty = true;
                         }
 
-                        if((m_password = m_loginCard.getPassword()).equals("")) {
+                        if((m_password = m_loginCard.getPassword()).isEmpty() || m_loginCard.getPassword().startsWith(SPACE)) {
                             System.out.println("Password field is blank");
+                            m_password = "";
                             isEmpty = true;
                         }
 
@@ -475,8 +484,14 @@ public class ViewStockTicker extends WindowAdapter implements IStockTicker_UICom
                             }
                             else {
                                 System.out.println("Not a recognized user, check username or register");
+                                m_username = "";
+                                m_password = "";
+                                m_loginCard.clearTextFields();
                             }
-                        } 
+                        }
+                        /*else {
+                            m_loginCard.clearTextFields();
+                        }*/
                     }
                     break;
 
@@ -528,6 +543,8 @@ public class ViewStockTicker extends WindowAdapter implements IStockTicker_UICom
                 }
                 else {
                     System.out.println("User login failed, please check password");
+                    m_username = "";
+                    m_password = "";
                 }
             }
             else {
@@ -553,9 +570,10 @@ public class ViewStockTicker extends WindowAdapter implements IStockTicker_UICom
          */
         private void registerUser(String username, String password) {
             if(!m_userAuth.isRegistered(username)) {
+                m_userInfo = new UserInfo(m_firstname, m_lastname);
                 if(m_userAuth.register(username, password, m_userInfo)) {
-                    m_user = new User(username, password);
-                    System.out.println("User successfully registered");
+                    //m_user = new User(username, password);
+                    System.out.println("New user successfully registered");
                     m_regSelect = false;
                     m_logInSelect = true;
                     this.logInUser(username, password);
@@ -572,13 +590,13 @@ public class ViewStockTicker extends WindowAdapter implements IStockTicker_UICom
                         this.logInUser(username, password);
                     }
                     else {
-                        System.out.println("User is registered and logged in");
+                        System.out.println("User is already registered and logged in");
                         this.resetLeftButton("Update");
                         this.resetRightButton("Logout");
                         this.resetFlags();
                         m_tickerSelect = true;
                         cardLayout.show(m_cardPanel, UI.TICKER.getName());
-                        m_symbolField.requestFocusInWindow();
+                        //m_symbolField.requestFocusInWindow();
                     }
                 }
                 else {

@@ -6,13 +6,10 @@
 
 package com.stockticker.ui;
 
-import com.stockticker.UserInfo;
 import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -36,8 +33,6 @@ public class RegistrationCard extends JPanel {
     private JTextField m_passwordField;
     private JTextField m_firstnameField;
     private JTextField m_lastnameField;
-    
-    private List<String> m_regInfo = new ArrayList<String>();
 
 
     /**
@@ -64,10 +59,10 @@ public class RegistrationCard extends JPanel {
         m_passwordField = new JTextField(40);
         m_firstnameField = new JTextField(40);
         m_lastnameField = new JTextField(40);
-        m_usernameField.setText(null);
-        m_passwordField.setText(null);
-        m_firstnameField.setText(null);
-        m_lastnameField.setText(null);
+        m_usernameField.setText("");
+        m_passwordField.setText("");
+        m_firstnameField.setText("");
+        m_lastnameField.setText("");
 
         JPanel compPanel = new JPanel(new GridBagLayout());
         compPanel.setPreferredSize(new Dimension(400, 250));

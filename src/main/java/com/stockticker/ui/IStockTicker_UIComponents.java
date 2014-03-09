@@ -7,7 +7,6 @@
 
 package com.stockticker.ui;
 
-import java.awt.Color;
 
 /**
  * Inteface for ViewStockTicker UI class Provides constant fields for button,
@@ -42,6 +41,7 @@ public interface IStockTicker_UIComponents {
         /**
          * Returns the value of this UI type as a String
          * 
+         * @return 
          */
         public String getName() {
             return btnName;
@@ -51,6 +51,8 @@ public interface IStockTicker_UIComponents {
          * Returns the type of UI type verses its String value (i.e. CLOSE vs
          * "Close")
          * 
+         * @param name
+         * @return 
          */
         public static UI getType(String name) {
             UI temp = DEFAULT;
