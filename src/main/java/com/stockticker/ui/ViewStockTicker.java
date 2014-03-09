@@ -12,7 +12,7 @@ import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
-import java.awt.Image;
+//import java.awt.Image;
 import java.awt.Insets;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
@@ -22,9 +22,11 @@ import java.awt.event.MouseEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.IOException;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
 
+//import javax.swing.ImageIcon;
 import javax.swing.BorderFactory;
-import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JList;
@@ -32,17 +34,30 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextField;
 import javax.swing.ScrollPaneConstants;
+import javax.swing.AbstractAction;
+import javax.swing.Action;
+import javax.swing.KeyStroke;
+import javax.swing.ListModel;
 
 import com.stockticker.SymbolMap;
+import com.stockticker.User;
+import com.stockticker.UserInfo;
+import com.stockticker.logic.AuthorizationService;
+import com.stockticker.logic.StockTicker;
+import com.stockticker.logic.StockTickerService;
+import com.stockticker.logic.UserAuthorization;
+
 
 /**
- * GUI for Stock Ticker Portfolio Manager
- * J308 Project
+ * GUI for Stock Ticker Portfolio Manager J308 Project
+ * 
  * @author prwallace
  */
-public class ViewStockTicker extends WindowAdapter implements ActionListener, IStockTicker_UIComponents {
+public class ViewStockTicker extends WindowAdapter implements IStockTicker_UIComponents {
+    private static final String ENTER_PRESSED = "ENTER_RELEASED";
+    private static final int ROW_OFFSET = 7;
+    private static final String SPACE = " ";
 
-    private static ViewStockTicker instance;
     private static CardLayout cardLayout;
     private static JPanel m_cardPanel;
 
@@ -55,29 +70,43 @@ public class ViewStockTicker extends WindowAdapter implements ActionListener, IS
 
     public JButton m_leftControlBtn;
     public JButton m_rightControlBtn;
+    private JTextField m_symbolField;
 
     private final Toolkit toolKit = Toolkit.getDefaultToolkit();
     private final Dimension screenSize = toolKit.getScreenSize();
     private GridBagConstraints m_constraints;
-    private Image m_titleIcon;
+    //private Image m_titleIcon;
 
-    private final String m_icon = "images\\stock_ticker.png";
+    private HomeCard m_homeCard;
+    private DetailCard m_detailCard;
+    private QuoteCard m_quoteCard;
+    private TickerCard m_tickerCard;
+    private RegistrationCard m_regCard;
+    private LoginCard m_loginCard;
+    //private final String m_icon = "images\\stock_ticker.png";
 
-    private boolean m_isLoggedIn = false;
-    private boolean m_isRegistered = false;
-    private boolean m_isTickerOpen = false;
+    private boolean m_logInSelect = false;
+    private boolean m_regSelect = false;
+    private boolean m_tickerSelect = false;
+    private boolean m_cancelSelect = false;
 
-    private int m_logInTries = 0;
-    private int m_maxTries = 3;
-    
+    private String m_username = "";
+    private String m_password = "";
+    private String m_firstname = "";
+    private String m_lastname = "";
+
+    private final AuthorizationService m_userAuth = UserAuthorization.INSTANCE;
+    private final StockTickerService stockTicker =  StockTicker.INSTANCE;
+    private UserInfo m_userInfo;
+    private User m_user;
+
 
     /**
      * Construct a ViewStockTicker object
      * 
      */
     public ViewStockTicker() {
-        m_frame = new JFrame("Stock Ticker Portfolio Manager");
-        
+        m_frame = new JFrame();
     }
 
 
@@ -86,8 +115,8 @@ public class ViewStockTicker extends WindowAdapter implements ActionListener, IS
      * the Title Bar.
      */
     public void build() {
-        m_titleIcon = new ImageIcon(toolKit.getImage(m_icon)).getImage();
-        m_frame.setIconImage(m_titleIcon);
+        //m_titleIcon = new ImageIcon(toolKit.getImage(m_icon)).getImage();
+        //m_frame.setIconImage(m_titleIcon);
         m_frame.setSize(920, 600);
         m_frame.setLocation(screenSize.width / 4, screenSize.height / 4);
         JFrame.setDefaultLookAndFeelDecorated(true);
@@ -105,12 +134,12 @@ public class ViewStockTicker extends WindowAdapter implements ActionListener, IS
 
 
     /**
-     * Create/add the main panel of the UI and its child JPanel's.  Create/add
+     * Create/add the main panel of the UI and its child JPanel's. Create/add
      * the individual controls for the child JPanels and their ActionListener's.
      * Create/add CardLayout and it's individual cards and controls.
      */
     public void setPanels() {
-        
+
         // Create the individual JPanels that make up the main screen
         m_bottomPanel = new JPanel();
         m_bottomPanel.setPreferredSize(new Dimension(700, 80));
@@ -129,39 +158,111 @@ public class ViewStockTicker extends WindowAdapter implements ActionListener, IS
         m_cardPanel.setPreferredSize(new Dimension(550, 520));
         m_cardPanel.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createRaisedBevelBorder(), BorderFactory.createLoweredBevelBorder()));
 
-        
-        // Add controls for the Symbol list controls and their action listeners
-        JList<Object> stockList = new JList<>(SymbolMap.getSymbols().keySet().toArray());
-        JScrollPane scrollPane = new JScrollPane(stockList);
+
+        final JList<Object> stockList = new JList<>(SymbolMap.getSymbols().keySet().toArray());
+        stockList.setToolTipText("Double click to track, single click to select in text field");
+        stockList.setVisibleRowCount(8);
+        final JScrollPane scrollPane = new JScrollPane(stockList);
         scrollPane.setSize(150, 20);
         scrollPane.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
 
-        final JButton setButton = new JButton();;
-        setButton.setName("Set");
-        setButton.setPreferredSize(new Dimension(10, 10));
-        setButton.setActionCommand("Set");
-        setButton.addActionListener(this);
+        m_symbolField = new JTextField(6);
+        m_symbolField.setEditable(true);
+        m_symbolField.setToolTipText("Press enter to track selected symbol");
+
+        // Select symbol in list after a double mouse click and track this symbol.  
+        // Verify user is signed in
         stockList.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
                 if(e.getClickCount() == 2) {
-                    setButton.doClick();
+                    String symbol = stockList.getSelectedValue().toString();
+
+                    if(m_username.isEmpty() || m_username.startsWith(SPACE)) {
+                        System.out.println("User has not logged in");
+                    }
+                    else if(!m_userAuth.isLoggedIn(m_username)) {
+                        System.err.println("User not logged in");
+                    }
+                    else if(symbol == null) {
+                        System.err.println("Unable to read symbol");
+                    }
+                    else if(stockTicker.trackStock(m_username, symbol, true)) {
+                        System.out.println("Trcking symbol " + symbol);
+                    }
+                    else {
+                        System.out.println("Unable to track selected stock");
+                    }
+                }
+                else {
+                    if(e.getClickCount() == 1) {
+                        String selection = stockList.getSelectedValue().toString();
+                        m_symbolField.setText(selection);
+                    }
                 }
             }
         });
 
-        final JTextField symbolName = new JTextField(5);
-        symbolName.setEditable(true);
-        symbolName.addActionListener(new ActionListener() {
+        m_symbolField.addKeyListener(new KeyAdapter() {
             @Override
-            public void actionPerformed(ActionEvent e) {
-                //String name = symbolName.getText();
+            public void keyReleased(KeyEvent evt) {
+                String userInput = null;
 
-                // Reset the text field.
-                symbolName.requestFocusInWindow();
-                symbolName.setText("");
-            }
+                int row_pose = stockList.getSelectedIndex();
+                stockList.ensureIndexIsVisible(row_pose + ROW_OFFSET);
+                userInput = m_symbolField.getText();
+
+                if(userInput != null) {
+                    String key = m_symbolField.getText().toUpperCase();
+                    ListModel listModel = stockList.getModel();
+
+                    for(int i = 0; i < listModel.getSize(); i++) {
+                        listModel.getElementAt(i);
+                        if(listModel.getElementAt(i).toString().startsWith(key)) {             
+                            stockList.setSelectedValue(listModel.getElementAt(i), true);  
+                            break;
+                        }
+                    }
+                }
+            } 
         });
+
+        
+        Action enterAction = new AbstractAction() {
+            @Override
+            public void actionPerformed(ActionEvent actionEvent) {
+                String symbol = stockList.getSelectedValue().toString();
+                m_symbolField.setText(symbol);
+
+                int row_pos = stockList.getSelectedIndex();
+                stockList.ensureIndexIsVisible(row_pos + ROW_OFFSET);
+
+                if(m_username.isEmpty() || m_username.startsWith(SPACE)) {
+                    System.out.println("User has not logged in");
+                }
+                else if(symbol.isEmpty()) {
+                    System.err.println("Unable to select symbol");
+                }
+                else if(!m_symbolField.getText().equals(symbol)) {
+                    System.err.println("Unable to read symbol from text field");
+                }
+                else if(!m_userAuth.isLoggedIn(m_username)) {
+                    System.err.println("User is not logged in");
+                }
+                else if(stockTicker.trackStock(m_username, symbol, true)) {
+                    System.out.println("Trcking symbol " + symbol);
+                }
+                else {
+                    System.err.println("Unable to track selected stock");
+                }
+            }
+        };
+
+
+        m_symbolField.getInputMap().put(KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, 0, true), ENTER_PRESSED);
+        m_symbolField.getActionMap().put(ENTER_PRESSED, enterAction);
+        stockList.getInputMap().put(KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, 0, true), ENTER_PRESSED);
+        stockList.getActionMap().put(ENTER_PRESSED, enterAction);
 
 
         // Create/add child panels to the main frame JPanels and layout their
@@ -170,8 +271,8 @@ public class ViewStockTicker extends WindowAdapter implements ActionListener, IS
         toolPanel.setPreferredSize(new Dimension(160, 180));
         JPanel midPanel = new JPanel(new GridBagLayout());
         midPanel.setPreferredSize(new Dimension(160, 200));
-        JPanel btmPanel = new JPanel(new GridBagLayout());
-        btmPanel.setPreferredSize(new Dimension(160, 50));
+        JPanel listPanel = new JPanel(new GridBagLayout());
+        listPanel.setPreferredSize(new Dimension(160, 50));
 
         // Layout the JList JScrollPane
         m_constraints.gridx = 0;
@@ -179,12 +280,14 @@ public class ViewStockTicker extends WindowAdapter implements ActionListener, IS
         m_constraints.ipadx = 10;
         m_constraints.insets = new Insets(50, 0, 0, 0);
         midPanel.add(scrollPane, m_constraints);
-        
+
         // Layout the JList's set button
-        m_constraints.insets = new Insets(0, 0, 30, 5);
-        btmPanel.add(setButton, m_constraints);
         m_constraints.gridx = 1;
-        btmPanel.add(symbolName, m_constraints);
+        m_constraints.weighty = 0.1;
+        m_constraints.anchor = GridBagConstraints.NORTH;
+        //m_constraints.ipadx = 0;
+        m_constraints.insets = new Insets(0, 0, 0, 0);
+        listPanel.add(m_symbolField, m_constraints);
         m_constraints.insets = new Insets(0, 0, 0, 0);
         m_statusPanel = new JPanel();
         m_statusPanel.setPreferredSize(new Dimension(650, 65));
@@ -192,6 +295,7 @@ public class ViewStockTicker extends WindowAdapter implements ActionListener, IS
         // Create the JPanel containing the UI control buttons
         JPanel btnPanel = new JPanel(new GridBagLayout());
         btnPanel.setPreferredSize(new Dimension(200, 40));
+
         m_leftControlBtn = new JButton(UI.USER_REG.getName());
         m_rightControlBtn = new JButton(UI.LOGIN.getName());
 
@@ -207,17 +311,16 @@ public class ViewStockTicker extends WindowAdapter implements ActionListener, IS
         m_constraints.gridy = 0;
         m_constraints.insets = new Insets(0, 0, 0, 0);
         btnPanel.add(m_rightControlBtn, m_constraints);
-        //m_constraints.insets = new Insets(0, 0, 0, 0);
 
         // Add action listeners to the control buttons
-        m_leftControlBtn.addActionListener(this);
-        m_rightControlBtn.addActionListener(this);
-
+        OperateStockTicker operate = new OperateStockTicker();
+        m_leftControlBtn.addActionListener(operate);
+        m_rightControlBtn.addActionListener(operate);
 
         // Add all child JPanels their parent JPanel
         m_toolPanel.add(toolPanel, BorderLayout.NORTH);
         m_toolPanel.add(midPanel, BorderLayout.CENTER);
-        m_toolPanel.add(btmPanel, BorderLayout.SOUTH);
+        m_toolPanel.add(listPanel, BorderLayout.SOUTH);
         m_statusPanel.add(btnPanel, BorderLayout.NORTH);
         m_bottomPanel.add(m_statusPanel, BorderLayout.CENTER);
 
@@ -228,7 +331,6 @@ public class ViewStockTicker extends WindowAdapter implements ActionListener, IS
         m_frame.getContentPane().add(m_toolPanel, BorderLayout.WEST);
         m_frame.getContentPane().add(m_sidePanel, BorderLayout.EAST);
 
-
         // Layout the individual Card's and make GUI visiable
         setCardLayout();
         m_frame.setResizable(false);
@@ -237,178 +339,315 @@ public class ViewStockTicker extends WindowAdapter implements ActionListener, IS
 
 
     /**
-     * Layout the individual Cards (screens) of the UI.
-     * Instantiates the children JPanels that will make up the entire CardLayout.
+     * Layout the individual Cards (screens) of the UI. Instantiates the
+     * children JPanels that will make up the entire CardLayout.
      * 
      */
     private void setCardLayout() {
-        HomeCard homeCard = null;
-
         try {
-            homeCard = new HomeCard();
-        }
-        catch(IOException ex) {
+            m_homeCard = new HomeCard();
+        } catch(IOException ex) {
             System.err.println("Exception attempting to load or retrieve splash image");
             System.err.println(ex.getMessage());
         }
 
-        DetailCard detailCard = new DetailCard();
-        QuoteCard quoteCard = new QuoteCard();
-        TickerCard tickerCard = new TickerCard(m_cardPanel);
-        RegistrationCard regCard = new RegistrationCard();
-        LoginCard loginCard = new LoginCard();
+        m_detailCard = new DetailCard();
+        m_quoteCard = new QuoteCard();
+        m_tickerCard = new TickerCard(m_cardPanel);
+        m_regCard = new RegistrationCard();
+        m_loginCard = new LoginCard();
 
-        m_cardPanel.add(UI.HOME.getName(), homeCard.getCard());
-        m_cardPanel.add(UI.DETAIL.getName(), detailCard.getCard());
-        m_cardPanel.add(UI.QUOTE.getName(), quoteCard.getCard());
-        m_cardPanel.add(UI.TICKER.getName(), tickerCard.getCard());
-        m_cardPanel.add(UI.USER_REG.getName(), regCard.getCard());
-        m_cardPanel.add(UI.LOGIN.getName(), loginCard.getCard());
+        m_cardPanel.add(UI.HOME.getName(), m_homeCard.getCard());
+        m_cardPanel.add(UI.DETAIL.getName(), m_detailCard.getCard());
+        m_cardPanel.add(UI.QUOTE.getName(), m_quoteCard.getCard());
+        m_cardPanel.add(UI.TICKER.getName(), m_tickerCard.getCard());
+        m_cardPanel.add(UI.USER_REG.getName(), m_regCard.getCard());
+        m_cardPanel.add(UI.LOGIN.getName(), m_loginCard.getCard());
         m_frame.add(m_cardPanel, BorderLayout.CENTER);
     }
 
 
     /**
-     * Gets an instance of the GUI, which provides the CardLayout to the user.
-     * 
+     *
      */
-    public static ViewStockTicker getInstance() {
-        if(instance == null) {
-            instance = new ViewStockTicker();
+    public class OperateStockTicker implements ActionListener {
+
+        /**
+         * Changes the name of the left control button on the main panel.
+         *  
+         * @param name      - Name of left main panel button
+         */
+        public void resetLeftButton(String name) {
+            m_leftControlBtn.setText(name);
         }
 
-        return instance;
-    }
+
+        /**
+         * Changes the name of the right control button on the main panel.
+         * 
+         * @param name      - Name of right main panel button
+         */
+        public void resetRightButton(String name) {
+            m_rightControlBtn.setText(name);
+        }
 
 
-    /**
-     * Changes the name of the left control button on the main panel.
-     * @param name      - Name of left main panel button
-     */
-    public void resetLeftButton(String name) {
-        m_leftControlBtn.setText(name);
-    }
+        /**
+         * Override method that receives ActionEvents for the JPanel fields, such as
+         * a button press. Determines which event occurred and takes the appropriate
+         * action.
+         * 
+         * @param evt       - Registered event
+         */
+        @Override
+        public void actionPerformed(ActionEvent evt) {
+            UI selection = UI.getType(evt.getActionCommand());
+            cardLayout = (CardLayout) (m_cardPanel.getLayout());
+            boolean isEmpty = false;
 
 
-    /**
-     * Changes the name of the right control button on the main panel.
-     * @param name      - Name of right main panel button
-     */
-    public void resetRightButton(String name) {
-        m_rightControlBtn.setText(name);
-    }
+            switch(selection) {
+
+                case USER_REG:
+                    m_regCard.clearTextFields();
+                    cardLayout.show(m_cardPanel, UI.USER_REG.getName());
+                    this.resetLeftButton(UI.SUBMIT.getName());
+                    this.resetRightButton("Cancel");
+                    m_regSelect = true;
+                    break;
 
 
-    /**
-     * Override method that receives ActionEvents for the JPanel fields, such as
-     * a button press. Determines which event occurred and takes the appropriate
-     * action.
-     * 
-     * @param evt
-     *            Registered event
-     */
-    @Override
-    public void actionPerformed(ActionEvent evt) {
-        UI selection = UI.getType(evt.getActionCommand());
-        cardLayout = (CardLayout) (m_cardPanel.getLayout());
-        
-
-        switch(selection) {
-
-            case USER_REG:
-                cardLayout.show(m_cardPanel, UI.USER_REG.getName());
-                this.resetLeftButton(UI.SUBMIT.getName());
-                m_isRegistered = true;      // temp place holder for logic
-                break;
-
-            case LOGIN:
-                cardLayout.show(m_cardPanel, UI.LOGIN.getName());
-                if(m_logInTries < m_maxTries && !m_isLoggedIn ) {
-                    this.resetLeftButton("Submit");
-                    m_isLoggedIn = true;    // temp place holder for logic
-                }
-
-                break;
-
-            case SUBMIT:
-                if(m_isRegistered && !m_isLoggedIn) {
+                case LOGIN:
+                    m_loginCard.clearTextFields();
                     cardLayout.show(m_cardPanel, UI.LOGIN.getName());
-                    m_isLoggedIn = true;   // temp place holder
-                }
-                else if(m_isLoggedIn) {
-                    cardLayout.show(m_cardPanel, UI.TICKER.getName());
-                    this.resetLeftButton("Update");
-                    this.resetRightButton("Logout");
-                    m_isTickerOpen = true;
-                }
-                break;
+                    if(!m_logInSelect) {
+                        this.resetLeftButton("Submit");
+                        this.resetRightButton("Cancel");
+                        m_logInSelect = true;
+                        m_regSelect = false;
+                    }
+                    break;
 
-            case UPDATE:
-                if(m_isTickerOpen) {
-                    cardLayout.show(m_cardPanel, UI.DETAIL.getName());
-                    m_isTickerOpen = false;
+
+                case SUBMIT:
+                    if(m_regSelect) {
+                        if((m_firstname = m_regCard.getfirstName()).isEmpty() || m_regCard.getfirstName().startsWith(SPACE)) {
+                            System.out.println("Firstname field is blank");
+                            m_firstname = "";
+                            isEmpty = true;
+                        }
+
+                        if((m_lastname = m_regCard.getLastName()).isEmpty() || m_regCard.getLastName().startsWith(SPACE)) {
+                            System.out.println("Lastname field is blank");
+                            m_lastname = "";
+                            isEmpty = true;
+                        }
+
+                        if((m_username = m_regCard.getUsername()).isEmpty() || m_regCard.getUsername().startsWith(SPACE)) {
+                            System.out.println("Username field is blank");
+                            m_username = "";
+                            isEmpty = true;
+                        } 
+
+                        if((m_password = m_regCard.getPassword()).isEmpty() || m_regCard.getPassword().startsWith(SPACE)) {
+                            System.out.println("Password field is blank");
+                            m_password = "";
+                            isEmpty = true;
+                        }
+
+                        // Registration selcted; register user
+                        if(!isEmpty) {
+                            //m_userInfo = new UserInfo(m_firstname, m_lastname);
+                            this.registerUser(m_username, m_password);
+                        }
+                        /*else {
+                            m_regCard.clearTextFields();
+                        }*/
+                    }
+                    else if(m_logInSelect) {
+                        if((m_username = m_loginCard.getUsername()).isEmpty() || m_loginCard.getUsername().startsWith(SPACE)) {
+                            System.out.println("Username field is blank");
+                            m_username = "";
+                            isEmpty = true;
+                        }
+
+                        if((m_password = m_loginCard.getPassword()).isEmpty() || m_loginCard.getPassword().startsWith(SPACE)) {
+                            System.out.println("Password field is blank");
+                            m_password = "";
+                            isEmpty = true;
+                        }
+
+                        // User is registered; login user
+                        if(!isEmpty) {
+                            if(m_userAuth.isRegistered(m_username)) {
+                                this.logInUser(m_username, m_password);
+                            }
+                            else {
+                                System.out.println("Not a recognized user, check username or register");
+                                m_username = "";
+                                m_password = "";
+                                m_loginCard.clearTextFields();
+                            }
+                        }
+                        /*else {
+                            m_loginCard.clearTextFields();
+                        }*/
+                    }
+                    break;
+
+
+                case UPDATE:
+                    if(m_tickerSelect) {
+                        cardLayout.show(m_cardPanel, UI.DETAIL.getName());
+                        m_tickerSelect = false;
+                    } else {
+                        cardLayout.show(m_cardPanel, UI.TICKER.getName());
+                        m_tickerSelect = true;
+                    }
+
+                    break;
+
+                case CANCEL:
+                    m_cancelSelect = true;
+                case LOGOUT:
+                    if(!m_cancelSelect) {
+                        if(m_userAuth.logOut(m_username)) {
+                            System.out.println("User is logged out");
+                        }
+                        else {
+                            System.out.println("Unable to log user out");
+                        }
+                    }
+                    this.resetLeftButton("Registration");
+                    this.resetRightButton("Login");
+                    this.resetFlags();
+                    cardLayout.show(m_cardPanel, UI.HOME.getName());
+                    break;
+
+                default:
+                    System.out.println("Failed to select a key");
+            }
+        }
+
+
+        /**
+         *
+         * @param username
+         * @param password
+         */
+        private void logInUser(String username, String password) {
+            if(!m_userAuth.isLoggedIn(username)) {
+                if(m_userAuth.logIn(username, password)) {
+                    System.out.println("User successfully logged in");
+                    this.resetFlags();
                 }
                 else {
-                    cardLayout.show(m_cardPanel, UI.TICKER.getName());
-                    m_isTickerOpen = true;
+                    System.out.println("User login failed, please check password");
+                    m_username = "";
+                    m_password = "";
                 }
-                
-                break;
+            }
+            else {
+                System.out.println("User is already logged in");
+                this.resetFlags();
+            }
 
-            case LOGOUT:
-                this.resetLeftButton("Registration");
-                this.resetRightButton("Login");
-                this.setFlags();
-                cardLayout.show(m_cardPanel, UI.HOME.getName());
-                break;
+            // User is logged in,  switch screen to ticker
+            if(!m_logInSelect && !m_regSelect) { 
+                this.resetLeftButton("Update");
+                this.resetRightButton("Logout");
+                m_rightControlBtn.setEnabled(true);
+                m_tickerSelect = true;
+                cardLayout.show(m_cardPanel, UI.TICKER.getName());
+            }
+        }
 
-                
 
-            default:
-                System.out.println("failed to select a key");
+        /**
+         *
+         * @param username
+         * @param password
+         */
+        private void registerUser(String username, String password) {
+            if(!m_userAuth.isRegistered(username)) {
+                m_userInfo = new UserInfo(m_firstname, m_lastname);
+                if(m_userAuth.register(username, password, m_userInfo)) {
+                    //m_user = new User(username, password);
+                    System.out.println("New user successfully registered");
+                    m_regSelect = false;
+                    m_logInSelect = true;
+                    this.logInUser(username, password);
+                }
+                else {
+                    System.err.println("Problem occured, unable to register user");
+                    this.resetFlags();
+                }   
+            }
+            else {
+                if(this.checkValidUser(m_username)) {
+                    if(!m_userAuth.isLoggedIn(username)) {
+                        System.out.println("User is already a registered user, attempting to login...");
+                        this.logInUser(username, password);
+                    }
+                    else {
+                        System.out.println("User is already registered and logged in");
+                        this.resetLeftButton("Update");
+                        this.resetRightButton("Logout");
+                        this.resetFlags();
+                        m_tickerSelect = true;
+                        cardLayout.show(m_cardPanel, UI.TICKER.getName());
+                        //m_symbolField.requestFocusInWindow();
+                    }
+                }
+                else {
+                    System.out.println("Username is already taken, please choose another");
+                }  
+            }
+        }
+
+
+        /**
+         * Verify username is not already in registered to another User
+         * 
+         * @param username
+         * @return
+         */
+        private boolean checkValidUser(String username) {
+            UserInfo verifyUsr;
+            boolean isExists = false;
+
+            verifyUsr = m_userAuth.getUserInfo(username);
+            if(m_firstname.equals(verifyUsr.getFirstName()) && m_lastname.equals(verifyUsr.getLastName())) {
+                isExists = true;
+            }
+
+            return isExists;
+        }
+
+
+        /**
+         * Reset all flags to default state
+         * 
+         */
+        private void resetFlags() {
+            m_logInSelect = false;
+            m_regSelect = false;
+            m_cancelSelect = false;
+        }
+
+
+        /**
+         * Displays a message the argument message in the status field in UI. The
+         * user can set the color of the message and a tool tip. These fields can be
+         * set to null if not required.
+         * 
+         * @param color
+         * @param message
+         * @param tip
+         */
+        //@Override
+        public void setStatus(Color color, String message, String tip) {
+
         }
     }
-
-
-    /**
-     * Reset all flags to default state
-     * 
-     */
-    private void setFlags() {
-        m_isLoggedIn = false;
-        m_isRegistered = false;
-        m_logInTries = 0;
-    }
-
-
-    /**
-     * Displays a message the argument message in the status field in UI. The
-     * user can set the color of the message and a tool tip. These fields can be
-     * set to null if not required.
-     * 
-     * @param color
-     * @param message
-     * @param tip
-     */
-    @Override
-    public void setStatus(Color color, String message, String tip) {
-
-    }
-
-
-    /**
-     * Prints details about GUI frame and panels to the screen.  Available for
-     * debugging purposes.
-     * 
-     */
-    /*public void displayUIProperties() {
-        System.out.println("frame: " + m_frame);
-        System.out.println("bottom panel: " + m_bottomPanel);
-        System.out.println("side panel(main) " + m_toolPanel);
-        System.out.println("side panel(button) " + m_btnPanel);
-        System.out.println("card panel(main) " + m_cardPanel);
-        System.out.println("bottom2 " + m_statusPanel);
-        System.out.println("btnPanel " + m_btnPanel);
-
-    }*/
 }

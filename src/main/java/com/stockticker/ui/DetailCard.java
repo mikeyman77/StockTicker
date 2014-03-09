@@ -17,7 +17,7 @@ import javax.swing.border.EtchedBorder;
  * J308
  * @author prwallace
  */
-public class DetailCard extends JPanel {
+public final class DetailCard extends JPanel {
     private static final long serialVersionUID = 1L;
     private JPanel m_detailCard;
     //private JPanel m_detailPanel;
@@ -54,6 +54,7 @@ public class DetailCard extends JPanel {
     /**
     *
     *
+     * @return 
     */
     public JPanel getCard() {
         return m_detailCard;

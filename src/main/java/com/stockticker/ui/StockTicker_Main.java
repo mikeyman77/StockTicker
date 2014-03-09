@@ -6,8 +6,6 @@
 
 package com.stockticker.ui;
 
-
-
 /**
  * J308
  * @author prwallace
@@ -18,6 +16,5 @@ public class StockTicker_Main {
         ViewStockTicker gui = new ViewStockTicker();
         gui.build();
         gui.setPanels();
-        //gui.displayUIProperties();
     }
 }

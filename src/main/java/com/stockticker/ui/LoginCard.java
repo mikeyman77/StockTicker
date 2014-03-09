@@ -10,8 +10,6 @@ import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 
 import javax.swing.BorderFactory;
 import javax.swing.JLabel;
@@ -20,30 +18,27 @@ import javax.swing.JTextField;
 import javax.swing.border.EtchedBorder;
 
 /**
-* J308
-* @author prwallace
-*/
+ * J308
+ * 
+ * @author prwallace
+ */
 public class LoginCard extends JPanel {
     private static final long serialVersionUID = 1L;
     private JPanel m_loginCard;
-    private GridBagConstraints m_constraints;
-    
-    private String m_userName;
-    private String m_password;
+    private final GridBagConstraints m_constraints;
 
+    private JTextField m_usernameField;
+    private JTextField m_passwordField;
 
     /**
-    *
-    *
-    */
+     *
+     */
     public LoginCard() {
         m_constraints = new GridBagConstraints();
         setCard();
     }
 
-
-    /**
-    *
+   /**
     *
     */
     public final void setCard() {
@@ -53,23 +48,10 @@ public class LoginCard extends JPanel {
         JLabel userLbl = new JLabel("User Name:");
         JLabel passLbl = new JLabel("Password:");
 
-
-        final JTextField userField = new JTextField(40);
-        userField.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent evt) {
-                m_userName = userField.getText();
-                System.out.println(m_userName);
-            }
-        });
-
-        final JTextField passwordField = new JTextField(40);
-        passwordField.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent evt) {
-                m_password = passwordField.getText();
-                System.out.println(m_password);
-            }
-        });
-
+        m_usernameField = new JTextField(40);
+        m_passwordField = new JTextField(40);
+        m_usernameField.setText("");
+        m_passwordField.setText("");
 
         JPanel compPanel = new JPanel(new GridBagLayout());
         compPanel.setPreferredSize(new Dimension(400, 150));
@@ -87,7 +69,7 @@ public class LoginCard extends JPanel {
         m_constraints.weightx = 1.0;
         m_constraints.fill = GridBagConstraints.HORIZONTAL;
         m_constraints.insets = new Insets(0, 120, 0, 30);
-        compPanel.add(userField, m_constraints);
+        compPanel.add(m_usernameField, m_constraints);
 
         m_constraints.gridx = 0;
         m_constraints.gridy = 1;
@@ -100,19 +82,46 @@ public class LoginCard extends JPanel {
         m_constraints.weightx = 1.0;
         m_constraints.fill = GridBagConstraints.HORIZONTAL;
         m_constraints.insets = new Insets(0, 120, 0, 30);
-        compPanel.add(passwordField, m_constraints);
+        compPanel.add(m_passwordField, m_constraints);
 
-
-        m_loginCard.setBorder(BorderFactory.createTitledBorder(BorderFactory.createEtchedBorder(EtchedBorder.LOWERED), "Login"));
+        m_loginCard.setBorder(BorderFactory.createTitledBorder(BorderFactory
+                .createEtchedBorder(EtchedBorder.LOWERED), "Login"));
         m_loginCard.add(compPanel, new GridBagConstraints());
     }
 
 
     /**
-    *
-    *
-    */
+     *
+     * @return
+     */
     public JPanel getCard() {
         return m_loginCard;
+    }
+
+
+    /**
+     *
+     * @return
+     */
+    public String getUsername() {
+        return m_usernameField.getText();
+    }
+
+
+    /**
+     *
+     * @return
+     */
+    public String getPassword() {
+        return m_passwordField.getText();
+    }
+
+
+    /**
+     *
+     */
+    public void clearTextFields() {
+        m_usernameField.setText("");
+        m_passwordField.setText("");
     }
 }
