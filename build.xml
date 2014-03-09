@@ -91,7 +91,7 @@
                                                 ./lib/jackson-annotations-2.2.3.jar
                                                 ./lib/jackson-core-2.2.3.jar
                                                 ./lib/jackson-databind-2.2.3.jar
-                                                ./lib/jasypt-1.9.2.jar" />
+                                                ./lib/jasypt-1.9.2.jar"/>
         </manifest>
         <jar manifest="${basedir}/META-INF/MANIFEST.MF" destfile="stockticker.jar" basedir="${classes.dir}" excludes="">
             <fileset dir="${basedir}">
@@ -109,10 +109,11 @@
              excludes=".idea/,build/**,data/**,lib/**,resources/**,META-INF/**,src/**,build.xml,cobertura.ser,**/*.pdf">
 
             <zipfileset dir="${lib.dir}" prefix="lib">
-                <include name="h2-1.3.175.jar"/>
-                <include name="jackson-annotations-2.2.3.jar"/>
-                <include name="jackson-core-2.2.3.jar"/>
-                <include name="jackson-databind-2.2.3.jar"/>
+                <include name="h2-1.3.175.jar" />
+                <include name="jackson-annotations-2.2.3.jar" />
+                <include name="jackson-core-2.2.3.jar" />
+                <include name="jackson-databind-2.2.3.jar" />
+                <include name="jasypt-1.9.2.jar" />
             </zipfileset>
         </zip>
     </target>
