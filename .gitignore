@@ -65,4 +65,4 @@ doc/api/
 ####################
 stockticker.jar
 stockticker-all.zip
-MANIFEST.MF
+META-INF/MANIFEST.MF
