@@ -25,12 +25,12 @@ public interface IStockTicker_UIComponents {
     public enum UI {
         CLOSE("Close"), USER_REG("Registration"), TICKER("Ticker"), QUOTE("Quote"), HOME("Home"), 
         DETAIL("Detail"), LOGIN("Login"), LOGOUT("Logout"), SUBMIT("Submit"), UPDATE("Update"), 
-        CANCEL("Cancel"), DEFAULT("Default");
+        CANCEL("Cancel"), TRACK("Track"), DEFAULT("Default");
 
         private final String btnName;
 
         /**
-         * Constructor call, creates an instance equivelant to the string
+         * Constructor call, creates an instance equivalent to the string
          * argument
          * 
          */
