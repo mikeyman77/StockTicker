@@ -26,7 +26,12 @@ import javax.swing.border.EtchedBorder;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
+import java.util.ArrayList;
+import java.util.List;
+import javax.swing.table.AbstractTableModel;
+
 import com.stockticker.ui.IStockTicker_UIComponents.UI;
+import com.stockticker.StockQuote;
 
 /**
  * 
@@ -35,13 +40,22 @@ import com.stockticker.ui.IStockTicker_UIComponents.UI;
  */
 public class TickerCard extends JPanel {
     private static final long serialVersionUID = 1L;
-    private JPanel m_stockPanel;
+    private static final String[] m_header = { "SYMBOL", "TIME", "PRICE", "CHG", "CHG%",
+                "LOW", "HIGH", "VOLUME" };
+
+    private JPanel m_tablePanel;
     private JPanel m_tickerCard;
     private JPanel m_buttonPanel;
     private JPanel m_cardPanel;
-
     private CardLayout m_cardLayout;
+    //private ViewStockTicker m_main;
     private final GridBagConstraints m_constraints;
+
+    private JTable m_table;
+    private JScrollPane m_scrollPane;
+
+    private StockTableModel m_model;
+    private List<StockQuote> m_stocks;
 
     private String m_symbol;
 
@@ -51,11 +65,13 @@ public class TickerCard extends JPanel {
      * Set the argument CardLayout to the main JPanel of this class.
      *  
      * @param cards     - JPanel containing a CardLayout
+     * @param main
      */
     public TickerCard(JPanel cards) {
         m_constraints = new GridBagConstraints();
         setCard();
         m_cardPanel = cards;
+        //m_main = main;
     }
 
 
@@ -65,12 +81,14 @@ public class TickerCard extends JPanel {
      * @return 
      */
     public final JPanel setCard() {
+        m_model = new StockTableModel(m_header);
+        
         m_tickerCard = new JPanel();
         m_tickerCard.setPreferredSize(new Dimension(550, 520));
 
         setStockTable();
         m_tickerCard.setBorder(BorderFactory.createTitledBorder(BorderFactory.createEtchedBorder(EtchedBorder.LOWERED), "Stocks"));
-        m_tickerCard.add(m_stockPanel);
+        m_tickerCard.add(m_tablePanel);
 
         setButtonPanel();
         m_tickerCard.add(m_buttonPanel, BorderLayout.SOUTH);
@@ -84,37 +102,18 @@ public class TickerCard extends JPanel {
      * 
      */
     public void setStockTable() {
-        m_stockPanel = new JPanel(new GridLayout(1, 0));
-        m_stockPanel.setOpaque(true);
+        m_tablePanel = new JPanel(new GridLayout(1, 0));
+        m_tablePanel.setOpaque(true);
+        m_table = new JTable(m_model);
+        m_table.setPreferredScrollableViewportSize(new Dimension(500, 240));
+        //m_table.setEnabled(false);
+        m_table.setFillsViewportHeight(true);
 
-        String[] columnNames = { "SYMBOL", "TIME", "PRICE", "CHG", "CHG%",
-                "LOW", "HIGH", "VOLUME" };
+        m_scrollPane = new JScrollPane(m_table);
+        m_tablePanel.add(m_scrollPane);
 
-        Object[][] data = { { "", "", "", "", "", "", "", "" },
-                            { "", "", "", "", "", "", "", "" },
-                            { "", "", "", "", "", "", "", "" },
-                            { "", "", "", "", "", "", "", "" },
-                            { "", "", "", "", "", "", "", "" },
-                            { "", "", "", "", "", "", "", "" },
-                            { "", "", "", "", "", "", "", "" },
-                            { "", "", "", "", "", "", "", "" },
-                            { "", "", "", "", "", "", "", "" },
-                            { "", "", "", "", "", "", "", "" },
-                            { "", "", "", "", "", "", "", "" },
-                            { "", "", "", "", "", "", "", "" },
-                            { "", "", "", "", "", "", "", "" },
-                            { "", "", "", "", "", "", "", "" },
-                            { "", "", "", "", "", "", "", "" } };
-
-        final JTable table = new JTable(data, columnNames);
-        table.setPreferredScrollableViewportSize(new Dimension(500, 240));
-        table.setFillsViewportHeight(true);
-
-        JScrollPane scrollPane = new JScrollPane(table);
-        m_stockPanel.add(scrollPane);
-        
-        table.setRowSelectionAllowed(true);
-        ListSelectionModel rowSelection = table.getSelectionModel();
+        m_table.setRowSelectionAllowed(true);
+        ListSelectionModel rowSelection = m_table.getSelectionModel();
         rowSelection.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         rowSelection.addListSelectionListener(new ListSelectionListener() {
             @Override
@@ -168,7 +167,6 @@ public class TickerCard extends JPanel {
     }
 
 
-
     /**
      * 
      * @return 
@@ -185,5 +183,112 @@ public class TickerCard extends JPanel {
      */
     public void setCardLayout(JPanel panel) {
         m_cardPanel = panel;
+    }
+
+    /**
+     *
+     * @param stocks
+     */
+    public void displayTractedStocks(List<StockQuote> stocks) {
+        //m_table.setEnabled(true);
+        m_model.addStocks(stocks);
+    }
+}
+
+
+/**
+ *
+ */
+class StockTableModel extends AbstractTableModel {
+    //private final List<Object> m_rowData;
+    private List<StockQuote> m_stocks;
+    private final String[] m_header;
+
+
+    public StockTableModel(String[] header) {
+        this.m_header = header;
+        //this.m_rowData = new ArrayList<>();
+        this.m_stocks = new ArrayList<>();
+    }
+
+
+    @Override
+    public String getColumnName(int column) {
+        return m_header[column];
+    }
+
+
+    @Override
+    public int getRowCount() {
+        return m_stocks.size();
+    }
+
+
+    @Override
+    public int getColumnCount() {
+        return m_header.length;
+    }
+
+
+    @Override
+    public Object getValueAt(int rowIndex, int columnIndex) {
+        StockQuote sq = m_stocks.get(rowIndex);
+        Object value = null;
+
+        switch(columnIndex) {
+            case 0:
+                value = sq.getSymbol();
+                break;
+            case 1:
+                value = sq.getTime();
+                break;
+            case 2:
+                value = sq.getPrice();
+                break;
+            case 3:
+                value = sq.getChange();
+                break;
+            case 4:
+                value = sq.getChangePercent();
+            case 5:
+                value = sq.getLow();
+                break;
+            case 6:
+                value = sq.getHigh();
+                break;
+            case 7:
+                value = sq.getVolume();
+                break;
+            default:
+                System.err.println("Problems displaying Stock Quotes");
+        }
+
+        return value;
+
+    }
+
+
+    // add entire stockQuote list to List<Object>
+    public void addStocks(List<StockQuote> stock) {
+        m_stocks = stock;
+        fireTableDataChanged();
+    }
+
+
+    public void addStockFields(StockQuote stock, int index) {
+        m_stocks.add(index, stock);
+        fireTableRowsInserted(index, index);
+    }
+
+
+    public void removeStock(StockQuote stock) {
+        int index = m_stocks.indexOf(stock);
+        m_stocks.remove(index);
+        fireTableRowsInserted(index, index);
+    }
+
+
+    public Object getStock(int row) {
+        return m_stocks.get(row);
     }
 }
