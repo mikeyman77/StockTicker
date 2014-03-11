@@ -11,8 +11,9 @@ public class Admin {
     private JTextField firstNameTextField;
     private JTextField lastNameTextField;
     private JTextField emailTextField;
-    private JPasswordField passwordField;
-    private JPasswordField password2Field;
+    private JPasswordField oldPasswordField;
+    private JPasswordField newPassword1Field;
     private JButton saveButton;
     private JButton cancelButton;
+    private JPasswordField newPassword2Field;
 }
