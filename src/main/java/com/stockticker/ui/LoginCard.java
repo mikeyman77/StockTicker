@@ -30,15 +30,18 @@ public class LoginCard extends JPanel {
     private JTextField m_usernameField;
     private JTextField m_passwordField;
 
+
     /**
-     *
-     */
+    *
+    *
+    */
     public LoginCard() {
         m_constraints = new GridBagConstraints();
         setCard();
     }
 
    /**
+    *
     *
     */
     public final void setCard() {

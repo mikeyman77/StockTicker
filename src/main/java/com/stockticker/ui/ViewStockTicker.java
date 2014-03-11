@@ -6,6 +6,7 @@
 
 package com.stockticker.ui;
 
+import com.stockticker.StockQuote;
 import java.awt.BorderLayout;
 import java.awt.CardLayout;
 import java.awt.Color;
@@ -46,6 +47,9 @@ import com.stockticker.logic.AuthorizationService;
 import com.stockticker.logic.StockTicker;
 import com.stockticker.logic.StockTickerService;
 import com.stockticker.logic.UserAuthorization;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 
 /**
@@ -87,18 +91,25 @@ public class ViewStockTicker extends WindowAdapter implements IStockTicker_UICom
 
     private boolean m_logInSelect = false;
     private boolean m_regSelect = false;
-    private boolean m_tickerSelect = false;
+    //private boolean m_tickerSelect = false;
     private boolean m_cancelSelect = false;
+    //private boolean m_isTracking = false;
 
     private String m_username = "";
     private String m_password = "";
     private String m_firstname = "";
     private String m_lastname = "";
 
+    //private List<String> m_trackedStocks;
+    private List<String> m_symbolList;
+    private List<StockQuote> m_stockQuoteList;
+
     private final AuthorizationService m_userAuth = UserAuthorization.INSTANCE;
-    private final StockTickerService stockTicker =  StockTicker.INSTANCE;
+    private final StockTickerService m_stockTicker =  StockTicker.INSTANCE;
     private UserInfo m_userInfo;
-    private User m_user;
+    //private User m_user;
+
+    //private ViewStockTicker m_mainScreen;
 
 
     /**
@@ -160,7 +171,7 @@ public class ViewStockTicker extends WindowAdapter implements IStockTicker_UICom
 
 
         final JList<Object> stockList = new JList<>(SymbolMap.getSymbols().keySet().toArray());
-        stockList.setToolTipText("Double click to track, single click to select in text field");
+        stockList.setToolTipText("Double click to select or single click to select in text field");
         stockList.setVisibleRowCount(8);
         final JScrollPane scrollPane = new JScrollPane(stockList);
         scrollPane.setSize(150, 20);
@@ -168,30 +179,34 @@ public class ViewStockTicker extends WindowAdapter implements IStockTicker_UICom
 
         m_symbolField = new JTextField(6);
         m_symbolField.setEditable(true);
-        m_symbolField.setToolTipText("Press enter to track selected symbol");
-
+        m_symbolField.setToolTipText("Press enter to retrieve stock quote list");
+  
         // Select symbol in list after a double mouse click and track this symbol.  
         // Verify user is signed in
         stockList.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
+                String symbol = null;
                 if(e.getClickCount() == 2) {
-                    String symbol = stockList.getSelectedValue().toString();
+                    //m_isTracking = true;
+                    symbol = stockList.getSelectedValue().toString();
 
                     if(m_username.isEmpty() || m_username.startsWith(SPACE)) {
                         System.out.println("User has not logged in");
                     }
                     else if(!m_userAuth.isLoggedIn(m_username)) {
-                        System.err.println("User not logged in");
+                        System.err.println("User is not logged in");
                     }
                     else if(symbol == null) {
                         System.err.println("Unable to read symbol");
                     }
-                    else if(stockTicker.trackStock(m_username, symbol, true)) {
+                    /*else if(m_stockTicker.trackStock(m_username, symbol, true)) {
+                        m_trackedStocks = m_stockTicker.getTrackedStocks(m_username);
                         System.out.println("Trcking symbol " + symbol);
-                    }
+                    }*/
                     else {
-                        System.out.println("Unable to track selected stock");
+                        m_symbolList.add(symbol);
+                        System.out.println("Symbol selected");
                     }
                 }
                 else {
@@ -231,6 +246,7 @@ public class ViewStockTicker extends WindowAdapter implements IStockTicker_UICom
         Action enterAction = new AbstractAction() {
             @Override
             public void actionPerformed(ActionEvent actionEvent) {
+                //m_isTracking = true;
                 String symbol = stockList.getSelectedValue().toString();
                 m_symbolField.setText(symbol);
 
@@ -249,11 +265,13 @@ public class ViewStockTicker extends WindowAdapter implements IStockTicker_UICom
                 else if(!m_userAuth.isLoggedIn(m_username)) {
                     System.err.println("User is not logged in");
                 }
-                else if(stockTicker.trackStock(m_username, symbol, true)) {
+                /*else if(m_stockTicker.trackStock(m_username, symbol, true)) {
+                    m_trackedStocks = m_stockTicker.getTrackedStocks(m_username);
                     System.out.println("Trcking symbol " + symbol);
-                }
+                }*/
                 else {
-                    System.err.println("Unable to track selected stock");
+                    m_symbolList.add(symbol);
+                    System.out.println("Symbol selected");
                 }
             }
         };
@@ -263,6 +281,7 @@ public class ViewStockTicker extends WindowAdapter implements IStockTicker_UICom
         m_symbolField.getActionMap().put(ENTER_PRESSED, enterAction);
         stockList.getInputMap().put(KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, 0, true), ENTER_PRESSED);
         stockList.getActionMap().put(ENTER_PRESSED, enterAction);
+
 
 
         // Create/add child panels to the main frame JPanels and layout their
@@ -488,22 +507,58 @@ public class ViewStockTicker extends WindowAdapter implements IStockTicker_UICom
                                 m_password = "";
                                 m_loginCard.clearTextFields();
                             }
-                        }
+                        } 
                         /*else {
                             m_loginCard.clearTextFields();
                         }*/
                     }
                     break;
 
+                /*case TRACK:
+                    if(m_tickerSelect && !m_trackedStocks.isEmpty()) {
+                        m_isTracking = false;
+                        m_stockQuoteList = m_stockTicker.getStockQuotes(m_trackedStocks);
+                        m_tickerCard.displayTractedStocks(m_stockQuoteList);
+                        for(int i = 0; i < m_stockQuoteList.size(); i++) {
+                            System.out.println("Symbol: " + m_stockQuoteList.get(i).getSymbol());
+                            System.out.println("Name " + m_stockQuoteList.get(i).getName());
+                            System.out.println("Time " + m_stockQuoteList.get(i).getTime());
+                            System.out.println("Price " + m_stockQuoteList.get(i).getPrice());
+                            System.out.println("Change " + m_stockQuoteList.get(i).getChange());
+                            System.out.println("Chane% " + m_stockQuoteList.get(i).getChangePercent());
+                            System.out.println("Low " + m_stockQuoteList.get(i).getLow());
+                            System.out.println("High " + m_stockQuoteList.get(i).getHigh());
+                            System.out.println("Volume " + m_stockQuoteList.get(i).getVolume());
+                        }
+                    }
+                    m_tickerSelect = false;
+                    this.resetLeftButton("Update");
+                    break;*/
 
-                case UPDATE:
-                    if(m_tickerSelect) {
-                        cardLayout.show(m_cardPanel, UI.DETAIL.getName());
-                        m_tickerSelect = false;
-                    } else {
+
+                //case UPDATE:
+                case REFRESH:
+                    cardLayout.show(m_cardPanel, UI.TICKER.getName());
+                    //if(m_tickerSelect && !m_trackedStocks.isEmpty()) {
+                    //if(m_trackedStocks != null) {
+                    if(m_symbolList != null && m_symbolList.size() > 0) {
+                        m_stockQuoteList = m_stockTicker.getStockQuotes(m_symbolList);
+                        if(m_stockQuoteList.size() > 1 && m_stockQuoteList != null) {
+                            m_tickerCard.displayTractedStocks(m_stockQuoteList);
+                        }
+                        else {
+                            System.out.println("Unable to get Stock Quotes list");
+                        }
+                    }
+                    else {
+                        System.out.println("Please add a symbol to stock quote list");
+                    }
+                        //cardLayout.show(m_cardPanel, UI.DETAIL.getName());
+                        //m_tickerSelect = false;
+                    /*} else {
                         cardLayout.show(m_cardPanel, UI.TICKER.getName());
                         m_tickerSelect = true;
-                    }
+                    }*/
 
                     break;
 
@@ -513,6 +568,8 @@ public class ViewStockTicker extends WindowAdapter implements IStockTicker_UICom
                     if(!m_cancelSelect) {
                         if(m_userAuth.logOut(m_username)) {
                             System.out.println("User is logged out");
+                            m_symbolList = null;
+                            m_tickerCard.clearStockList();
                         }
                         else {
                             System.out.println("Unable to log user out");
@@ -540,6 +597,10 @@ public class ViewStockTicker extends WindowAdapter implements IStockTicker_UICom
                 if(m_userAuth.logIn(username, password)) {
                     System.out.println("User successfully logged in");
                     this.resetFlags();
+                    //m_tickerCard.displayTractedStocks(m_stockQuoteList);
+                    m_symbolList = new ArrayList<>();
+                    m_stockQuoteList = new ArrayList<>();
+                    
                 }
                 else {
                     System.out.println("User login failed, please check password");
@@ -554,10 +615,11 @@ public class ViewStockTicker extends WindowAdapter implements IStockTicker_UICom
 
             // User is logged in,  switch screen to ticker
             if(!m_logInSelect && !m_regSelect) { 
-                this.resetLeftButton("Update");
+                //this.resetLeftButton("Update");
+                this.resetLeftButton("Refresh");
                 this.resetRightButton("Logout");
                 m_rightControlBtn.setEnabled(true);
-                m_tickerSelect = true;
+                //m_tickerSelect = true;
                 cardLayout.show(m_cardPanel, UI.TICKER.getName());
             }
         }
@@ -591,12 +653,12 @@ public class ViewStockTicker extends WindowAdapter implements IStockTicker_UICom
                     }
                     else {
                         System.out.println("User is already registered and logged in");
-                        this.resetLeftButton("Update");
+                        //this.resetLeftButton("Update");
+                        this.resetLeftButton("Refresh");
                         this.resetRightButton("Logout");
                         this.resetFlags();
-                        m_tickerSelect = true;
+                        //m_tickerSelect = true;
                         cardLayout.show(m_cardPanel, UI.TICKER.getName());
-                        //m_symbolField.requestFocusInWindow();
                     }
                 }
                 else {
