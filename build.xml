@@ -19,9 +19,9 @@
               description="this directory is for all reports - xml and html"/>
     <property name="report.junit.dir" value="${report.dir}${file.separator}junit"
               description="this directory is used by JUnit. Test results are placed here in a nice HTML format"/>
-    <!-- Currently, the inmemory db is being persisted to disk, but wiped out each time clean is run. Switch to
+    <!-- Currently, the temp db is being persisted to disk, but wiped out each time clean is run. Switch to
          using init_cached.sql and data dir for persistent persistence. -->
-    <property name="inmemory.db.dir" value="data/mem" description="location of inmemory db files wiped out each run" />
+    <property name="temp.db.dir" value="data/mem" description="location of temp db files wiped out each run" />
 
     <!-- cobertura properties -->
     <property name="cobertura.home" value="lib"/>
@@ -47,7 +47,7 @@
 
     <target name="clean" description="deletes all build artifacts (anything created by this build file)">
         <delete dir="${classes.dir}"/>
-        <delete dir="${inmemory.db.dir}"/>
+        <delete dir="${temp.db.dir}"/>
         <delete dir="${doc.api.dir}"/>
         <delete file="stockticker.jar"/>
         <delete file="stockticker-all.zip"/>
@@ -55,7 +55,7 @@
 
     <target name="init" description="Build initialization - create output directories" depends="clean">
         <mkdir dir="${classes.dir}"/>
-        <mkdir dir="${inmemory.db.dir}"/>
+        <mkdir dir="${temp.db.dir}"/>
         <mkdir dir="${doc.api.dir}"/>
     </target>
 
@@ -85,7 +85,7 @@
 
     <!-- Creates a jar file -->
     <target name="jar" depends="compile" description="generates the jar file" >
-        <manifest file="${basedir}/META-INF/MANIFEST.MF">
+        <manifest file="${basedir}/META-INF/MANIFEST.MF" mode="replace">
             <attribute name="Main-Class" value="com.stockticker.ui.StockTicker_Main"/>
             <attribute name="Class-Path" value="./lib/h2-1.3.175.jar
                                                 ./lib/jackson-annotations-2.2.3.jar
