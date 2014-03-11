@@ -8,4 +8,9 @@ import javax.swing.*;
 public class Admin {
     private JTabbedPane tabbedPane1;
     private JPanel panel1;
+    private JTextField firstNameTextField;
+    private JTextField lastNameTextField;
+    private JTextField emailTextField;
+    private JPasswordField passwordField;
+    private JPasswordField password2Field;
 }
