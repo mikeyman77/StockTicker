@@ -13,4 +13,6 @@ public class Admin {
     private JTextField emailTextField;
     private JPasswordField passwordField;
     private JPasswordField password2Field;
+    private JButton saveButton;
+    private JButton cancelButton;
 }
