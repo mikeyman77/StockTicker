@@ -14,17 +14,24 @@ import com.stockticker.UserInfo;
 public enum StockTickerPersistence implements PersistenceService {
     INSTANCE;
 
-    private final TrackedStocksDAO trackedDAO;
-    private final UserDAO userDAO;
+    private TrackedStocksDAO trackedDAO = null;
+    private UserDAO userDAO = null;
 
     /**
      * Default no-args constructor that gets an instance of the
      * PersistenceConnection interface.
      */
     private StockTickerPersistence() {
-        PersistenceConnection persistence = PersistenceConnection.INSTANCE;
-        userDAO = new UserDAOImpl(persistence.getConnection());
-        trackedDAO = new TrackedStocksDAOImpl(persistence.getConnection());
+        try {
+            PersistenceConnection persistence = PersistenceConnection.INSTANCE;
+            userDAO = new UserDAOImpl(persistence.getConnection());
+            trackedDAO = new TrackedStocksDAOImpl(persistence.getConnection());
+        }
+        //do something better here. Throw to Business Logic and let it decide
+        // what to tell the UI.
+        catch (PersistenceServiceException pse) {
+            System.out.println(pse.getMessage());
+        }
     }
 
     /**
