@@ -44,11 +44,10 @@ public enum PersistenceConnection {
      * Default constructor that grabs local properties to build the connection
      * url and runs the database schema if not yet exists.
      *
-     * @exception ClassNotFoundException
-     * @exception SQLException
-     * @exception Exception
+     * @exception PersistenceServiceException provides message and error code
+     *              for specific error situations
      */
-    private PersistenceConnection() {
+    private PersistenceConnection() throws PersistenceServiceException {
 
         try {
             loadProperties();
@@ -76,13 +75,19 @@ public enum PersistenceConnection {
             */
         }
         catch (ClassNotFoundException e) {
-            System.out.println(e.getMessage());
+            int errorCode = PersistenceServiceException.DATABASE_DRIVER_NOT_FOUND;
+            String message = "Persistence Service unable to locate database driver";
+            throw new PersistenceServiceException(message+" ["+errorCode+"]: "+e.getMessage(), e, errorCode);
         }
         catch (SQLException e) {
-            System.out.println(e.getMessage());
+            int errorCode = PersistenceServiceException.DATABASE_CONNECTION_FAILED;
+            String message = "Persistence Service unable to obtain database connection";
+            throw new PersistenceServiceException(message+" ["+errorCode+"]: "+e.getMessage(), e, errorCode);
         }
-        catch (Exception e) {
-            e.printStackTrace();
+        catch (IOException e) {
+            int errorCode = PersistenceServiceException.PROPERTIES_FILE_NOT_FOUND;
+            String message = "Persistence Service unable to open properties file";
+            throw new PersistenceServiceException(message+" ["+errorCode+"]: "+e.getMessage(), e, errorCode);
         }
     }
 
