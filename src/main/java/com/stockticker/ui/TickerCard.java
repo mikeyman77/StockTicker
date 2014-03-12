@@ -193,6 +193,13 @@ public class TickerCard extends JPanel {
         //m_table.setEnabled(true);
         m_model.addStocks(stocks);
     }
+    
+    public void clearStockList() {
+        int count = m_model.getRowCount();
+        System.out.println("row count " + count);
+        m_model.deleteRow();
+    }
+            
 }
 
 
@@ -290,5 +297,11 @@ class StockTableModel extends AbstractTableModel {
 
     public Object getStock(int row) {
         return m_stocks.get(row);
+    }
+
+    public void deleteRow() {
+        for(int i = m_stocks.size() - 1; i >= 0; i--) {
+            m_stocks.remove(i);
+        }
     }
 }

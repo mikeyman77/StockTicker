@@ -10,8 +10,6 @@ import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
-import java.util.ArrayList;
-import java.util.List;
 
 import javax.swing.BorderFactory;
 import javax.swing.JLabel;
@@ -43,9 +41,11 @@ public class RegistrationCard extends JPanel {
         setCard();
     }
 
+
     /**
-     *
-     */
+    *
+    *
+    */
     public final void setCard() {
         m_regCard = new JPanel(new GridBagLayout());
         m_regCard.setPreferredSize(new Dimension(550, 520));
@@ -155,6 +155,7 @@ public class RegistrationCard extends JPanel {
         return m_lastnameField.getText();
     }
 
+
     /**
      *
      * @return
@@ -162,6 +163,7 @@ public class RegistrationCard extends JPanel {
     public String getUsername() {
         return m_usernameField.getText();
     }
+
 
     /**
      *
