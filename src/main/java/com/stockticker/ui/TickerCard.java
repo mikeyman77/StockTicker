@@ -33,6 +33,7 @@ import javax.swing.table.AbstractTableModel;
 import com.stockticker.ui.IStockTicker_UIComponents.UI;
 import com.stockticker.StockQuote;
 
+
 /**
  * 
  * J308 Project
@@ -40,8 +41,7 @@ import com.stockticker.StockQuote;
  */
 public class TickerCard extends JPanel {
     private static final long serialVersionUID = 1L;
-    private static final String[] m_header = { "SYMBOL", "TIME", "PRICE", "CHG", "CHG%",
-                "LOW", "HIGH", "VOLUME" };
+    private static final String[] m_header = { "SYMBOL", "TIME", "PRICE", "CHG", "CHG%", "LOW", "HIGH", "VOLUME" };
 
     private JPanel m_tablePanel;
     private JPanel m_tickerCard;
@@ -55,9 +55,14 @@ public class TickerCard extends JPanel {
     private JScrollPane m_scrollPane;
 
     private StockTableModel m_model;
-    private List<StockQuote> m_stocks;
+    //private List<StockQuote> m_stocks;
+    StockQuote m_selectedStock;
 
     private String m_symbol;
+    private final QuoteCard m_quoteCard;
+
+    private int m_quoteIndex;
+    private boolean m_isLoggedIn = false;
 
 
     /**
@@ -65,13 +70,14 @@ public class TickerCard extends JPanel {
      * Set the argument CardLayout to the main JPanel of this class.
      *  
      * @param cards     - JPanel containing a CardLayout
-     * @param main
+     * @param quoteCard
      */
-    public TickerCard(JPanel cards) {
+    //public TickerCard(JPanel cards) {
+    public TickerCard(JPanel cards, QuoteCard quoteCard) {
         m_constraints = new GridBagConstraints();
         setCard();
         m_cardPanel = cards;
-        //m_main = main;
+        m_quoteCard = quoteCard;
     }
 
 
@@ -106,19 +112,26 @@ public class TickerCard extends JPanel {
         m_tablePanel.setOpaque(true);
         m_table = new JTable(m_model);
         m_table.setPreferredScrollableViewportSize(new Dimension(500, 240));
-        //m_table.setEnabled(false);
         m_table.setFillsViewportHeight(true);
 
         m_scrollPane = new JScrollPane(m_table);
         m_tablePanel.add(m_scrollPane);
 
         m_table.setRowSelectionAllowed(true);
-        ListSelectionModel rowSelection = m_table.getSelectionModel();
+        final ListSelectionModel rowSelection = m_table.getSelectionModel();
         rowSelection.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         rowSelection.addListSelectionListener(new ListSelectionListener() {
+            
+            int eventCount = 0;
             @Override
             public void valueChanged(ListSelectionEvent evt) {
-                System.out.println("Selection in table");
+                
+                System.out.println("row selected = " + m_table.getSelectedRow());
+                if(m_table.getSelectedRow() >= 0 && evt.getValueIsAdjusting()) {
+                    m_quoteIndex = m_table.getSelectedRow();
+                    m_selectedStock = m_model.getStock(m_quoteIndex);
+                    System.out.println("row = " + m_quoteIndex);
+                } 
             }
         });
     }
@@ -131,15 +144,29 @@ public class TickerCard extends JPanel {
     public void setButtonPanel() {
         m_buttonPanel = new JPanel(new GridBagLayout());
         m_buttonPanel.setPreferredSize(new Dimension(300, 100));
+        
 
         JButton quote = new JButton("Quote");
         quote.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent evt) {
-                m_cardLayout = (CardLayout) m_cardPanel.getLayout();
-                m_cardLayout.show(m_cardPanel, UI.QUOTE.getName());
+                if(m_selectedStock != null) { //Insure there is a quote to display
+                    if(m_isLoggedIn) {                      
+                        m_quoteCard.displayStockQuote(m_selectedStock, 0, true);
+                        m_cardLayout = (CardLayout) m_cardPanel.getLayout();
+                        m_cardLayout.show(m_cardPanel, UI.QUOTE.getName());
+                        System.out.println("switching to QuoteCard");
+                    }
+                    else {
+                        System.out.println("No Quotes to display");
+                    }
+                }
+                else {
+                    System.out.println("Stock quote list is empty");
+                }
             }
         });
+
         final JTextField quoteField = new JTextField(40);
         quoteField.addActionListener(new ActionListener() {
              @Override
@@ -185,18 +212,21 @@ public class TickerCard extends JPanel {
         m_cardPanel = panel;
     }
 
+
     /**
      *
      * @param stocks
+     * @param enable
      */
-    public void displayTractedStocks(List<StockQuote> stocks) {
-        //m_table.setEnabled(true);
+    public void displayStockQuoteList(List<StockQuote> stocks, boolean enable) {
+        m_isLoggedIn = enable;
         m_model.addStocks(stocks);
     }
-    
-    public void clearStockList() {
-        int count = m_model.getRowCount();
-        System.out.println("row count " + count);
+
+
+    public void clearStockList(boolean disable) {
+        m_isLoggedIn = disable;
+        m_selectedStock = null;
         m_model.deleteRow();
     }
             
@@ -207,14 +237,12 @@ public class TickerCard extends JPanel {
  *
  */
 class StockTableModel extends AbstractTableModel {
-    //private final List<Object> m_rowData;
     private List<StockQuote> m_stocks;
     private final String[] m_header;
 
 
     public StockTableModel(String[] header) {
         this.m_header = header;
-        //this.m_rowData = new ArrayList<>();
         this.m_stocks = new ArrayList<>();
     }
 
@@ -275,7 +303,6 @@ class StockTableModel extends AbstractTableModel {
     }
 
 
-    // add entire stockQuote list to List<Object>
     public void addStocks(List<StockQuote> stock) {
         m_stocks = stock;
         fireTableDataChanged();
@@ -284,19 +311,21 @@ class StockTableModel extends AbstractTableModel {
 
     public void addStockFields(StockQuote stock, int index) {
         m_stocks.add(index, stock);
-        fireTableRowsInserted(index, index);
+        //fireTableRowsInserted(index, index);
     }
 
 
     public void removeStock(StockQuote stock) {
         int index = m_stocks.indexOf(stock);
         m_stocks.remove(index);
-        fireTableRowsInserted(index, index);
+        System.out.println("test");
+        //fireTableRowsInserted(index, index);
     }
 
 
-    public Object getStock(int row) {
-        return m_stocks.get(row);
+    //public Object getStock(int row) {
+    public StockQuote getStock(int row) {
+            return m_stocks.get(row);
     }
 
     public void deleteRow() {
