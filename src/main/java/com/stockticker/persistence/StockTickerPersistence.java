@@ -28,10 +28,17 @@ public enum StockTickerPersistence implements PersistenceService {
     private StockTickerPersistence() {
         boolean isBusinessLogic = false;
         String BUSINESS_LOGIC_CLASS = "com.stockticker.logic.UserAuthorization";
+        String PERSISTENCE_SERVICE_TEST = "com.stockticker.persistence.PersistenceServiceTest";
+        String USER_AUTHORIZATION_TEST = "com.stockticker.logic.UserAuthorizationTest";
+        String STOCK_TICKER_TEST = "com.stockticker.logic.StockTickerTest";
         try {
             List<StackTraceElement> elements = new ArrayList<StackTraceElement>(Arrays.asList(Thread.currentThread().getStackTrace()));
             for (StackTraceElement element : elements) {
-                if (element.getClassName().equals(BUSINESS_LOGIC_CLASS)) {
+                if (element.getClassName().equals(BUSINESS_LOGIC_CLASS) ||
+                    element.getClassName().equals(PERSISTENCE_SERVICE_TEST) ||
+                    element.getClassName().equals(USER_AUTHORIZATION_TEST) ||
+                    element.getClassName().equals(STOCK_TICKER_TEST)) {
+
                     isBusinessLogic = true;
                     break;
                 }
