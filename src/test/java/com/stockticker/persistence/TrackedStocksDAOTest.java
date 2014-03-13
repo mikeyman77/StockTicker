@@ -18,15 +18,20 @@ import static junit.framework.Assert.assertTrue;
  */
 public class TrackedStocksDAOTest {
 
-    private final Connection connection = PersistenceConnection.INSTANCE.getConnection();
-    private final UserDAO userDAO = new UserDAOImpl(this.connection);
-    private final TrackedStocksDAO trackedDAO = new TrackedStocksDAOImpl(this.connection);
+    private final UserDAO userDAO;
+    private final TrackedStocksDAO trackedDAO;
     private static final String GOOG = "GOOG";
     private static final String MSFT = "MSFT";
     private static final String MALONE = "malone";
     private static final String PASSWORD = "bugsy";
     private int userId;
     private int stockId;
+
+
+    public TrackedStocksDAOTest() throws PersistenceServiceException {
+        this.userDAO = new UserDAOImpl();
+        this.trackedDAO = new TrackedStocksDAOImpl();
+    }
 
     /**
      * Sets up the required values in the database before each test

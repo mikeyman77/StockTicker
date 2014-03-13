@@ -7,6 +7,15 @@ import com.stockticker.UserInfo;
 public interface PersistenceService {
 
     /**
+     * Starts the Persistence Service which performs necessary
+     * initialization.
+     *
+     * @throws PersistenceServiceException
+     */
+    public void start() throws PersistenceServiceException;
+
+
+    /**
      * Returns a List of stock symbols being tracked by a specific user
      *
      * @param username name of user
@@ -39,7 +48,7 @@ public interface PersistenceService {
      * @param username the name of the user
      * @return true if exists, false otherwise
      */
-    public boolean userExists(String username);
+    public boolean userExists(String username) throws PersistenceServiceException;
 
     /**
      * Creates a new user in the database
@@ -48,7 +57,7 @@ public interface PersistenceService {
      * @param password the user's password
      * @return a User object if doesn't exist, null otherwise
      */
-    public User createUser(String username, String password);
+    public User createUser(String username, String password) throws PersistenceServiceException;
 
     /**
      * Updates the specified user's information. Proper usage of this
@@ -58,7 +67,7 @@ public interface PersistenceService {
      * @param user a User object instance
      * @return true if updated, false otherwise
      */
-    public boolean updateUser(User user);
+    public boolean updateUser(User user) throws PersistenceServiceException;
 
     /**
      * Gets the specified user's information
@@ -74,7 +83,7 @@ public interface PersistenceService {
      * @param username the name of the user
      * @return true if successful, false otherwise
      */
-    public boolean deleteUser(String username);
+    public boolean deleteUser(String username) throws PersistenceServiceException;
 
     /**
      * Checks if the specified user is logged in

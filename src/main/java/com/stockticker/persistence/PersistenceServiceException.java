@@ -23,7 +23,15 @@ public class PersistenceServiceException extends RuntimeException {
      */
     public static final int DATABASE_CONNECTION_FAILED = 201;
 
+    /**
+     * Error code thrown when an SQL Exception occurs during
+     * execution of SQL statement.
+     */
+    public static final int SQL_EXCEPTION_OCCURRED = 202;
+
     private int errorCode;
+    private int reasonCode;
+    private int stateCode;
 
     /**
      * Constructs an exception class for the persistence service

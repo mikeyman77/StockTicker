@@ -17,8 +17,9 @@ public interface UserDAO {
      *
      * @param username the name of the user
      * @return the user id, -1 otherwise
+     * @throws  PersistenceServiceException
      */
-    public int getUserId(String username);
+    public int getUserId(String username) throws PersistenceServiceException;
 
     /**
      * Create a row in the user table and stores the username and
@@ -27,56 +28,63 @@ public interface UserDAO {
      * @param   username the name of the user
      * @param   password the user's password
      * @return  a new User with id, username, and password, null if creation failed
+     * @throws PersistenceServiceException
      */
-    public User create(String username, String password);
+    public User create(String username, String password) throws PersistenceServiceException;
 
     /**
      * Checks if the user exists
      *
      * @param username  the name of the user
      * @return  true if exists, false otherwise
+     * @throws PersistenceServiceException
      */
-    public boolean exists(String username);
+    public boolean exists(String username) throws PersistenceServiceException;
 
     /**
      * Updates the user data
      *
      * @param user  the User object to persist
      * @return  true if updated, false otherwise
+     * @throws PersistenceServiceException
      */
-    public boolean update(User user);
+    public boolean update(User user) throws PersistenceServiceException;
 
     /**
      * Finds a user by row id
      *
      * @param userId  the user's row id
      * @return  returns a User object, null if no user
+     * @throws  PersistenceServiceException
      */
-    //public User findByUserId(int userId);
+    //public User findByUserId(int userId) throws PersistenceServiceException;
 
     /**
      * Gets the user row associated with the user name
      *
      * @param username the name of the user
      * @return  a User object or null if it doesn't exist
+     * @throws  PersistenceServiceException
      */
-    public User    get(String username);
+    public User get(String username) throws PersistenceServiceException;
 
     /**
      * Deletes the user row associated with the username
      *
      * @param username  the name of the user
      * @return  true if delete successful, false otherwise
+     * @throws PersistenceServiceException
      */
-    public boolean delete(String username);
+    public boolean delete(String username) throws PersistenceServiceException;
 
     /**
      * Checks if the user is currently logged in
      *
      * @param username  the name of the user
      * @return  true if logged in, false otherwise
+     * @throws  PersistenceServiceException
      */
-    public boolean isLoggedIn(String username);
+    public boolean isLoggedIn(String username) throws PersistenceServiceException;
 
     /**
      * Set a user's logged in status to true or false
@@ -84,14 +92,16 @@ public interface UserDAO {
      * @param username  the name of the user
      * @param status    login status, true or false
      * @return  true if status set, false otherwise
+     * @throws  PersistenceServiceException
      */
-    public boolean setLoginStatus(String username, boolean status);
+    public boolean setLoginStatus(String username, boolean status) throws PersistenceServiceException;
 
     /**
      * Returns a list of logged in users.
      *
      * @return  list of logged in users
+     * @throws  PersistenceServiceException
      */
-    public List<String> getLoggedInUsers();
+    public List<String> getLoggedInUsers() throws PersistenceServiceException;
 
 }

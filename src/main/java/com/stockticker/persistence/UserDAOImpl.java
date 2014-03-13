@@ -22,12 +22,14 @@ public class UserDAOImpl implements UserDAO {
     private final Connection connection;
 
     /**
-     * Constructs the UserDAO implementation and stores a JDBC connection
-     *
-     * @param conn A JDBC connection
+     * Constructs the UserDAO implementation
      */
-    public UserDAOImpl(Connection conn) {
-        this.connection = conn;
+    public UserDAOImpl() throws PersistenceServiceException {
+        PersistenceConnection persistenceConnection = PersistenceConnectionImpl.INSTANCE;
+        if (!persistenceConnection.connectionEstablished()) {
+            persistenceConnection.start();
+        }
+        this.connection = persistenceConnection.getConnection();
     }
 
     /**
@@ -35,8 +37,9 @@ public class UserDAOImpl implements UserDAO {
      *
      * @param username the name of the user
      * @return the user id, -1 otherwise
+     * @throws PersistenceServiceException
      */
-    public int getUserId(String username) {
+    public int getUserId(String username) throws PersistenceServiceException {
         int userId = -1;
         try {
             Statement statement = connection.createStatement();
@@ -44,8 +47,10 @@ public class UserDAOImpl implements UserDAO {
             if (result.next())
                 userId = result.getInt(1);
         }
-        catch(SQLException e) {
-            System.out.println(e.getMessage());
+        catch (SQLException e) {
+            int errorCode = PersistenceServiceException.SQL_EXCEPTION_OCCURRED;
+            String message = "An SQL Exception occurred in the Persistence Service :";
+            throw new PersistenceServiceException(message+" ["+errorCode+"]: "+e.getMessage(), e, errorCode);
         }
 
         return userId;
@@ -58,46 +63,52 @@ public class UserDAOImpl implements UserDAO {
      * @param   username the name of the user
      * @param   password the user's password
      * @return  a new User with id, username, and password, null if creation failed
+     * @throws  PersistenceServiceException
      */
-    public User create(String username, String password){
+    public User create(String username, String password) throws PersistenceServiceException {
         User user = null;
 
-            //check if the user already exists
-            if (!exists(username)) {
-                try {
-                    //Create an empty userinfo row and retrieve the auto increment row id
-                    int userInfoId = -1;
-                    PreparedStatement prepared = connection.prepareStatement("INSERT INTO userinfo (firstName) VALUES (?)", Statement.RETURN_GENERATED_KEYS);
-                    prepared.setString(1, "");
-                    prepared.execute();
-                    ResultSet result = prepared.getGeneratedKeys();
-                    if (result.next() ) {
-                        userInfoId = result.getInt(1);
-                    }
-
-                    //insert the user row with username, password, and id from userinfo table insert
-                    int userId = -1;
-                    prepared = connection.prepareStatement("INSERT INTO user (FK_userInfoId, username, password, joinedDate, isLoggedIn) VALUES (?,?,?,?,?)", Statement.RETURN_GENERATED_KEYS);
-                    prepared.setInt(1, userInfoId);
-                    prepared.setString(2, username);
-                    prepared.setString(3, password);
-                    prepared.setTimestamp(4, new Timestamp(System.currentTimeMillis()));
-                    prepared.setBoolean(5, false);
-                    prepared.execute();
-                    result = prepared.getGeneratedKeys();
-                    if (result.next() ) {
-                        userId = result.getInt(1);
-                    }
-
-                    //create and return new User object
-                    user = new User(username, password);
-                    user.setUserID(userId);
-                    user.setUserInfo(new UserInfo("", ""));
+        //check if the user already exists
+        if (!exists(username)) {
+            try {
+                //Create an empty userinfo row and retrieve the auto increment row id
+                int userInfoId = -1;
+                PreparedStatement prepared = connection.prepareStatement("INSERT INTO userinfo (firstName) VALUES (?)",
+                                                                         Statement.RETURN_GENERATED_KEYS);
+                prepared.setString(1, "");
+                prepared.execute();
+                ResultSet result = prepared.getGeneratedKeys();
+                if (result.next() ) {
+                    userInfoId = result.getInt(1);
                 }
-                catch(SQLException e) {
-                    System.out.println(e.getMessage());
+
+                //insert the user row with username, password, and id from userinfo table insert
+                int userId = -1;
+                prepared = connection.prepareStatement("INSERT INTO user (FK_userInfoId, username, password, " +
+                                                         "joinedDate, isLoggedIn) VALUES (?,?,?,?,?)",
+                                                       Statement.RETURN_GENERATED_KEYS);
+                prepared.setInt(1, userInfoId);
+                prepared.setString(2, username);
+                prepared.setString(3, password);
+                prepared.setTimestamp(4, new Timestamp(System.currentTimeMillis()));
+                prepared.setBoolean(5, false);
+                prepared.execute();
+                result = prepared.getGeneratedKeys();
+                if (result.next() ) {
+                    userId = result.getInt(1);
                 }
+
+                //create and return new User object
+                user = new User(username, password);
+                user.setUserID(userId);
+                user.setUserInfo(new UserInfo("", ""));
             }
+            catch (SQLException e) {
+                int errorCode = PersistenceServiceException.SQL_EXCEPTION_OCCURRED;
+                String message = "An SQL Exception occurred in the Persistence Service :";
+                throw new PersistenceServiceException(message+" ["+errorCode+"]: "+e.getMessage(), e, errorCode);
+            }
+        }
 
         return user;
     }
@@ -107,8 +118,9 @@ public class UserDAOImpl implements UserDAO {
      *
      * @param username  the name of the user
      * @return  true if exists, false otherwise
+     * @throws  PersistenceServiceException
      */
-    public boolean exists(String username) {
+    public boolean exists(String username) throws PersistenceServiceException {
         boolean userExists = false;
 
         try {
@@ -118,8 +130,10 @@ public class UserDAOImpl implements UserDAO {
                 userExists = true;
             }
         }
-        catch(SQLException e) {
-            System.out.println(e.getMessage());
+        catch (SQLException e) {
+            int errorCode = PersistenceServiceException.SQL_EXCEPTION_OCCURRED;
+            String message = "An SQL Exception occurred in the Persistence Service :";
+            throw new PersistenceServiceException(message+" ["+errorCode+"]: "+e.getMessage(), e, errorCode);
         }
 
         return userExists;
@@ -130,8 +144,9 @@ public class UserDAOImpl implements UserDAO {
      *
      * @param user  the User object to persist
      * @return  true if updated, false otherwise
+     * @throws  PersistenceServiceException
      */
-    public boolean update(User user) {
+    public boolean update(User user) throws PersistenceServiceException {
         boolean updateSuccessful = false;
 
         //Check if row exists, if not return false
@@ -151,7 +166,8 @@ public class UserDAOImpl implements UserDAO {
                         //Retrieve the FK_userInfoId from the User table
                         int userInfoId = -1;
                         Statement statement = connection.createStatement();
-                        ResultSet result = statement.executeQuery("SELECT FK_userInfoId FROM user WHERE userId='"+user.getUserID()+"'");
+                        ResultSet result = statement.executeQuery("SELECT FK_userInfoId FROM user WHERE userId='" +
+                                                                  user.getUserID()+"'");
                         if (result.next()) {
                             userInfoId = result.getInt(1);
                         }
@@ -172,8 +188,10 @@ public class UserDAOImpl implements UserDAO {
                         updateSuccessful = true;
                     }
                 }
-                catch(SQLException e) {
-                    System.out.println(e.getMessage());
+                catch (SQLException e) {
+                    int errorCode = PersistenceServiceException.SQL_EXCEPTION_OCCURRED;
+                    String message = "An SQL Exception occurred in the Persistence Service :";
+                    throw new PersistenceServiceException(message+" ["+errorCode+"]: "+e.getMessage(), e, errorCode);
                 }
             }
 
@@ -224,8 +242,9 @@ public class UserDAOImpl implements UserDAO {
      *
      * @param username the name of the user
      * @return  a User object or null if it doesn't exist
+     * @throws PersistenceServiceException
      */
-    public User get(String username) {
+    public User get(String username) throws PersistenceServiceException {
         User user = null;
         int userInfoId = -1;
 
@@ -251,8 +270,10 @@ public class UserDAOImpl implements UserDAO {
                 user.setUserInfo(userinfo);
             }
         }
-        catch(SQLException e) {
-            System.out.println(e.getMessage());
+        catch (SQLException e) {
+            int errorCode = PersistenceServiceException.SQL_EXCEPTION_OCCURRED;
+            String message = "An SQL Exception occurred in the Persistence Service :";
+            throw new PersistenceServiceException(message+" ["+errorCode+"]: "+e.getMessage(), e, errorCode);
         }
 
         return user;
@@ -263,8 +284,9 @@ public class UserDAOImpl implements UserDAO {
      *
      * @param username  the name of the user
      * @return  true if delete successful, false otherwise
+     * @throws  PersistenceServiceException
      */
-    public boolean delete(String username) {
+    public boolean delete(String username) throws PersistenceServiceException {
         boolean deleteSuccessful = false;
 
         if (exists(username)) {
@@ -273,7 +295,8 @@ public class UserDAOImpl implements UserDAO {
                 int userId = -1;
                 int userInfoId = -1;
                 Statement statement = connection.createStatement();
-                ResultSet result = statement.executeQuery("SELECT userId, FK_userInfoId FROM user WHERE username='"+username+"'");
+                ResultSet result = statement.executeQuery("SELECT userId, FK_userInfoId FROM user WHERE username='" +
+                                                          username+"'");
                 if (result.next()) {
                     userId = result.getInt(1);
                     userInfoId = result.getInt(2);
@@ -296,8 +319,10 @@ public class UserDAOImpl implements UserDAO {
                     deleteSuccessful = false;
                 }
             }
-            catch(SQLException e) {
-                System.out.println(e.getMessage());
+            catch (SQLException e) {
+                int errorCode = PersistenceServiceException.SQL_EXCEPTION_OCCURRED;
+                String message = "An SQL Exception occurred in the Persistence Service :";
+                throw new PersistenceServiceException(message+" ["+errorCode+"]: "+e.getMessage(), e, errorCode);
             }
         }
 
@@ -309,8 +334,9 @@ public class UserDAOImpl implements UserDAO {
      *
      * @param username  the name of the user
      * @return  true if logged in, false otherwise
+     * @throws  PersistenceServiceException
      */
-    public boolean isLoggedIn(String username) {
+    public boolean isLoggedIn(String username) throws PersistenceServiceException {
         boolean isLoggedIn = false;
 
         try {
@@ -323,8 +349,10 @@ public class UserDAOImpl implements UserDAO {
                 }
             }
         }
-        catch(SQLException e) {
-            System.out.println(e.getMessage());
+        catch (SQLException e) {
+            int errorCode = PersistenceServiceException.SQL_EXCEPTION_OCCURRED;
+            String message = "An SQL Exception occurred in the Persistence Service :";
+            throw new PersistenceServiceException(message+" ["+errorCode+"]: "+e.getMessage(), e, errorCode);
         }
 
         return isLoggedIn;
@@ -336,8 +364,9 @@ public class UserDAOImpl implements UserDAO {
      * @param username  the name of the user
      * @param status    login status, true or false
      * @return  true if status set, false otherwise
+     * @throws  PersistenceServiceException
      */
-    public boolean setLoginStatus(String username, boolean status) {
+    public boolean setLoginStatus(String username, boolean status) throws PersistenceServiceException {
         boolean statusSet = false;
 
         try {
@@ -352,8 +381,10 @@ public class UserDAOImpl implements UserDAO {
                 statusSet = (rows > 0);
             }
         }
-        catch(SQLException e) {
-            System.out.println(e.getMessage());
+        catch (SQLException e) {
+            int errorCode = PersistenceServiceException.SQL_EXCEPTION_OCCURRED;
+            String message = "An SQL Exception occurred in the Persistence Service :";
+            throw new PersistenceServiceException(message+" ["+errorCode+"]: "+e.getMessage(), e, errorCode);
         }
 
         return statusSet;
@@ -363,8 +394,9 @@ public class UserDAOImpl implements UserDAO {
      * Returns a list of logged in users.
      *
      * @return  list of logged in users
+     * @throws  PersistenceServiceException
      */
-    public List<String> getLoggedInUsers() {
+    public List<String> getLoggedInUsers() throws PersistenceServiceException {
         List<String> users = new ArrayList<>();
 
         try {
@@ -377,8 +409,10 @@ public class UserDAOImpl implements UserDAO {
                 }
             }
         }
-        catch(SQLException e) {
-            System.out.println(e.getMessage());
+        catch (SQLException e) {
+            int errorCode = PersistenceServiceException.SQL_EXCEPTION_OCCURRED;
+            String message = "An SQL Exception occurred in the Persistence Service :";
+            throw new PersistenceServiceException(message+" ["+errorCode+"]: "+e.getMessage(), e, errorCode);
         }
 
         return users;

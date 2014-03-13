@@ -1,5 +1,7 @@
 package com.stockticker.persistence;
 
+import java.util.Arrays;
+import java.util.ArrayList;
 import java.util.List;
 import com.stockticker.User;
 import com.stockticker.UserInfo;
@@ -18,20 +20,39 @@ public enum StockTickerPersistence implements PersistenceService {
     private UserDAO userDAO = null;
 
     /**
-     * Default no-args constructor that gets an instance of the
-     * PersistenceConnection interface.
+     * @TODO This is temporary code that allows my exception changes
+     *       to be introduced without breaking the compiler. Once
+     *       the Business Logic Layer implements handling for these
+     *       new exceptions. Remove this private constructor.
      */
     private StockTickerPersistence() {
+        boolean isBusinessLogic = false;
+        String BUSINESS_LOGIC_CLASS = "com.stockticker.logic.UserAuthorization";
         try {
-            PersistenceConnection persistence = PersistenceConnection.INSTANCE;
-            userDAO = new UserDAOImpl(persistence.getConnection());
-            trackedDAO = new TrackedStocksDAOImpl(persistence.getConnection());
+            List<StackTraceElement> elements = new ArrayList<StackTraceElement>(Arrays.asList(Thread.currentThread().getStackTrace()));
+            for (StackTraceElement element : elements) {
+                if (element.getClassName().equals(BUSINESS_LOGIC_CLASS)) {
+                    isBusinessLogic = true;
+                    break;
+                }
+            }
+            if (isBusinessLogic) {
+                start();
+            }
         }
-        //do something better here. Throw to Business Logic and let it decide
-        // what to tell the UI.
-        catch (PersistenceServiceException pse) {
-            System.out.println(pse.getMessage());
+        catch (PersistenceServiceException e) {
+            ; //do nothing, supress. see todo above
         }
+    }
+
+    /**
+     * Performs necessary initialization.
+     *
+     * @throws PersistenceServiceException
+     */
+    public void start() throws PersistenceServiceException {
+        userDAO = new UserDAOImpl();
+        trackedDAO = new TrackedStocksDAOImpl();
     }
 
     /**
@@ -98,7 +119,7 @@ public enum StockTickerPersistence implements PersistenceService {
      * @return true if exists, false otherwise
      */
     @Override
-    public boolean userExists(String username) {
+    public boolean userExists(String username) throws PersistenceServiceException {
 
         return userDAO.exists(username);
     }
@@ -111,7 +132,7 @@ public enum StockTickerPersistence implements PersistenceService {
      * @return a User object if doesn't exist, null otherwise
      */
     @Override
-    public User createUser(String username, String password) {
+    public User createUser(String username, String password) throws PersistenceServiceException {
 
         return userDAO.create(username, password);
     }
@@ -125,7 +146,7 @@ public enum StockTickerPersistence implements PersistenceService {
      * @return true if updated, false otherwise
      */
     @Override
-    public boolean updateUser(User user) {
+    public boolean updateUser(User user) throws PersistenceServiceException {
         return userDAO.update(user);
     }
 
@@ -147,7 +168,7 @@ public enum StockTickerPersistence implements PersistenceService {
      * @return true if successful, false otherwise
      */
     @Override
-    public boolean deleteUser(String username) {
+    public boolean deleteUser(String username) throws PersistenceServiceException {
         return userDAO.delete(username);
     }
 
@@ -200,7 +221,7 @@ public enum StockTickerPersistence implements PersistenceService {
     /*
      * This is for testing purposes only, to run in the debugger.
      */
-    public static void main(String [] args) {
+    public static void main(String [] args) throws PersistenceServiceException {
         PersistenceService ps = StockTickerPersistence.INSTANCE;
 
         //User test calls go here
