@@ -6,14 +6,17 @@
 
 package com.stockticker.ui;
 
+import com.stockticker.ui.ViewStockTicker.OperateStockTicker;
 import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
+import java.util.Arrays;
 
 import javax.swing.BorderFactory;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JPasswordField;
 import javax.swing.JTextField;
 import javax.swing.border.EtchedBorder;
 
@@ -28,16 +31,20 @@ public class RegistrationCard extends JPanel {
     private JPanel m_regCard;
 
     private JTextField m_usernameField;
-    private JTextField m_passwordField;
+    //private JTextField m_passwordField;
+    private JPasswordField m_passwordField;
     private JTextField m_firstnameField;
     private JTextField m_lastnameField;
+
+    private OperateStockTicker m_ost;
 
 
     /**
      *
      */
-    public RegistrationCard() {
+    public RegistrationCard(OperateStockTicker ost) {
         m_constraints = new GridBagConstraints();
+        m_ost = ost;
         setCard();
     }
 
@@ -56,13 +63,18 @@ public class RegistrationCard extends JPanel {
         JLabel lastNameLbl = new JLabel("Last name:");
 
         m_usernameField = new JTextField(40);
-        m_passwordField = new JTextField(40);
-        m_firstnameField = new JTextField(40);
-        m_lastnameField = new JTextField(40);
         m_usernameField.setText("");
+
+        m_passwordField = new JPasswordField(20);
+        m_passwordField.setEchoChar('*');
         m_passwordField.setText("");
+
+        m_firstnameField = new JTextField(40);
         m_firstnameField.setText("");
+
+        m_lastnameField = new JTextField(40);
         m_lastnameField.setText("");
+
 
         JPanel compPanel = new JPanel(new GridBagLayout());
         compPanel.setPreferredSize(new Dimension(400, 250));
@@ -170,7 +182,7 @@ public class RegistrationCard extends JPanel {
      * @return
      */
     public String getPassword() {
-        return m_passwordField.getText();
+        return String.valueOf(m_passwordField.getPassword());
     }
 
 
@@ -179,8 +191,9 @@ public class RegistrationCard extends JPanel {
      */
     public void clearTextFields() {
         m_usernameField.setText("");
-        m_passwordField.setText("");
+        Arrays.fill(m_passwordField.getPassword(), '0');
         m_firstnameField.setText("");
         m_lastnameField.setText("");
+        m_passwordField.setText("");
     }
 }
