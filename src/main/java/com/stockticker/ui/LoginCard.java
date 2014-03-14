@@ -10,10 +10,12 @@ import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
+import java.util.Arrays;
 
 import javax.swing.BorderFactory;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JPasswordField;
 import javax.swing.JTextField;
 import javax.swing.border.EtchedBorder;
 
@@ -28,7 +30,8 @@ public class LoginCard extends JPanel {
     private final GridBagConstraints m_constraints;
 
     private JTextField m_usernameField;
-    private JTextField m_passwordField;
+    private JPasswordField m_passwordField;
+    //private JTextField m_passwordField;
 
 
     /**
@@ -52,8 +55,10 @@ public class LoginCard extends JPanel {
         JLabel passLbl = new JLabel("Password:");
 
         m_usernameField = new JTextField(40);
-        m_passwordField = new JTextField(40);
         m_usernameField.setText("");
+
+        m_passwordField = new JPasswordField(20);
+        m_passwordField.setEchoChar('*');
         m_passwordField.setText("");
 
         JPanel compPanel = new JPanel(new GridBagLayout());
@@ -125,6 +130,7 @@ public class LoginCard extends JPanel {
      */
     public void clearTextFields() {
         m_usernameField.setText("");
+        Arrays.fill(m_passwordField.getPassword(), '0');
         m_passwordField.setText("");
     }
 }

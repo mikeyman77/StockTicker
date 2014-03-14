@@ -100,6 +100,7 @@ public class ViewStockTicker extends WindowAdapter implements IStockTicker_UICom
 
     private String m_username = "";
     private String m_password = "";
+    //private char[] m_password;
     private String m_firstname = "";
     private String m_lastname = "";
 
@@ -111,6 +112,8 @@ public class ViewStockTicker extends WindowAdapter implements IStockTicker_UICom
     private final StockTickerService m_stockTicker =  StockTicker.INSTANCE;
     private UserInfo m_userInfo;
     //private User m_user;
+
+    private OperateStockTicker m_operate;
 
 
     /**
@@ -339,9 +342,9 @@ public class ViewStockTicker extends WindowAdapter implements IStockTicker_UICom
         btnPanel.add(m_rightControlBtn, m_constraints);
 
         // Add action listeners to the control buttons
-        OperateStockTicker operate = new OperateStockTicker();
-        m_leftControlBtn.addActionListener(operate);
-        m_rightControlBtn.addActionListener(operate);
+        m_operate = new OperateStockTicker();
+        m_leftControlBtn.addActionListener(m_operate);
+        m_rightControlBtn.addActionListener(m_operate);
 
         // Add all child JPanels their parent JPanel
         m_toolPanel.add(toolPanel, BorderLayout.NORTH);
@@ -356,6 +359,7 @@ public class ViewStockTicker extends WindowAdapter implements IStockTicker_UICom
         m_frame.getContentPane().add(m_cardPanel, BorderLayout.CENTER);
         m_frame.getContentPane().add(m_toolPanel, BorderLayout.WEST);
         m_frame.getContentPane().add(m_sidePanel, BorderLayout.EAST);
+        //m_frame.getRootPane().setDefaultButton(m_leftControlBtn);
 
         // Layout the individual Card's and make GUI visiable
         setCardLayout();
@@ -380,7 +384,7 @@ public class ViewStockTicker extends WindowAdapter implements IStockTicker_UICom
         m_detailCard = new DetailCard();
         m_quoteCard = new QuoteCard();
         m_tickerCard = new TickerCard(m_cardPanel, m_quoteCard);
-        m_regCard = new RegistrationCard();
+        m_regCard = new RegistrationCard(m_operate);
         m_loginCard = new LoginCard();
 
         m_cardPanel.add(UI.HOME.getName(), m_homeCard.getCard());
@@ -432,7 +436,7 @@ public class ViewStockTicker extends WindowAdapter implements IStockTicker_UICom
             cardLayout = (CardLayout) (m_cardPanel.getLayout());
             boolean isEmpty = false;
 
-
+            System.out.println("get source = " + evt.getSource());
             switch(selection) {
 
                 case USER_REG:
