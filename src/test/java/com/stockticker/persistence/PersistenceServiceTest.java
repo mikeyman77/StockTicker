@@ -1,7 +1,6 @@
 package com.stockticker.persistence;
 
 import java.util.List;
-import com.stockticker.Stock;
 import com.stockticker.User;
 import org.junit.After;
 import org.junit.Before;
@@ -25,7 +24,6 @@ public class PersistenceServiceTest {
     private static final String PEDROIA = "Pedroia";
     private static final String ORTIZ = "Ortiz";
     private static final String VICTORINO = "Victorino";
-    private static final String BRADY = "Brady";
     private static final String MANNING = "Manning";
     private static final String SCHILLING = "Schilling";
     private static final String CONNALL = "Connall";
@@ -35,14 +33,8 @@ public class PersistenceServiceTest {
     private static final String AAPL = "AAPL";
     private static final String MSFT = "MSFT";
     private static final String ORCL = "ORCL";
-    private User pedroia;
     private User ortiz;
-    private User victorino;
     private User vedder;
-    private Stock google;
-    private Stock apple;
-    private Stock microsoft;
-    private Stock oracle;
 
     /**
      * Sets up each test before they run
@@ -50,12 +42,9 @@ public class PersistenceServiceTest {
     @Before
     public void setUp() {
         persistence = StockTickerPersistence.INSTANCE;
-        pedroia = persistence.createUser(PEDROIA, PASSWORD);
+        persistence.createUser(PEDROIA, PASSWORD);
         ortiz = persistence.createUser(ORTIZ, PASSWORD);
-        victorino = persistence.createUser(VICTORINO, PASSWORD);
-        google = new Stock(GOOG);
-        apple = new Stock(AAPL);
-        microsoft = new Stock(MSFT);
+        persistence.createUser(VICTORINO, PASSWORD);
         persistence.trackStock(ORTIZ, GOOG, true);
         persistence.trackStock(ORTIZ, AAPL, true);
         persistence.trackStock(ORTIZ, MSFT, true);

@@ -18,13 +18,14 @@ import static junit.framework.Assert.*;
  */
 public class UserDAOTest {
 
-    private final Connection connection = PersistenceConnection.INSTANCE.getConnection();
-    private final UserDAO userDAO = new UserDAOImpl(this.connection);
-    private static final String GOOG = "GOOG";
-    private static final String MSFT = "MSFT";
+    private final UserDAO userDAO;
     private static final String MALONE = "malone";
     private static final String BOJACKSON = "bojackson";
     private static final String PASSWORD = "bugsy";
+
+    public UserDAOTest() throws PersistenceServiceException {
+        this.userDAO = new UserDAOImpl();
+    }
 
     /**
      * Sets up the required values in the database before each test
@@ -34,7 +35,6 @@ public class UserDAOTest {
         User user = userDAO.create(MALONE, PASSWORD);
         user.setUserInfo(new UserInfo("bugsy", "malone"));
         userDAO.update(user);
-        int userId = userDAO.getUserId(MALONE);
     }
 
     /**

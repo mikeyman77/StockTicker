@@ -25,7 +25,13 @@ public class PersistenceConnectionTest {
      */
     @Before
     public void setUp() {
-        persistence = PersistenceConnection.INSTANCE;
+        try {
+            persistence = PersistenceConnectionImpl.INSTANCE;
+            persistence.start();
+        }
+        catch (PersistenceServiceException e) {
+            System.out.println(e.getMessage());
+        }
     }
 
     /**
@@ -39,24 +45,6 @@ public class PersistenceConnectionTest {
         Connection stub = Implementor.proxy(Connection.class, new Object(){
         });
         assertNotNull("db connection", stub);
-    }
-
-    /**
-     * Tests that the database was successfully initialized
-     */
-    @Test
-    public void testInitializeDatabaseTrue() {
-        boolean initialized = persistence.initializeDatabase(H2_DBNAME);
-        assertTrue("initialze db", initialized);
-    }
-
-    /**
-     * Tests that the database was not initialized
-     */
-    @Test
-    public void testInitializeDatabaseFalse() {
-        boolean initialized = persistence.initializeDatabase("");
-        assertFalse("initialze db", initialized);
     }
 
 }
