@@ -11,13 +11,19 @@ import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
+import java.awt.event.ActionEvent;
+import java.awt.event.KeyEvent;
 import java.util.Arrays;
+import javax.swing.AbstractAction;
+import javax.swing.Action;
 
 import javax.swing.BorderFactory;
+import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JPasswordField;
 import javax.swing.JTextField;
+import javax.swing.KeyStroke;
 import javax.swing.border.EtchedBorder;
 
 /**
@@ -26,25 +32,24 @@ import javax.swing.border.EtchedBorder;
  */
 public class RegistrationCard extends JPanel {
     private static final long serialVersionUID = 1L;
+    private static final String ENTER_PRESSED = "ENTER_RELEASED";
 
     private final GridBagConstraints m_constraints;
     private JPanel m_regCard;
 
     private JTextField m_usernameField;
-    //private JTextField m_passwordField;
     private JPasswordField m_passwordField;
     private JTextField m_firstnameField;
     private JTextField m_lastnameField;
-
-    private OperateStockTicker m_ost;
+    private final OperateStockTicker m_operate;
 
 
     /**
      *
      */
-    public RegistrationCard(OperateStockTicker ost) {
+    public RegistrationCard(OperateStockTicker operate) {
         m_constraints = new GridBagConstraints();
-        m_ost = ost;
+        m_operate = operate;
         setCard();
     }
 
@@ -75,6 +80,16 @@ public class RegistrationCard extends JPanel {
         m_lastnameField = new JTextField(40);
         m_lastnameField.setText("");
 
+        Action enterAction = new AbstractAction() {
+            @Override
+            public void actionPerformed(ActionEvent actionEvent) {
+               m_operate.getLeftControlBtn().doClick();
+            }
+        };
+
+        m_lastnameField.getInputMap(JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT).put(KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, 0, true), ENTER_PRESSED);
+        m_lastnameField.getActionMap().put(ENTER_PRESSED, enterAction);
+        
 
         JPanel compPanel = new JPanel(new GridBagLayout());
         compPanel.setPreferredSize(new Dimension(400, 250));
@@ -136,7 +151,6 @@ public class RegistrationCard extends JPanel {
         // Add this main panel to the main Card panel
         m_regCard.setBorder(BorderFactory.createTitledBorder(BorderFactory.createEtchedBorder(EtchedBorder.LOWERED), "Registration"));
         m_regCard.add(compPanel, new GridBagConstraints());
-
     }
 
 

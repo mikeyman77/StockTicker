@@ -6,18 +6,26 @@
 
 package com.stockticker.ui;
 
+import com.stockticker.ui.ViewStockTicker.OperateStockTicker;
 import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
+import java.awt.event.ActionEvent;
+import java.awt.event.KeyEvent;
 import java.util.Arrays;
+import javax.swing.AbstractAction;
+import javax.swing.Action;
 
 import javax.swing.BorderFactory;
+import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JPasswordField;
 import javax.swing.JTextField;
+import javax.swing.KeyStroke;
 import javax.swing.border.EtchedBorder;
+
 
 /**
  * J308
@@ -26,20 +34,24 @@ import javax.swing.border.EtchedBorder;
  */
 public class LoginCard extends JPanel {
     private static final long serialVersionUID = 1L;
+    private static final String ENTER_PRESSED = "ENTER_RELEASED";
+
     private JPanel m_loginCard;
     private final GridBagConstraints m_constraints;
 
     private JTextField m_usernameField;
     private JPasswordField m_passwordField;
-    //private JTextField m_passwordField;
+
+    private final OperateStockTicker m_operate;
 
 
     /**
     *
     *
     */
-    public LoginCard() {
+    public LoginCard(OperateStockTicker operate) {
         m_constraints = new GridBagConstraints();
+        m_operate = operate;
         setCard();
     }
 
@@ -60,6 +72,16 @@ public class LoginCard extends JPanel {
         m_passwordField = new JPasswordField(20);
         m_passwordField.setEchoChar('*');
         m_passwordField.setText("");
+
+        Action enterAction = new AbstractAction() {
+            @Override
+            public void actionPerformed(ActionEvent actionEvent) {
+               m_operate.getLeftControlBtn().doClick();
+            }
+        };
+
+        m_passwordField.getInputMap(JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT).put(KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, 0, true), ENTER_PRESSED);
+        m_passwordField.getActionMap().put(ENTER_PRESSED, enterAction);
 
         JPanel compPanel = new JPanel(new GridBagLayout());
         compPanel.setPreferredSize(new Dimension(400, 150));
@@ -92,8 +114,7 @@ public class LoginCard extends JPanel {
         m_constraints.insets = new Insets(0, 120, 0, 30);
         compPanel.add(m_passwordField, m_constraints);
 
-        m_loginCard.setBorder(BorderFactory.createTitledBorder(BorderFactory
-                .createEtchedBorder(EtchedBorder.LOWERED), "Login"));
+        m_loginCard.setBorder(BorderFactory.createTitledBorder(BorderFactory.createEtchedBorder(EtchedBorder.LOWERED), "Login"));
         m_loginCard.add(compPanel, new GridBagConstraints());
     }
 

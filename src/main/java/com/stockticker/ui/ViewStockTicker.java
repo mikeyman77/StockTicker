@@ -49,6 +49,7 @@ import com.stockticker.logic.StockTickerService;
 import com.stockticker.logic.UserAuthorization;
 import java.util.ArrayList;
 import java.util.List;
+import javax.swing.JComponent;
 
 
 /**
@@ -100,7 +101,6 @@ public class ViewStockTicker extends WindowAdapter implements IStockTicker_UICom
 
     private String m_username = "";
     private String m_password = "";
-    //private char[] m_password;
     private String m_firstname = "";
     private String m_lastname = "";
 
@@ -113,7 +113,8 @@ public class ViewStockTicker extends WindowAdapter implements IStockTicker_UICom
     private UserInfo m_userInfo;
     //private User m_user;
 
-    private OperateStockTicker m_operate;
+    private final OperateStockTicker m_operate;
+    //public Action m_leftButtonAction;
 
 
     /**
@@ -122,6 +123,7 @@ public class ViewStockTicker extends WindowAdapter implements IStockTicker_UICom
      */
     public ViewStockTicker() {
         m_frame = new JFrame();
+        m_operate = new OperateStockTicker();
     }
 
 
@@ -287,10 +289,9 @@ public class ViewStockTicker extends WindowAdapter implements IStockTicker_UICom
             }
         };
 
-
-        m_symbolField.getInputMap().put(KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, 0, true), ENTER_PRESSED);
+        m_symbolField.getInputMap(JComponent.WHEN_FOCUSED).put(KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, 0, true), ENTER_PRESSED);
         m_symbolField.getActionMap().put(ENTER_PRESSED, enterAction);
-        m_stockList.getInputMap().put(KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, 0, true), ENTER_PRESSED);
+        m_stockList.getInputMap(JComponent.WHEN_FOCUSED).put(KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, 0, true), ENTER_PRESSED);
         m_stockList.getActionMap().put(ENTER_PRESSED, enterAction);
 
 
@@ -321,12 +322,34 @@ public class ViewStockTicker extends WindowAdapter implements IStockTicker_UICom
         m_statusPanel = new JPanel();
         m_statusPanel.setPreferredSize(new Dimension(650, 65));
 
+
         // Create the JPanel containing the UI control buttons
         JPanel btnPanel = new JPanel(new GridBagLayout());
         btnPanel.setPreferredSize(new Dimension(200, 40));
 
         m_leftControlBtn = new JButton(UI.USER_REG.getName());
         m_rightControlBtn = new JButton(UI.LOGIN.getName());
+
+        Action m_leftButtonAction = new AbstractAction() {
+            @Override
+            public void actionPerformed(ActionEvent actionEvent) {
+                m_leftControlBtn.doClick();
+            }
+        };
+
+        m_leftControlBtn.getInputMap(JComponent.WHEN_FOCUSED).put(KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, 0, true), ENTER_PRESSED);
+        m_leftControlBtn.getActionMap().put(ENTER_PRESSED, m_leftButtonAction);
+
+        Action rightButtonAction = new AbstractAction() {
+            @Override
+            public void actionPerformed(ActionEvent actionEvent) {
+                m_rightControlBtn.doClick();
+            }
+        };
+
+        m_rightControlBtn.getInputMap(JComponent.WHEN_FOCUSED).put(KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, 0, true), ENTER_PRESSED);
+        m_rightControlBtn.getActionMap().put(ENTER_PRESSED, rightButtonAction);
+        
 
         // Layout the left control button
         m_constraints.gridx = 0;
@@ -342,7 +365,6 @@ public class ViewStockTicker extends WindowAdapter implements IStockTicker_UICom
         btnPanel.add(m_rightControlBtn, m_constraints);
 
         // Add action listeners to the control buttons
-        m_operate = new OperateStockTicker();
         m_leftControlBtn.addActionListener(m_operate);
         m_rightControlBtn.addActionListener(m_operate);
 
@@ -359,10 +381,9 @@ public class ViewStockTicker extends WindowAdapter implements IStockTicker_UICom
         m_frame.getContentPane().add(m_cardPanel, BorderLayout.CENTER);
         m_frame.getContentPane().add(m_toolPanel, BorderLayout.WEST);
         m_frame.getContentPane().add(m_sidePanel, BorderLayout.EAST);
-        //m_frame.getRootPane().setDefaultButton(m_leftControlBtn);
 
         // Layout the individual Card's and make GUI visiable
-        setCardLayout();
+        this.setCardLayout();
         m_frame.setResizable(false);
         m_frame.setVisible(true);
     }
@@ -385,7 +406,7 @@ public class ViewStockTicker extends WindowAdapter implements IStockTicker_UICom
         m_quoteCard = new QuoteCard();
         m_tickerCard = new TickerCard(m_cardPanel, m_quoteCard);
         m_regCard = new RegistrationCard(m_operate);
-        m_loginCard = new LoginCard();
+        m_loginCard = new LoginCard(m_operate);
 
         m_cardPanel.add(UI.HOME.getName(), m_homeCard.getCard());
         m_cardPanel.add(UI.DETAIL.getName(), m_detailCard.getCard());
@@ -430,13 +451,14 @@ public class ViewStockTicker extends WindowAdapter implements IStockTicker_UICom
          * 
          * @param evt       - Registered event
          */
+        //Action buttonAction = new AbstractAction() {
         @Override
         public void actionPerformed(ActionEvent evt) {
             UI selection = UI.getType(evt.getActionCommand());
             cardLayout = (CardLayout) (m_cardPanel.getLayout());
             boolean isEmpty = false;
 
-            System.out.println("get source = " + evt.getSource());
+            System.out.println("In operate action = " + selection);
             switch(selection) {
 
                 case USER_REG:
@@ -461,6 +483,7 @@ public class ViewStockTicker extends WindowAdapter implements IStockTicker_UICom
 
 
                 case SUBMIT:
+                    m_leftControlBtn.requestFocusInWindow();
                     if(m_regSelect) {
                         if((m_firstname = m_regCard.getfirstName()).isEmpty() || m_regCard.getfirstName().startsWith(SPACE)) {
                             System.out.println("Firstname field is blank");
@@ -530,6 +553,7 @@ public class ViewStockTicker extends WindowAdapter implements IStockTicker_UICom
                 //case UPDATE:
                 case REFRESH:
                     cardLayout.show(m_cardPanel, UI.TICKER.getName());
+                    m_leftControlBtn.requestFocusInWindow();
                     m_quoteCard.clearQuote(m_isLoggedIn);
                     
                     //if(m_tickerSelect && !m_trackedStocks.isEmpty()) {
@@ -582,6 +606,7 @@ public class ViewStockTicker extends WindowAdapter implements IStockTicker_UICom
                     this.resetRightButton("Login");
                     this.resetFlags();
                     cardLayout.show(m_cardPanel, UI.HOME.getName());
+                    m_leftControlBtn.requestFocusInWindow();
                     break;
 
                 default:
@@ -664,6 +689,7 @@ public class ViewStockTicker extends WindowAdapter implements IStockTicker_UICom
                         this.resetFlags();
                         //m_tickerSelect = true;
                         cardLayout.show(m_cardPanel, UI.TICKER.getName());
+                        m_leftControlBtn.requestFocusInWindow();
                     }
                 }
                 else {
@@ -703,6 +729,19 @@ public class ViewStockTicker extends WindowAdapter implements IStockTicker_UICom
         }
 
 
+        /**
+         *
+         * @return
+         */
+        public JButton getLeftControlBtn() {
+           return m_leftControlBtn;
+        }
+
+
+        /**
+         *
+         * @param enable
+         */
         private void enableStockList(boolean enable) {
             m_stockList.setEnabled(enable);
             m_stockList.setVisible(enable);
