@@ -142,7 +142,7 @@ public class LoginCard extends JPanel {
      * @return
      */
     public String getPassword() {
-        return m_passwordField.getText();
+        return String.valueOf(m_passwordField.getPassword());
     }
 
 
