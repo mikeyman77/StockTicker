@@ -6,10 +6,8 @@
 
 package com.stockticker.ui;
 
-import com.stockticker.StockQuote;
 import java.awt.BorderLayout;
 import java.awt.CardLayout;
-import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
@@ -39,7 +37,9 @@ import javax.swing.AbstractAction;
 import javax.swing.Action;
 import javax.swing.KeyStroke;
 import javax.swing.ListModel;
+import javax.swing.JComponent;
 
+import com.stockticker.StockQuote;
 import com.stockticker.SymbolMap;
 //import com.stockticker.User;
 import com.stockticker.UserInfo;
@@ -47,9 +47,9 @@ import com.stockticker.logic.AuthorizationService;
 import com.stockticker.logic.StockTicker;
 import com.stockticker.logic.StockTickerService;
 import com.stockticker.logic.UserAuthorization;
+
 import java.util.ArrayList;
 import java.util.List;
-import javax.swing.JComponent;
 
 
 /**
@@ -114,7 +114,6 @@ public class ViewStockTicker extends WindowAdapter implements IStockTicker_UICom
     //private User m_user;
 
     private final OperateStockTicker m_operate;
-    //public Action m_leftButtonAction;
 
 
     /**
@@ -178,7 +177,6 @@ public class ViewStockTicker extends WindowAdapter implements IStockTicker_UICom
 
 
         m_stockList = new JList<>(SymbolMap.getSymbols().keySet().toArray());
-        //m_stockList.setToolTipText("Double click to select or single click to select in text field");
         m_stockList.setVisibleRowCount(8);
         m_stockList.setEnabled(false);
         m_stockList.setVisible(false);
@@ -192,7 +190,6 @@ public class ViewStockTicker extends WindowAdapter implements IStockTicker_UICom
         m_symbolField = new JTextField(6);
         m_symbolField.setEditable(false);
         m_symbolField.setVisible(false);
-        //m_symbolField.setToolTipText("Press enter to retrieve stock quote list");
   
         // Select symbol in list after a double mouse click and track this symbol.  
         // Verify user is signed in
@@ -213,13 +210,9 @@ public class ViewStockTicker extends WindowAdapter implements IStockTicker_UICom
                     else if(symbol == null) {
                         System.err.println("Unable to read symbol");
                     }
-                    /*else if(m_stockTicker.trackStock(m_username, symbol, true)) {
-                        m_trackedStocks = m_stockTicker.getTrackedStocks(m_username);
-                        System.out.println("Trcking symbol " + symbol);
-                    }*/
                     else {
                         m_symbolList.add(symbol);
-                        System.out.println("Symbol selected");
+                        m_operate.getStockQuoteList();
                     }
                 }
                 else {
@@ -284,7 +277,7 @@ public class ViewStockTicker extends WindowAdapter implements IStockTicker_UICom
                 }*/
                 else {
                     m_symbolList.add(symbol);
-                    System.out.println("Symbol selected");
+                    m_operate.getStockQuoteList();
                 }
             }
         };
@@ -315,7 +308,6 @@ public class ViewStockTicker extends WindowAdapter implements IStockTicker_UICom
         m_constraints.gridx = 1;
         m_constraints.weighty = 0.1;
         m_constraints.anchor = GridBagConstraints.NORTH;
-        //m_constraints.ipadx = 0;
         m_constraints.insets = new Insets(0, 0, 0, 0);
         listPanel.add(m_symbolField, m_constraints);
         m_constraints.insets = new Insets(0, 0, 0, 0);
@@ -404,7 +396,7 @@ public class ViewStockTicker extends WindowAdapter implements IStockTicker_UICom
 
         m_detailCard = new DetailCard();
         m_quoteCard = new QuoteCard();
-        m_tickerCard = new TickerCard(m_cardPanel, m_quoteCard);
+        m_tickerCard = new TickerCard(m_cardPanel, m_quoteCard, m_operate);
         m_regCard = new RegistrationCard(m_operate);
         m_loginCard = new LoginCard(m_operate);
 
@@ -558,7 +550,7 @@ public class ViewStockTicker extends WindowAdapter implements IStockTicker_UICom
                     
                     //if(m_tickerSelect && !m_trackedStocks.isEmpty()) {
                     //if(!m_stockListSelect) {
-                        if(m_symbolList != null) {//&& m_symbolList.size() > 0
+                        /*if(m_symbolList != null) {//&& m_symbolList.size() > 0
                             m_stockQuoteList = m_stockTicker.getStockQuotes(m_symbolList);
                             if(m_stockQuoteList.size() > 1 && m_stockQuoteList != null) {//
                                 m_tickerCard.displayStockQuoteList(m_stockQuoteList, m_isLoggedIn);
@@ -570,7 +562,7 @@ public class ViewStockTicker extends WindowAdapter implements IStockTicker_UICom
                         }
                         else {
                             System.out.println("Please add a symbol to stock quote list");
-                        }
+                        }*/
                     /*}
                     else {
                         m_quoteCard.clearQuote(m_isLoggedIn);  //Returning from QuoteCard
@@ -740,6 +732,45 @@ public class ViewStockTicker extends WindowAdapter implements IStockTicker_UICom
 
         /**
          *
+         */
+        public void getStockQuoteList() {
+            if(m_symbolList != null) {
+                m_stockQuoteList = m_stockTicker.getStockQuotes(m_symbolList);
+                    if(m_stockQuoteList.size() > 1 && m_stockQuoteList != null) {//
+                        m_tickerCard.setSymbolsTextField(m_symbolList, m_isLoggedIn);
+                        System.out.println("Symbol selected");
+                    }
+                    else {
+                        System.out.println("Unable to get Stock Quotes list");
+                    }
+            }
+            else {
+                System.out.println("Unable to get Stock Quotes list");
+            }
+        }
+
+
+        /**
+         *
+         */
+        public void showStockQuoteList() {
+            if(m_symbolList != null) {
+                m_stockQuoteList = m_stockTicker.getStockQuotes(m_symbolList);
+                if(m_stockQuoteList.size() > 1 && m_stockQuoteList != null) {//
+                    m_tickerCard.displayStockQuoteList(m_stockQuoteList, m_isLoggedIn);
+                }
+                else {
+                    System.out.println("Unable to get Stock Quotes list");
+                }
+            }
+            else {
+                System.out.println("Please add a symbol to stock quote list");
+            }
+        }
+
+
+        /**
+         *
          * @param enable
          */
         private void enableStockList(boolean enable) {
@@ -749,21 +780,6 @@ public class ViewStockTicker extends WindowAdapter implements IStockTicker_UICom
             m_scrollPane.setVisible(enable);
             m_symbolField.setEditable(enable);
             m_symbolField.setVisible(enable);
-        }
-
-
-        /**
-         * Displays a message the argument message in the status field in UI. The
-         * user can set the color of the message and a tool tip. These fields can be
-         * set to null if not required.
-         * 
-         * @param color
-         * @param message
-         * @param tip
-         */
-        //@Override
-        public void setStatus(Color color, String message, String tip) {
-
         }
     }
 }

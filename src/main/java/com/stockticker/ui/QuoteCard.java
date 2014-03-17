@@ -50,7 +50,7 @@ public final class QuoteCard extends JPanel {
 
     private QuoteTableModel m_quoteModel;
     private DetailTableModel m_detailModel;
-    private List<StockQuote> m_quote;
+    //private List<StockQuote> m_quote;
 
     private boolean m_isLoggedIn = false;
 
