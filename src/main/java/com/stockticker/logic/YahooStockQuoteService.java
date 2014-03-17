@@ -23,6 +23,9 @@ public enum YahooStockQuoteService implements StockQuoteService {
     
     /**
      * This method returns a URL based on the list of stock symbols provided.
+     *
+     * @param symbols a list of stock symbols
+     * @return URL
      */
     @Override
     public URL getURL(List<String> symbols) {
@@ -78,6 +81,9 @@ public enum YahooStockQuoteService implements StockQuoteService {
         
     /**
      * This method returns an Input stream for the URL provided.
+     *
+     * @param url URL generated from getURL for the stock symbols
+     * @return InputStream of stock data
      */
     @Override
     public InputStream getInputStream(URL url) {
@@ -101,6 +107,9 @@ public enum YahooStockQuoteService implements StockQuoteService {
     /**
      * This method returns a list of StockQuote based on the JSON input stream
      * provided.
+     *
+     * @param is an InputStream containing stock quote data
+     * @return a list of StockQuote objects
      */
     @Override
     public List<StockQuote> getStockQuotes(InputStream is) {

@@ -21,6 +21,9 @@ public enum StockTicker implements StockTickerService {
     /**
      * This method returns a list of stock quotes based on the stock symbols
      * provided.
+     *
+     * @param symbols a list of stock symbols
+     * @return a list of StockQuote objects
      */
     @Override
     public List<StockQuote> getStockQuotes(List<String> symbols) {
@@ -31,6 +34,9 @@ public enum StockTicker implements StockTickerService {
     
     /**
      * This method gets the tracked stocks for a specific user.
+     *
+     * @param username the username of the user
+     * @return a list of tracked stocks
      */
     @Override
     public List<String> getTrackedStocks(String username) {
@@ -39,6 +45,11 @@ public enum StockTicker implements StockTickerService {
     
     /**
      * This method tracks and un-tracks stocks for a specific user.
+     *
+     * @param username the username of the user
+     * @param symbol the stock symbol
+     * @param tracked true to track stock and false to not track the stock
+     * @return true if the operation was successful
      */
     @Override
     public boolean trackStock(String username, String symbol, boolean tracked) {
@@ -47,6 +58,10 @@ public enum StockTicker implements StockTickerService {
     
     /**
      * This method checks to see if a stock is tracked for a specific user.
+     *
+     * @param username the username of the user
+     * @param symbol the stock symbol
+     * @return true if the stock is tracked
      */
     @Override
     public boolean isStockTracked(String username, String symbol) {
