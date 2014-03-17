@@ -2,6 +2,13 @@ package com.stockticker.logic;
 
 import com.stockticker.UserInfo;
 
+/**
+ * This is the interface defines the functionality for user authorization.
+ * It provides methods to register, unregister, log in, log out, unregister,
+ * change password, etc.
+ *
+ * @author Michael Grissom
+ */
 public interface AuthorizationService {
 
     public boolean logIn(String username, String password);
