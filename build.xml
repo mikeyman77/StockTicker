@@ -181,7 +181,7 @@
     </target>
 
     <!-- Cobertura code coverage -->
-    <target name="coverage" depends="compile">
+    <target name="coverage" depends="debug">
 
         <delete dir="${cobertura.instrumented.dir}"/>
         <delete dir="${cobertura.reports.dir}"/>
