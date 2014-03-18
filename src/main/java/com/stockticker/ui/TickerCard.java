@@ -144,10 +144,10 @@ public class TickerCard extends JPanel {
                                 m_quoteCard.displayStockQuote(m_selectedStock, 0, true);
                                 m_cardLayout = (CardLayout) m_cardPanel.getLayout();
                                 m_cardLayout.show(m_cardPanel, UI.QUOTE.getName());
-                                System.out.println("switching to QuoteCard");
+                                System.out.println("Displaying stock qoute list");
                             }
                             else {
-                                System.out.println("No Quotes to display");
+                                System.out.println("No quotes to display");
                             }
                         }
                         else {

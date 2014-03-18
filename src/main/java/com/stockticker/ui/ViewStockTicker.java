@@ -121,6 +121,8 @@ public class ViewStockTicker extends WindowAdapter implements IStockTicker_UICom
      * 
      */
     public ViewStockTicker() {
+        this.m_symbolList = new ArrayList<>();
+        this.m_stockQuoteList = new ArrayList<>();
         m_frame = new JFrame();
         m_operate = new OperateStockTicker();
     }
@@ -249,12 +251,18 @@ public class ViewStockTicker extends WindowAdapter implements IStockTicker_UICom
         });
 
 
+        // Action listener for JList; gets fired when enter pressed in list or text field
         Action enterAction = new AbstractAction() {
             @Override
             public void actionPerformed(ActionEvent actionEvent) {
                 //m_isTracking = true;
                 String symbol = m_stockList.getSelectedValue().toString();
-                m_symbolField.setText(symbol);
+                if(symbol != null) {
+                    m_symbolField.setText(symbol);
+                }
+                else {
+                    System.out.println("No selection made in list");
+                }
 
                 int row_pos = m_stockList.getSelectedIndex();
                 m_stockList.ensureIndexIsVisible(row_pos + ROW_OFFSET);
@@ -450,12 +458,12 @@ public class ViewStockTicker extends WindowAdapter implements IStockTicker_UICom
             cardLayout = (CardLayout) (m_cardPanel.getLayout());
             boolean isEmpty = false;
 
-            System.out.println("In operate action = " + selection);
             switch(selection) {
 
                 case USER_REG:
                     m_regCard.clearTextFields();
                     cardLayout.show(m_cardPanel, UI.USER_REG.getName());
+                    m_rightControlBtn.transferFocus();
                     this.resetLeftButton(UI.SUBMIT.getName());
                     this.resetRightButton("Cancel");
                     m_regSelect = true;
@@ -465,6 +473,7 @@ public class ViewStockTicker extends WindowAdapter implements IStockTicker_UICom
                 case LOGIN:
                     m_loginCard.clearTextFields();
                     cardLayout.show(m_cardPanel, UI.LOGIN.getName());
+                    m_rightControlBtn.transferFocus();
                     if(!m_logInSelect) {
                         this.resetLeftButton("Submit");
                         this.resetRightButton("Cancel");
@@ -545,6 +554,7 @@ public class ViewStockTicker extends WindowAdapter implements IStockTicker_UICom
                 //case UPDATE:
                 case REFRESH:
                     cardLayout.show(m_cardPanel, UI.TICKER.getName());
+                    this.showStockQuoteList();
                     m_leftControlBtn.requestFocusInWindow();
                     m_quoteCard.clearQuote(m_isLoggedIn);
                     
@@ -736,7 +746,7 @@ public class ViewStockTicker extends WindowAdapter implements IStockTicker_UICom
         public void getStockQuoteList() {
             if(m_symbolList != null) {
                 m_stockQuoteList = m_stockTicker.getStockQuotes(m_symbolList);
-                    if(m_stockQuoteList.size() > 1 && m_stockQuoteList != null) {//
+                    if(m_stockQuoteList.size() > 0 && m_stockQuoteList != null) {//
                         m_tickerCard.setSymbolsTextField(m_symbolList, m_isLoggedIn);
                         System.out.println("Symbol selected");
                     }

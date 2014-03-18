@@ -205,6 +205,7 @@ public class RegistrationCard extends JPanel {
      */
     public void clearTextFields() {
         m_usernameField.setText("");
+        m_usernameField.grabFocus();
         Arrays.fill(m_passwordField.getPassword(), '0');
         m_firstnameField.setText("");
         m_lastnameField.setText("");
