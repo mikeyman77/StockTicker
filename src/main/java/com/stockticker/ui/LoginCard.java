@@ -7,16 +7,17 @@
 package com.stockticker.ui;
 
 import com.stockticker.ui.ViewStockTicker.OperateStockTicker;
+import java.util.Arrays;
+
 import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
-import java.util.Arrays;
+
 import javax.swing.AbstractAction;
 import javax.swing.Action;
-
 import javax.swing.BorderFactory;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
@@ -151,6 +152,7 @@ public class LoginCard extends JPanel {
      */
     public void clearTextFields() {
         m_usernameField.setText("");
+        m_usernameField.grabFocus();
         Arrays.fill(m_passwordField.getPassword(), '0');
         m_passwordField.setText("");
     }

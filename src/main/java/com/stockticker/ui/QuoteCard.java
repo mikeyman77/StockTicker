@@ -50,7 +50,7 @@ public final class QuoteCard extends JPanel {
 
     private QuoteTableModel m_quoteModel;
     private DetailTableModel m_detailModel;
-    private List<StockQuote> m_quote;
+    //private List<StockQuote> m_quote;
 
     private boolean m_isLoggedIn = false;
 
@@ -158,16 +158,14 @@ public final class QuoteCard extends JPanel {
      * @param enable
      */
     public void displayStockQuote(StockQuote quote,  int index, boolean enable) {
-      int count = m_quoteModel.getRowCount();
-      System.out.println("Row count = " + count);
-      m_isLoggedIn = enable;
-      if(m_isLoggedIn) {
-        m_quoteModel.addQuoteFields(quote, index);
-        m_detailModel.addQuoteFields(quote, index);
-      }
-      else {
-          System.out.println("No Quote list to display, user not logged in");
-      }
+        m_isLoggedIn = enable;
+        if(m_isLoggedIn) {
+            m_quoteModel.addQuoteFields(quote, index);
+            m_detailModel.addQuoteFields(quote, index);
+        }
+        else {
+            System.out.println("No Quote list to display, user not logged in");
+        }
     }
 
 
