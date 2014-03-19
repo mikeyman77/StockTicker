@@ -784,7 +784,7 @@ public class ViewStockTicker extends WindowAdapter implements IStockTicker_UICom
             //if(m_symbolList != null) {
             if(m_symbolList.size() > 0) {
                 m_stockQuoteList = m_stockTicker.getStockQuotes(m_symbolList);
-                if(m_stockQuoteList.size() > 1 && m_stockQuoteList != null) {//
+                if(m_stockQuoteList.size() > 0 && m_stockQuoteList != null) {//
                     m_tickerCard.displayStockQuoteList(m_stockQuoteList, m_isLoggedIn);
                     m_quoteSelect = true;
                 }
