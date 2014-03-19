@@ -158,7 +158,7 @@ public class YahooStockQuoteServiceTest {
     }
     
     /**
-     * test getInputStream method with 1 stock quote result returned.
+     * test getInputStream method with no stock quote results returned.
      */
     @Test
     public void testGetInputStreamWithNoResults() throws Exception {
