@@ -136,7 +136,14 @@ public enum YahooStockQuoteService implements StockQuoteService {
         quoteCount = rootNode.path("query").path("count").asInt();
         
         for (int i = 0; i < quoteCount; i++) {
-            quoteNode = rootNode.path("query").path("results").path("quote").path(i);
+            if (quoteCount > 1) {
+                // parse an array of quotes
+                quoteNode = rootNode.path("query").path("results").path("quote").path(i);
+            }
+            else {
+                // parse a single quote
+                quoteNode = rootNode.path("query").path("results").path("quote");
+            }
             YahooStockQuote yahooStockQuote = mapper.convertValue(quoteNode, YahooStockQuote.class);
             stockQuoteList.add(yahooStockQuote);
         }
