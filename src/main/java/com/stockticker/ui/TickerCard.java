@@ -139,19 +139,22 @@ public class TickerCard extends JPanel {
                         m_quoteIndex = m_table.getSelectedRow();
                         m_selectedStock = m_model.getStock(m_quoteIndex);
 
-                        if(m_selectedStock != null) { //Insure there is at least one quote to display
+                        //Insure there is at least one stock selected from table
+                        if(m_selectedStock != null) {
                             if(m_isLoggedIn) {                      
                                 m_quoteCard.displayStockQuote(m_selectedStock, 0, true);
+                                m_operate.resetLeftButton("Track");
+                                m_operate.resetRightButton("Close");
                                 m_cardLayout = (CardLayout) m_cardPanel.getLayout();
                                 m_cardLayout.show(m_cardPanel, UI.QUOTE.getName());
-                                System.out.println("Displaying stock qoute list");
+                                System.out.println("Display stock qoute table");
                             }
                             else {
-                                System.out.println("No quotes to display");
+                                System.out.println("Unable to display stock quote, user not logged in");
                             }
                         }
                         else {
-                            System.out.println("Stock quote list is empty");
+                            System.out.println("Unable to get stock from stock quote list");
                         }
                     } 
                 }
@@ -248,6 +251,7 @@ public class TickerCard extends JPanel {
     public void displayStockQuoteList(List<StockQuote> stocks, boolean enable) {
         m_isLoggedIn = enable;
         m_model.addStocks(stocks);
+        System.out.println("Stock quotes displayed in table");
     }
 
 
