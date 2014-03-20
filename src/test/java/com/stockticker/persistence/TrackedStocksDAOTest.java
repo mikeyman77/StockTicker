@@ -3,7 +3,9 @@ package com.stockticker.persistence;
 
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.ExpectedException;
 
 import java.sql.Connection;
 
@@ -22,8 +24,8 @@ public class TrackedStocksDAOTest {
     private final TrackedStocksDAO trackedDAO;
     private static final String GOOG = "GOOG";
     private static final String MSFT = "MSFT";
-    private static final String MALONE = "malone";
-    private static final String PASSWORD = "bugsy";
+    private static final String CONNALL = "connall";
+    private static final String PASSWORD = "redsox";
     private int userId;
     private int stockId;
 
@@ -38,8 +40,8 @@ public class TrackedStocksDAOTest {
      */
     @Before
     public void setUp() {
-        userDAO.create(MALONE, PASSWORD);
-        userId = userDAO.getUserId(MALONE);
+        userDAO.create(CONNALL, PASSWORD);
+        userId = userDAO.getUserId(CONNALL);
         stockId = trackedDAO.getStockId(GOOG);
         trackedDAO.add(userId, stockId);
     }
@@ -49,7 +51,7 @@ public class TrackedStocksDAOTest {
      */
     @After
     public void tearDown() {
-        userDAO.delete(MALONE);
+        userDAO.delete(CONNALL);
         trackedDAO.deleteAll(userId);
     }
 
@@ -67,6 +69,26 @@ public class TrackedStocksDAOTest {
     @Test
     public void testGetStockIdInvalid() {
         assertFalse("get invalid stock id", (trackedDAO.getStockId("") > 0));
+    }
+
+    /**
+     * Defines a rule for expected exceptions
+     */
+    @Rule
+    public ExpectedException exception = ExpectedException.none();
+
+    /**
+     * Tests if a PersistenceServiceException is thrown when getting a stock
+     * by stock id
+     *
+     * @throws PersistenceServiceException
+     */
+    @Test
+    public void testGetStockIdThrowsPersistenceServiceException() throws PersistenceServiceException {
+
+        exception.expect(PersistenceServiceException.class);
+        exception.expectMessage("An SQL Exception occurred in the Persistence Service");
+        trackedDAO.getStockId("'");
     }
 
     /**

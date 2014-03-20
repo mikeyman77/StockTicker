@@ -21,16 +21,11 @@ public class PropertiesFileReader {
      *
      * @param filename property file name
      */
-    public PropertiesFileReader(String filename) {
+    public PropertiesFileReader(String filename) throws IOException {
 
-        try {
-            FileReader reader = new FileReader(filename);
-            properties = new Properties();
-            properties.load(reader);
-        }
-        catch (IOException e) {
-           System.out.println(e.getMessage());
-        }
+        FileReader reader = new FileReader(filename);
+        properties = new Properties();
+        properties.load(reader);
     }
 
     /**
@@ -52,12 +47,20 @@ public class PropertiesFileReader {
         return properties.getProperty(property);
     }
 
+/*
     public static void main(String [] args) {
 
-        PropertiesFileReader properties = new PropertiesFileReader("./config/stockticker.properties");
-        for (Enumeration<?> property = properties.getPropertyNames(); property.hasMoreElements();) {
-             String key = (String) property.nextElement();
-             System.out.println(key+"="+properties.getProperty(key));
+        try {
+            PropertiesFileReader properties = new PropertiesFileReader("./config/nosuchfile.properties");
+            for (Enumeration<?> property = properties.getPropertyNames(); property.hasMoreElements();) {
+                String key = (String) property.nextElement();
+                System.out.println(key+"="+properties.getProperty(key));
+            }
+        }
+        catch (IOException e) {
+            e.printStackTrace();
         }
     }
-}
+*/
+
+} //end of class

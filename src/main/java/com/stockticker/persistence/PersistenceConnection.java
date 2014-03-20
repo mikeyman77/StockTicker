@@ -12,6 +12,15 @@ import java.sql.Connection;
 public interface PersistenceConnection {
 
     /**
+     * Invokes the PersistenceConnection to perform initialization and
+     * passes an alternate properties file to the initialize routine.
+     *
+     * @param  propertiesFileOverride an alternate properties file to use
+     * @throws PersistenceServiceException
+     */
+    public void start(String propertiesFileOverride) throws PersistenceServiceException;
+
+    /**
      * Invokes the PersistenceConnection to perform initialization.
      *
      * @throws PersistenceServiceException

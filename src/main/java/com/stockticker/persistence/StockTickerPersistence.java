@@ -226,8 +226,10 @@ public enum StockTickerPersistence implements PersistenceService {
 
 
     /*
-     * This is for testing purposes only, to run in the debugger.
+     * This is for testing purposes only in order to run in the debugger.
      */
+
+/*
     public static void main(String [] args) throws PersistenceServiceException {
         PersistenceService ps = StockTickerPersistence.INSTANCE;
 
@@ -258,5 +260,5 @@ public enum StockTickerPersistence implements PersistenceService {
         System.out.println("");
         System.exit(0);
     }
-
+*/
 }

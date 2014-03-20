@@ -4,7 +4,10 @@ import com.stockticker.User;
 import com.stockticker.UserInfo;
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.ExpectedException;
+
 import java.sql.Connection;
 import java.util.List;
 
@@ -19,9 +22,9 @@ import static junit.framework.Assert.*;
 public class UserDAOTest {
 
     private final UserDAO userDAO;
-    private static final String MALONE = "malone";
-    private static final String BOJACKSON = "bojackson";
-    private static final String PASSWORD = "bugsy";
+    private static final String CONNALL = "connall";
+    private static final String WILLIAMS = "williams";
+    private static final String PASSWORD = "redsox";
 
     public UserDAOTest() throws PersistenceServiceException {
         this.userDAO = new UserDAOImpl();
@@ -32,8 +35,8 @@ public class UserDAOTest {
      */
     @Before
     public void setUp() {
-        User user = userDAO.create(MALONE, PASSWORD);
-        user.setUserInfo(new UserInfo("bugsy", "malone"));
+        User user = userDAO.create(CONNALL, PASSWORD);
+        user.setUserInfo(new UserInfo("stuart", "connall"));
         userDAO.update(user);
     }
 
@@ -42,7 +45,7 @@ public class UserDAOTest {
      */
     @After
     public void tearDown() {
-        userDAO.delete(MALONE);
+        userDAO.delete(CONNALL);
     }
 
     /**
@@ -50,7 +53,7 @@ public class UserDAOTest {
      */
     @Test
     public void testGetUserIdValid() {
-        assertTrue("get valid user id", (userDAO.getUserId(MALONE) > 0));
+        assertTrue("get valid user id", (userDAO.getUserId(CONNALL) > 0));
     }
 
     /**
@@ -62,11 +65,30 @@ public class UserDAOTest {
     }
 
     /**
+     * Defines a rule for expected exceptions
+     */
+    @Rule
+    public ExpectedException exception = ExpectedException.none();
+
+    /**
+     * Tests if a PersistenceServiceException is thrown when getting a user id
+     *
+     * @throws PersistenceServiceException
+     */
+    @Test
+    public void testGetUserIdThrowsPersistenceServiceException() throws PersistenceServiceException {
+
+        exception.expect(PersistenceServiceException.class);
+        exception.expectMessage("An SQL Exception occurred in the Persistence Service");
+        userDAO.getUserId("'");
+    }
+
+    /**
      * Tests that the create method returns a valid User object
      */
     @Test
     public void testCreateNewUser() {
-        assertNotNull("create not null", userDAO.create(BOJACKSON, PASSWORD));
+        assertNotNull("create not null", userDAO.create(WILLIAMS, PASSWORD));
     }
 
     /**
@@ -74,15 +96,36 @@ public class UserDAOTest {
      */
     @Test
     public void testCreateUserAlreadyExists() {
-        assertNull("create null", userDAO.create(MALONE, PASSWORD));
+        assertNull("create null", userDAO.create(CONNALL, PASSWORD));
     }
+
+    /**
+     * Tests if a PersistenceServiceException is thrown when creating a user
+     *
+     * @throws PersistenceServiceException
+     */
+/*  The exception is difficult to test here because you can pretty much put
+      anything in a varchar and the fact that parameter markers is being used
+      doesn't screw up the SQL statement like it would when using a standard
+      jdbc Statement object.
+*/ /*
+    @Rule
+    public ExpectedException exception2 = ExpectedException.none();
+    @Test
+    public void testCreateUserThrowsPersistenceServiceException() {
+
+        exception2.expect(PersistenceServiceException.class);
+        exception2.expectMessage("An SQL Exception occurred in the Persistence Service");
+        userDAO.create("noname", "'");
+    }
+*/
 
     /**
      * Tests that the exists method returns true
      */
     @Test
     public void testExistsTrue() {
-        assertTrue("exists true", userDAO.exists(MALONE));
+        assertTrue("exists true", userDAO.exists(CONNALL));
     }
 
     /**
@@ -94,11 +137,24 @@ public class UserDAOTest {
     }
 
     /**
+     * Tests if a PersistenceServiceException is thrown when testing if a user exists
+     *
+     * @throws PersistenceServiceException
+     */
+    @Test
+    public void testExistsThrowsPersistenceServiceException() throws PersistenceServiceException {
+
+        exception.expect(PersistenceServiceException.class);
+        exception.expectMessage("An SQL Exception occurred in the Persistence Service");
+        userDAO.exists("'");
+    }
+
+    /**
      * Tests that the update method returns true
      */
     @Test
     public void testUpdateTrue() {
-        User user = userDAO.get(MALONE);
+        User user = userDAO.get(CONNALL);
         user.setUserInfo(new UserInfo("xxxxxxx", "xxxxxxx"));
         assertTrue("update true", userDAO.update(user));
     }
@@ -112,11 +168,24 @@ public class UserDAOTest {
     }
 
     /**
+     * Tests if a PersistenceServiceException is thrown when updating a user
+     *
+     * @throws PersistenceServiceException
+     */
+    @Test
+    public void testUpdatesThrowsPersistenceServiceException() throws PersistenceServiceException {
+
+        exception.expect(PersistenceServiceException.class);
+        exception.expectMessage("An SQL Exception occurred in the Persistence Service");
+        userDAO.update(new User("'", PASSWORD));
+    }
+
+    /**
      * Tests that the get method returns true
      */
     @Test
     public void testGetTrue() {
-        assertNotNull("get not null", userDAO.get(MALONE));
+        assertNotNull("get not null", userDAO.get(CONNALL));
     }
 
     /**
@@ -128,11 +197,24 @@ public class UserDAOTest {
     }
 
     /**
+     * Tests if a PersistenceServiceException is thrown when getting a user
+     *
+     * @throws PersistenceServiceException
+     */
+    @Test
+    public void testGetThrowsPersistenceServiceException() throws PersistenceServiceException {
+
+        exception.expect(PersistenceServiceException.class);
+        exception.expectMessage("An SQL Exception occurred in the Persistence Service");
+        userDAO.get("'");
+    }
+
+    /**
      * Tests that the delete method returns true
      */
     @Test
     public void testDeleteTrue() {
-        assertTrue("delete true", userDAO.delete(MALONE));
+        assertTrue("delete true", userDAO.delete(CONNALL));
     }
 
     /**
@@ -144,12 +226,24 @@ public class UserDAOTest {
     }
 
     /**
+     * Tests if a PersistenceServiceException is thrown when deleting
+     *
+     * @throws PersistenceServiceException
+     */
+    @Test
+    public void testDeleteThrowsPersistenceServiceException() throws PersistenceServiceException {
+
+        exception.expect(PersistenceServiceException.class);
+        exception.expectMessage("An SQL Exception occurred in the Persistence Service");
+        userDAO.delete("'");
+    }
+    /**
      * Tests that the isLoggedIn method returns true
      */
     @Test
     public void testIsLoggedInTrue() {
-        userDAO.setLoginStatus(MALONE, true);
-        assertTrue("is logged in true", userDAO.isLoggedIn(MALONE));
+        userDAO.setLoginStatus(CONNALL, true);
+        assertTrue("is logged in true", userDAO.isLoggedIn(CONNALL));
     }
 
     /**
@@ -157,8 +251,21 @@ public class UserDAOTest {
      */
     @Test
     public void testIsLoggedInFalse() {
-        userDAO.setLoginStatus(MALONE, false);
-        assertFalse("is logged in false", userDAO.isLoggedIn(MALONE));
+        userDAO.setLoginStatus(CONNALL, false);
+        assertFalse("is logged in false", userDAO.isLoggedIn(CONNALL));
+    }
+
+    /**
+     * Tests if a PersistenceServiceException is thrown when isLoggedIn is invoked
+     *
+     * @throws PersistenceServiceException
+     */
+    @Test
+    public void testIsLoggedInThrowsPersistenceServiceException() throws PersistenceServiceException {
+
+        exception.expect(PersistenceServiceException.class);
+        exception.expectMessage("An SQL Exception occurred in the Persistence Service");
+        userDAO.isLoggedIn("'");
     }
 
     /**
@@ -166,7 +273,7 @@ public class UserDAOTest {
      */
     @Test
     public void testSetLoginStatusTrue() {
-        assertTrue("set login status true", userDAO.setLoginStatus(MALONE, true));
+        assertTrue("set login status true", userDAO.setLoginStatus(CONNALL, true));
     }
 
     /**
@@ -175,6 +282,19 @@ public class UserDAOTest {
     @Test
     public void testSetLoginStatusFalse() {
         assertFalse("set login status false", userDAO.setLoginStatus("", false));
+    }
+
+    /**
+     * Tests if a PersistenceServiceException is thrown when setting the login status
+     *
+     * @throws PersistenceServiceException
+     */
+    @Test
+    public void testSetLoginStatusThrowsPersistenceServiceException() {
+
+        exception.expect(PersistenceServiceException.class);
+        exception.expectMessage("An SQL Exception occurred in the Persistence Service");
+        userDAO.setLoginStatus("'", true);
     }
 
     /**
