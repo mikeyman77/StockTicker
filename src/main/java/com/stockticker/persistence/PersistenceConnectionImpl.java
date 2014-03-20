@@ -27,7 +27,7 @@ public enum PersistenceConnectionImpl implements PersistenceConnection {
     private static final String H2_DRIVER = "org.h2.Driver";
     private static final String H2_URL = "jdbc:h2:";
     private static final String H2_SCRIPT = ";INIT=runscript from ";
-    private static final String PROPERTIES_FILE = "./config/stockticker.properties";
+    private static final String DEFAULT_PROPERTIES_FILE = "./config/stockticker.properties";
     private static final String SINGLE_QUOTE = "'";
     private static final String SEPARATOR = "/";
 
@@ -39,12 +39,25 @@ public enum PersistenceConnectionImpl implements PersistenceConnection {
 
     private Connection connection;
     private boolean dbInitialized = false;
+    private String propertiesFile;
 
-    private String dbSchema;
-    private String dbName;
-    private String dbLocation;
-    private String dbUser;
-    private String dbPswd;
+    private String dbSchema = "./sql/init_memory.sql";
+    private String dbName = "stockticker";
+    private String dbLocation = "data/mem";
+    private String dbUser = "sa";
+    private String dbPswd = "";
+
+    /**
+     * Invokes the start method with a properties file override.
+     *
+     * @param propertiesFileOverride an alternate properties file to use
+     * @exception PersistenceServiceException provides message and error code
+     *              for specific error situations
+     */
+    public void start(String propertiesFileOverride) throws PersistenceServiceException {
+        this.propertiesFile = propertiesFileOverride;
+        start();
+    }
 
     /**
      * Sets up the database connection to the embedded H2 database engine. Refer to
@@ -64,19 +77,19 @@ public enum PersistenceConnectionImpl implements PersistenceConnection {
             String connectionUrl = H2_URL+dbLocation+SEPARATOR+dbName+H2_SCRIPT+SINGLE_QUOTE+dbSchema+SINGLE_QUOTE;
             this.connection = DriverManager.getConnection(connectionUrl, this.dbUser, this.dbPswd);
         }
+        catch (IOException e) {
+            int errorCode = PersistenceServiceException.PROPERTIES_FILE_NOT_FOUND;
+            String message = PersistenceServiceException.PROPERTIES_FILE_NOT_FOUND_MESSAGE;
+            throw new PersistenceServiceException(message+" ["+errorCode+"]: "+e.getMessage(), e, errorCode);
+        }
         catch (ClassNotFoundException e) {
             int errorCode = PersistenceServiceException.DATABASE_DRIVER_NOT_FOUND;
-            String message = "Persistence Service unable to locate database driver";
+            String message = PersistenceServiceException.DATABASE_DRIVER_NOT_FOUND_MESSAGE;
             throw new PersistenceServiceException(message+" ["+errorCode+"]: "+e.getMessage(), e, errorCode);
         }
         catch (SQLException e) {
             int errorCode = PersistenceServiceException.DATABASE_CONNECTION_FAILED;
-            String message = "Persistence Service unable to obtain database connection";
-            throw new PersistenceServiceException(message+" ["+errorCode+"]: "+e.getMessage(), e, errorCode);
-        }
-        catch (IOException e) {
-            int errorCode = PersistenceServiceException.PROPERTIES_FILE_NOT_FOUND;
-            String message = "Persistence Service unable to open properties file";
+            String message = PersistenceServiceException.DATABASE_CONNECTION_FAILED_MESSAGE;
             throw new PersistenceServiceException(message+" ["+errorCode+"]: "+e.getMessage(), e, errorCode);
         }
     }
@@ -103,15 +116,38 @@ public enum PersistenceConnectionImpl implements PersistenceConnection {
     }
 
     /**
-     * Loads the database properties from the project properties file
+     * Loads the database properties from the project properties file.
+     *
+     * Set default values for any properties that are either not provided
+     * or empty.
      */
     private void loadProperties() throws IOException {
-        PropertiesFileReader properties = new PropertiesFileReader(PROPERTIES_FILE);
-        dbSchema = properties.getProperty(DB_SCHEMA);
-        dbName = properties.getProperty(DB_NAME);
-        dbLocation = properties.getProperty(DB_LOCATION);
-        dbUser = properties.getProperty(DB_USER);
-        dbPswd = properties.getProperty(DB_PASSWORD);
+        if (propertiesFile == null) {
+            propertiesFile = DEFAULT_PROPERTIES_FILE;
+        }
+        PropertiesFileReader properties = new PropertiesFileReader(propertiesFile);
+        if (properties != null) {
+            String tempDbName = properties.getProperty(DB_NAME);
+            if (tempDbName != null && !tempDbName.isEmpty()) {
+                this.dbName = tempDbName;
+            }
+            String tempDbSchema = properties.getProperty(DB_SCHEMA);
+            if (tempDbSchema != null && !tempDbSchema.isEmpty()) {
+                this.dbSchema = tempDbSchema;
+            }
+            String tempDbLocation = properties.getProperty(DB_LOCATION);
+            if (tempDbLocation != null && !tempDbLocation.isEmpty()) {
+                this.dbLocation = tempDbLocation;
+            }
+            String tempDbUser = properties.getProperty(DB_USER);
+            if (tempDbUser != null && !tempDbUser.isEmpty()) {
+                this.dbUser = tempDbLocation;
+            }
+            String tempDbPswd = properties.getProperty(DB_PASSWORD);
+            if (tempDbPswd != null && !tempDbPswd.isEmpty()) {
+                dbPswd = tempDbPswd;
+            }
+        }
     }
 
     /**
@@ -143,4 +179,13 @@ public enum PersistenceConnectionImpl implements PersistenceConnection {
                 dbInitialized = initializeDatabase(dbName);
             }
             */
+
+
+    public static void main(String [] args) {
+
+        PersistenceConnection connection = PersistenceConnectionImpl.INSTANCE;
+        connection.start("./config/junittest.properties");
+    }
+
+
 }

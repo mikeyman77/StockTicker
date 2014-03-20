@@ -1,5 +1,6 @@
 package com.stockticker;
 
+import com.stockticker.persistence.PersistenceServiceException;
 import org.junit.Test;
 import java.io.IOException;
 
@@ -18,12 +19,13 @@ public class PropertiesFileReaderTest {
 
     private final PropertiesFileReader properties;
     private static final String PROP_FILE = "./config/stockticker.properties";
+    private static final String EMPTY_PROP_FILE = "./config/empty.properties";
     private static final String DUMMY_PROP_FILE = "./config/junittest.properties";
 
     /**
      * Constructs PropertiesFileReader using stockticker.properties file
      */
-    public PropertiesFileReaderTest() {
+    public PropertiesFileReaderTest() throws IOException {
         properties = new PropertiesFileReader(PROP_FILE);
     }
 
@@ -48,7 +50,7 @@ public class PropertiesFileReaderTest {
      */
     @Test
     public void testGetPropertyNamesEmpty() throws IOException {
-        PropertiesFileReader dummy = new PropertiesFileReader(DUMMY_PROP_FILE);
+        PropertiesFileReader dummy = new PropertiesFileReader(EMPTY_PROP_FILE);
         assertFalse("no property names exist", dummy.getPropertyNames().hasMoreElements());
     }
 
