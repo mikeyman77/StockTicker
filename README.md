@@ -13,8 +13,8 @@ Ant build options
 * **junit**    (runs junit tests)
 * **coverage** (runs Cobertura instrumentation and creates html reports)
 
-To execute Stock Ticker from the command line use `java -jar stockticker.jar`
+To execute Stock Ticker from the command line use `ant run` or `java -jar stockticker.jar`
 
-[Stock Ticker API documentation](./doc/api/index.html)
+[Stock Ticker API documentation](./doc/api/index.html) [not currently uploaded - use `ant javadoc` to generate]
 
 [Stock Ticker Proposal 1.0](https://github.com/mikeyman77/StockTicker/blob/testing/doc/90.308-ProjectProposal.pdf)
