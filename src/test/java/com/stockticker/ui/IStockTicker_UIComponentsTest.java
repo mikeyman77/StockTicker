@@ -19,7 +19,6 @@ public class IStockTicker_UIComponentsTest {
         assertEquals("Equal to Login", "Login", UI.LOGIN.getName());
         assertEquals("Equal to Logout", "Logout", UI.LOGOUT.getName());
         assertEquals("Equal to Submit", "Submit", UI.SUBMIT.getName());
-        assertEquals("Equal to Update", "Update", UI.UPDATE.getName());
         assertEquals("Equal to Default", "Default", UI.DEFAULT.getName()); 
     }
 
@@ -35,7 +34,6 @@ public class IStockTicker_UIComponentsTest {
         assertEquals("Equal to LOGIN ", UI.getType("Login"), UI.LOGIN);
         assertEquals("Equal to LOGOUT ", UI.getType("Logout"), UI.LOGOUT);
         assertEquals("Equal to SUBMIT ", UI.getType("Submit"), UI.SUBMIT);
-        assertEquals("Equal to UPDATE ", UI.getType("Update"), UI.UPDATE);
         assertEquals("Equal to DEFAULT ", UI.getType("Default"), UI.DEFAULT);
     }
 

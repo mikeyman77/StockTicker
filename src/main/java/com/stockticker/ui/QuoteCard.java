@@ -7,6 +7,7 @@
 package com.stockticker.ui;
 
 import com.stockticker.StockQuote;
+
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.GridBagConstraints;
@@ -17,10 +18,7 @@ import javax.swing.BorderFactory;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
-//import javax.swing.ListSelectionModel;
 import javax.swing.border.EtchedBorder;
-//import javax.swing.event.ListSelectionEvent;
-//import javax.swing.event.ListSelectionListener;
 import javax.swing.table.AbstractTableModel;
 
 import java.util.ArrayList;
@@ -50,7 +48,6 @@ public final class QuoteCard extends JPanel {
 
     private QuoteTableModel m_quoteModel;
     private DetailTableModel m_detailModel;
-    //private List<StockQuote> m_quote;
 
     private boolean m_isLoggedIn = false;
 
@@ -95,15 +92,6 @@ public final class QuoteCard extends JPanel {
         m_quoteTable.setOpaque(true);
         m_scrollPane = new JScrollPane(m_quoteTable);
 
-        /*m_quoteTable.setRowSelectionAllowed(true);
-        ListSelectionModel rowSelection = m_quoteTable.getSelectionModel();
-        rowSelection.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-        rowSelection.addListSelectionListener(new ListSelectionListener() {
-            @Override
-            public void valueChanged(ListSelectionEvent evt) {
-                System.out.println("Select in quote table");
-            }
-        });*/
 
         m_detailPanel = new JPanel(new GridBagLayout());
         m_detailPanel.setOpaque(true);
@@ -143,16 +131,11 @@ public final class QuoteCard extends JPanel {
 
 
     /**
-     *
-     * @param quotes
-     */
-    public void displayStockQuotes(List<StockQuote> quotes) {
-        m_quoteModel.addAllQuotes(quotes);
-    }
-
-
-    /**
-     *
+     * Adds the Stock to this List<StockQuote> list by calling method addQuoteFields in 
+     * JTable model.  The model then adds the stock quote to the first row, index 0.  
+     * The model will delete any previous entries to the models List<StockQuote> to 
+     * insure only 1 stock quote is displayed in the JTable.
+     * 
      * @param quote
      * @param index
      * @param enable
@@ -181,7 +164,11 @@ public final class QuoteCard extends JPanel {
 }
 
 
-
+/*
+ * class QuoteTableModel extends AbstractTableModel
+ * Model for JTable.  Adds/displays/removes StockQuote entries to the JTable.  
+ *
+ */
 class QuoteTableModel extends AbstractTableModel {
     private List<StockQuote> m_quotes;
     private final String[] m_header;
@@ -191,7 +178,9 @@ class QuoteTableModel extends AbstractTableModel {
         this.m_quotes = new ArrayList<>();
     }
 
-
+    /*
+     * Gets the number of rows of the models List<StockQuote>
+     */
     @Override
     public int getRowCount() {
         return m_quotes.size();
@@ -251,18 +240,10 @@ class QuoteTableModel extends AbstractTableModel {
     }
 
 
-    public void insertRow(List<StockQuote> quotes) {
-        //defaultModel.addColumn("Test");
-    }
-
-
-    public void addAllQuotes(List<StockQuote> quotes) {
-        m_quotes = quotes;
-        fireTableDataChanged();
-    }
-
-
     public void addQuoteFields(StockQuote quote, int index) {
+        if(m_quotes.size() > 0) {
+            this.deleteRow();
+        }
         m_quotes.add(index, quote);
         fireTableRowsInserted(index, index);
     }
@@ -288,6 +269,13 @@ class QuoteTableModel extends AbstractTableModel {
 }
 
 
+
+/*
+ * class DetailTableModel extends AbstractTableModel
+ * Model for JTable.  Adds/displays/removes 2nd portion of StockQuote details
+ * to the JTable.  
+ *
+ */
 class DetailTableModel extends AbstractTableModel {
     private List<StockQuote> m_quotes;
     private final String[] m_header;
@@ -326,7 +314,7 @@ class DetailTableModel extends AbstractTableModel {
                 value = sq.getYearLow();
                 break;
             case 1:
-                value = sq.getYearLow();
+                value = sq.getYearHigh();
                 break;
             case 2:
                 value = sq.getPrevClose();
@@ -357,18 +345,10 @@ class DetailTableModel extends AbstractTableModel {
     }
 
 
-    /*public void insertRow(List<StockQuote> quotes) {
-        //defaultModel.addColumn("Test");
-    }*/
-
-
-    public void addAllQuotes(List<StockQuote> quotes) {
-        m_quotes = quotes;
-        fireTableDataChanged();
-    }
-
-
     public void addQuoteFields(StockQuote quote, int index) {
+        if(m_quotes.size() > 0) {
+            this.deleteRow();
+        }
         m_quotes.add(index, quote);
         fireTableRowsInserted(index, index);
     }
