@@ -92,13 +92,11 @@ public enum PersistenceConnectionImpl implements PersistenceConnection {
                 if (!retryConnection) {
                     loadProperties();
                 }
-                else {
-                    retryConnection = false;
-                }
 
                 Class.forName(H2_DRIVER);
                 String connectionUrl = buildConnectionUrl(retryConnection);
-                this.connection = DriverManager.getConnection(connectionUrl, this.dbUser, this.dbPswd);
+                connection = DriverManager.getConnection(connectionUrl, this.dbUser, this.dbPswd);
+                retryConnection = false;
             }
             catch (IOException e) {
                 int errorCode = PersistenceServiceException.PROPERTIES_FILE_NOT_FOUND;
@@ -119,7 +117,7 @@ public enum PersistenceConnectionImpl implements PersistenceConnection {
                 } else { //SQLSTATE="90013"
                     //if this is a database not found condition, retry the connection with sqlscript
                     // to create the database
-                    this.retryConnection = true;
+                    retryConnection = true;
                 }
             }
         } while (retryConnection);
