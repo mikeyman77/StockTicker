@@ -195,6 +195,9 @@ public enum PersistenceConnectionImpl implements PersistenceConnection {
         if (this.dbInMemory) {
             buffer.append(H2_IN_MEMORY);
             buffer.append(H2_SCRIPT_CREATE);
+            buffer.append(SINGLE_QUOTE);
+            buffer.append(dbSchema);
+            buffer.append(SINGLE_QUOTE);
         }
         else {
             /*initially, this logic will configure the connection
