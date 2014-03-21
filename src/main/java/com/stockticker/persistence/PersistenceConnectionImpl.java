@@ -47,9 +47,9 @@ public enum PersistenceConnectionImpl implements PersistenceConnection {
 
     //setup some default values in case one or more aren't provided in stockticker.properties
     private boolean dbInMemory = false;
-    private String  dbSchema = "./sql/init_memory.sql";
+    private String  dbSchema = "./sql/init.sql";
     private String  dbName = "stockticker";
-    private String  dbLocation = "data/mem";
+    private String  dbLocation = "data";
     private String  dbUser = "sa";
     private String  dbPswd = "";
 
