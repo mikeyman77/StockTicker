@@ -4,6 +4,7 @@ Stock Market Portfolio Tracker
 Ant build options
 * **init**     (sets up directories)
 * **clean**    (removes directories, including all class files)
+* **wipedb**   (removes all database files in data directory)
 * **compile**  (compiles all source)
 * **debug**    (compiles code with debug options)
 * **jar**      (creates executable jar file)

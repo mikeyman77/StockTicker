@@ -89,6 +89,7 @@ public class UserDAOTest {
     @Test
     public void testCreateNewUser() {
         assertNotNull("create not null", userDAO.create(WILLIAMS, PASSWORD));
+        userDAO.delete(WILLIAMS);
     }
 
     /**

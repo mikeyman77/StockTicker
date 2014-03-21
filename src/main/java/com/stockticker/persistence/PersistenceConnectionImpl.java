@@ -22,15 +22,19 @@ public enum PersistenceConnectionImpl implements PersistenceConnection {
       The JDBC driver and url are static here and could be read from the
       properties file to allow connections to other database providers such
       as Oracle, DB2, MySQL, etc. However, this implementation calls for an
-      embedded H2 database.
+      embedded H2 database only, for now.
      */
     private static final String H2_DRIVER = "org.h2.Driver";
     private static final String H2_URL = "jdbc:h2:";
-    private static final String H2_SCRIPT = ";INIT=runscript from ";
+    private static final String H2_IN_MEMORY = "mem:";
+    private static final String H2_SCRIPT_CREATE = ";INIT=runscript from ";
+    private static final String H2_SCRIPT_OPEN = ";IFEXISTS=TRUE";
     private static final String DEFAULT_PROPERTIES_FILE = "./config/stockticker.properties";
     private static final String SINGLE_QUOTE = "'";
     private static final String SEPARATOR = "/";
 
+    private static final String IN_MEMORY = "1";
+    private static final String DB_IN_MEMORY = "dbInMemory";
     private static final String DB_SCHEMA = "dbSchema";
     private static final String DB_NAME = "dbName";
     private static final String DB_LOCATION = "dbLocation";
@@ -38,14 +42,16 @@ public enum PersistenceConnectionImpl implements PersistenceConnection {
     private static final String DB_PASSWORD = "dbPswd";
 
     private Connection connection;
-    private boolean dbInitialized = false;
+    private boolean retryConnection = false;
     private String propertiesFile;
 
-    private String dbSchema = "./sql/init_memory.sql";
-    private String dbName = "stockticker";
-    private String dbLocation = "data/mem";
-    private String dbUser = "sa";
-    private String dbPswd = "";
+    //setup some default values in case one or more aren't provided in stockticker.properties
+    private boolean dbInMemory = false;
+    private String  dbSchema = "./sql/init.sql";
+    private String  dbName = "stockticker";
+    private String  dbLocation = "data";
+    private String  dbUser = "sa";
+    private String  dbPswd = "";
 
     /**
      * Invokes the start method with a properties file override.
@@ -64,34 +70,58 @@ public enum PersistenceConnectionImpl implements PersistenceConnection {
      * the PersistenceServiceException for an explanation of the various error
      * codes.
      *
+     * The connection URL is made up of the H2 URL (jdbc:h2:), the location of the database files e.g., in
+     *   the data directory, the database name (default is stockticker), the script command and schema to
+     *   run to initialize the database.
+     *
+     * To setup the database as in memory, i.e., the database doesn't not persist after the application
+     *   closes, then set dbInMemory=1 in stockticker.properties. The default is 0, to persist the database.
+     *
      * @exception PersistenceServiceException provides message and error code
      *              for specific error situations
      */
     public void start() throws PersistenceServiceException {
 
-        //Load the database properties from the properties file and load
-        // the database manager class.
-        try {
-            loadProperties();
-            Class.forName(H2_DRIVER);
-            String connectionUrl = H2_URL+dbLocation+SEPARATOR+dbName+H2_SCRIPT+SINGLE_QUOTE+dbSchema+SINGLE_QUOTE;
-            this.connection = DriverManager.getConnection(connectionUrl, this.dbUser, this.dbPswd);
-        }
-        catch (IOException e) {
-            int errorCode = PersistenceServiceException.PROPERTIES_FILE_NOT_FOUND;
-            String message = PersistenceServiceException.PROPERTIES_FILE_NOT_FOUND_MESSAGE;
-            throw new PersistenceServiceException(message+" ["+errorCode+"]: "+e.getMessage(), e, errorCode);
-        }
-        catch (ClassNotFoundException e) {
-            int errorCode = PersistenceServiceException.DATABASE_DRIVER_NOT_FOUND;
-            String message = PersistenceServiceException.DATABASE_DRIVER_NOT_FOUND_MESSAGE;
-            throw new PersistenceServiceException(message+" ["+errorCode+"]: "+e.getMessage(), e, errorCode);
-        }
-        catch (SQLException e) {
-            int errorCode = PersistenceServiceException.DATABASE_CONNECTION_FAILED;
-            String message = PersistenceServiceException.DATABASE_CONNECTION_FAILED_MESSAGE;
-            throw new PersistenceServiceException(message+" ["+errorCode+"]: "+e.getMessage(), e, errorCode);
-        }
+        //The do-while loop may loop a 2nd time to retry the connection
+        // if a permanent database does not yet exist. The 2nd time around
+        // the database will be created.
+        do {
+            //Load the database properties from the properties file and load
+            // the database manager class.
+            try {
+                if (!retryConnection) {
+                    loadProperties();
+                }
+
+                Class.forName(H2_DRIVER);
+                String connectionUrl = buildConnectionUrl(retryConnection);
+                connection = DriverManager.getConnection(connectionUrl, this.dbUser, this.dbPswd);
+                retryConnection = false;
+            }
+            catch (IOException e) {
+                int errorCode = PersistenceServiceException.PROPERTIES_FILE_NOT_FOUND;
+                String message = PersistenceServiceException.PROPERTIES_FILE_NOT_FOUND_MESSAGE;
+                throw new PersistenceServiceException(message+" ["+errorCode+"]: "+e.getMessage(), e, errorCode);
+            }
+            catch (ClassNotFoundException e) {
+                int errorCode = PersistenceServiceException.DATABASE_DRIVER_NOT_FOUND;
+                String message = PersistenceServiceException.DATABASE_DRIVER_NOT_FOUND_MESSAGE;
+                throw new PersistenceServiceException(message+" ["+errorCode+"]: "+e.getMessage(), e, errorCode);
+            }
+            catch (SQLException e) {
+                //if this is not a database not found condition, throw an exception.
+                if (!e.getSQLState().equals(PersistenceServiceException.SQLSTATE_DATABASE_NOT_FOUND)) {
+                    int errorCode = PersistenceServiceException.DATABASE_CONNECTION_FAILED;
+                    String message = PersistenceServiceException.DATABASE_CONNECTION_FAILED_MESSAGE;
+                    throw new PersistenceServiceException(message+" ["+errorCode+"]: "+e.getMessage(), e, errorCode);
+                } else { //SQLSTATE="90013"
+                    //if this is a database not found condition, retry the connection with sqlscript
+                    // to create the database
+                    retryConnection = true;
+                }
+            }
+        } while (retryConnection);
+
     }
 
     /**
@@ -115,7 +145,7 @@ public enum PersistenceConnectionImpl implements PersistenceConnection {
         return (this.connection != null);
     }
 
-    /**
+    /*
      * Loads the database properties from the project properties file.
      *
      * Set default values for any properties that are either not provided
@@ -127,6 +157,10 @@ public enum PersistenceConnectionImpl implements PersistenceConnection {
         }
         PropertiesFileReader properties = new PropertiesFileReader(propertiesFile);
         if (properties != null) {
+            String tempDbInMemory = properties.getProperty(DB_IN_MEMORY);
+            if (tempDbInMemory != null && !tempDbInMemory.isEmpty()) {
+                this.dbInMemory = (tempDbInMemory.equals(IN_MEMORY));
+            }
             String tempDbName = properties.getProperty(DB_NAME);
             if (tempDbName != null && !tempDbName.isEmpty()) {
                 this.dbName = tempDbName;
@@ -141,7 +175,7 @@ public enum PersistenceConnectionImpl implements PersistenceConnection {
             }
             String tempDbUser = properties.getProperty(DB_USER);
             if (tempDbUser != null && !tempDbUser.isEmpty()) {
-                this.dbUser = tempDbLocation;
+                this.dbUser = tempDbUser;
             }
             String tempDbPswd = properties.getProperty(DB_PASSWORD);
             if (tempDbPswd != null && !tempDbPswd.isEmpty()) {
@@ -150,42 +184,50 @@ public enum PersistenceConnectionImpl implements PersistenceConnection {
         }
     }
 
-    /**
-     * Initialize database using init.sql schema
-     *
-     * @param dbName Name of database for connection
+    /*
+     *  Builds the connection URL for both in memory and permanent databases.
      */
-    private boolean initializeDatabase(String dbName) {
-        if (dbName.equals(""))
-            return false;
+    private String buildConnectionUrl(boolean retry) {
+        StringBuilder buffer = new StringBuilder();
 
-        return true;
+        buffer.append(H2_URL);
+        //the in-memory db doesn't require a db location and name
+        if (this.dbInMemory) {
+            buffer.append(H2_IN_MEMORY);
+            buffer.append(H2_SCRIPT_CREATE);
+            buffer.append(SINGLE_QUOTE);
+            buffer.append(dbSchema);
+            buffer.append(SINGLE_QUOTE);
+        }
+        else {
+            /*initially, this logic will configure the connection
+             url to attempt an open. If the open fails because the
+             database doesn't exist, the connection string will be
+             rebuilt using the database creation script.
+             */
+            buffer.append(dbLocation);
+            buffer.append(SEPARATOR);
+            buffer.append(dbName);
+            if (retry) {
+                buffer.append(H2_SCRIPT_CREATE);
+                buffer.append(SINGLE_QUOTE);
+                buffer.append(dbSchema);
+                buffer.append(SINGLE_QUOTE);
+            }
+            else {
+                buffer.append(H2_SCRIPT_OPEN);
+            }
+        }
+
+        return buffer.toString();
     }
 
-        /* If tables don't exist then initialize the database */
-
-            /* SDC - this code will go away once it is assured that the
-                     database schema is only run when the DB does not exist.
-                     Otherwise, the following code checks if the tables
-                     exist, which would enable the schema to be run using
-                     something like the MyBatis script runner in the
-                     initializeDatabase method below.
-
-            DatabaseMetaData meta = conn.getMetaData();
-            ResultSet result = meta.getTables(null, null, "user", null);
-            //If not result, then tables have not been created yet
-            if (!result.next()) {
-                dbName = H2_URL+dbName;
-                dbInitialized = initializeDatabase(dbName);
-            }
-            */
-
-
+/*
     public static void main(String [] args) {
 
         PersistenceConnection connection = PersistenceConnectionImpl.INSTANCE;
         connection.start("./config/junittest.properties");
     }
-
+*/
 
 }
