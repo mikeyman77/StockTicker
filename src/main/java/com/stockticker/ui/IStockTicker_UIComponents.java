@@ -9,7 +9,7 @@ package com.stockticker.ui;
 
 
 /**
- * Inteface for ViewStockTicker UI class Provides constant fields for button,
+ * Interface for ViewStockTicker UI class Provides constant fields for button,
  * Card names, and other constant fields. Provides a status message method to
  * display messages in the UI by classes outside the UI.
  * 
@@ -24,8 +24,8 @@ public interface IStockTicker_UIComponents {
      */
     public enum UI {
         CLOSE("Close"), USER_REG("Registration"), TICKER("Ticker"), QUOTE("Quote"), HOME("Home"), 
-        DETAIL("Detail"), LOGIN("Login"), LOGOUT("Logout"), SUBMIT("Submit"), UPDATE("Update"), 
-        CANCEL("Cancel"), TRACK("Track"), REFRESH("Refresh"), DEFAULT("Default");
+        DETAIL("Detail"), LOGIN("Login"), LOGOUT("Logout"), SUBMIT("Submit"), CANCEL("Cancel"),
+        TRACK("Track"), UNTRACK("Untrack"), REFRESH("Refresh"), DEFAULT("Default");
 
         private final String btnName;
 
