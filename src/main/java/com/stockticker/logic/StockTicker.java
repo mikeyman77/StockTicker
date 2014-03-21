@@ -31,7 +31,7 @@ public enum StockTicker implements StockTickerService {
         return ysqs.getStockQuotes(ysqs
                 .getInputStream(ysqs.getURL(symbols)));
     }
-    
+
     /**
      * This method gets the tracked stocks for a specific user.
      *
