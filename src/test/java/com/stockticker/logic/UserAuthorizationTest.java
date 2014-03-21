@@ -38,6 +38,7 @@ public class UserAuthorizationTest {
     public void tearDown() {
         persistentence.deleteUser(testUser.getUserName());
         persistentence.deleteUser(otherUser.getUserName());
+        persistentence.deleteUser(anotherUser.getUserName());
     }
     
     @Test
