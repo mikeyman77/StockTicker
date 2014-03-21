@@ -9,6 +9,11 @@ package com.stockticker.persistence;
 public class PersistenceServiceException extends RuntimeException {
 
     /**
+     * SQLState representing database not found
+     */
+    public static final String SQLSTATE_DATABASE_NOT_FOUND = "90013";
+
+    /**
      * Error code thrown when the Stock Ticker properties file is not located.
      */
     public static final int    PROPERTIES_FILE_NOT_FOUND = 100;

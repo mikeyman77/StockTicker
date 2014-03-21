@@ -21,7 +21,7 @@
               description="this directory is used by JUnit. Test results are placed here in a nice HTML format"/>
     <!-- Currently, the temp db is being persisted to disk, but wiped out each time clean is run. Switch to
          using init_cached.sql and data dir for persistent persistence. -->
-    <property name="temp.db.dir" value="data/mem" description="location of temp db files wiped out each run" />
+    <property name="temp.db.dir" value="data/temp" description="location of temp db files wiped out each run" />
 
     <!-- cobertura properties -->
     <property name="cobertura.home" value="lib"/>
@@ -55,7 +55,6 @@
 
     <target name="init" description="Build initialization - create output directories" depends="clean">
         <mkdir dir="${classes.dir}"/>
-        <mkdir dir="${temp.db.dir}"/>
         <mkdir dir="${doc.api.dir}"/>
     </target>
 
