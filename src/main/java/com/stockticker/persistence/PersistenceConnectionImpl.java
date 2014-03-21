@@ -175,7 +175,7 @@ public enum PersistenceConnectionImpl implements PersistenceConnection {
             }
             String tempDbUser = properties.getProperty(DB_USER);
             if (tempDbUser != null && !tempDbUser.isEmpty()) {
-                this.dbUser = tempDbLocation;
+                this.dbUser = tempDbUser;
             }
             String tempDbPswd = properties.getProperty(DB_PASSWORD);
             if (tempDbPswd != null && !tempDbPswd.isEmpty()) {
