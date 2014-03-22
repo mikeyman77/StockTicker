@@ -127,6 +127,7 @@ public class TickerCard extends JPanel {
         m_table = new JTable(m_model);
         m_table.setPreferredScrollableViewportSize(new Dimension(580, 240));
         m_table.setFillsViewportHeight(true);
+        m_table.putClientProperty("terminateEditOnFocusLost", Boolean.TRUE);
 
         TableColumn column = m_table.getColumnModel().getColumn(8);
         DefaultTableCellRenderer cellRenderer = new DefaultTableCellRenderer();
@@ -183,8 +184,10 @@ public class TickerCard extends JPanel {
 
 
     /**
-     * 
-     * 
+     * Adds a JPanel with a JButton and JText Field to the main JPanel and its listeners.
+     * The text field lists the selected symbols from the symbols list.  Pressing enter
+     * or Quote button will call StockTickerService for a list of stock quotes based on
+     * the symbols in text field.  The stock quote list is then displayed in the JTable. 
      */
     public void setButtonPanel() {
         m_buttonPanel = new JPanel(new GridBagLayout());
@@ -195,6 +198,7 @@ public class TickerCard extends JPanel {
         quote.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent evt) {
+                m_quoteField.setText("");
                 m_operate.showStockQuoteList();
             }
         });
@@ -207,7 +211,8 @@ public class TickerCard extends JPanel {
         Action enterAction = new AbstractAction() {
             @Override
             public void actionPerformed(ActionEvent actionEvent) {
-               m_operate.showStockQuoteList();
+                m_quoteField.setText("");
+                m_operate.showStockQuoteList();
             }
         };
 
@@ -238,6 +243,17 @@ public class TickerCard extends JPanel {
      */
     public JPanel getCard() {
         return m_tickerCard;
+    }
+
+
+    public List<String> getSymbolsInTable(List<String> symbols) {
+        if(m_model.getRowCount() > 0) {
+            for(int i = 0; i < m_model.getRowCount(); i++) {
+                symbols.add(m_model.getStock(i).getSymbol().toString());
+            }
+        }
+
+        return symbols;
     }
 
 
@@ -277,8 +293,9 @@ public class TickerCard extends JPanel {
 
 
     /**
-     *
-     * @param disable
+     *  Empties the table of all stock quotes
+     * 
+     * @param disable   -   
      */
     public void clearStockList(boolean disable) {
         m_isLoggedIn = disable;
@@ -353,7 +370,7 @@ public class TickerCard extends JPanel {
          */
         @Override
         public Object getValueAt(int rowIndex, int columnIndex) {
-            StockQuote sq = m_stocks.get(rowIndex);
+            StockQuote sq = (StockQuote)m_stocks.get(rowIndex);
             Object value = null;
 
             switch(columnIndex) {
@@ -393,7 +410,6 @@ public class TickerCard extends JPanel {
             }
 
             return value;
-
         }
 
 
@@ -404,11 +420,10 @@ public class TickerCard extends JPanel {
 
 
         /*
-         * Gets/returns the StockQuote at the specified row 
-         * 
+         * Gets/returns the StockQuote at the specified row
          */
         public StockQuote getStock(int row) {
-                return m_stocks.get(row);
+            return m_stocks.get(row);
         }
 
 
@@ -416,7 +431,7 @@ public class TickerCard extends JPanel {
          * Deletes all rows in the table
          */
         public void deleteAllRows() {
-            for(int i = m_stocks.size() - 1; i >= 0; i--) {
+            for(int i = this.getRowCount() - 1; i >= 0; i--) {
                 m_stocks.remove(i);
             }
         }
