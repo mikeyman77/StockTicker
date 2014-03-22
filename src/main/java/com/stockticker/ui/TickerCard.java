@@ -162,6 +162,7 @@ public class TickerCard extends JPanel {
                                 }
                                 
                                 m_operate.resetRightButton(UI.CLOSE.getName());
+                                m_operate.enableSymbolJList(false);
                                 m_cardLayout = (CardLayout) m_cardPanel.getLayout();
                                 m_cardLayout.show(m_cardPanel, UI.QUOTE.getName());
                                 System.out.println("Display stock qoute table");
