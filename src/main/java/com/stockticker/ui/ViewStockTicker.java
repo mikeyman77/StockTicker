@@ -96,10 +96,10 @@ public class ViewStockTicker extends WindowAdapter implements IStockTicker_UICom
 
     private boolean m_logInSelect = false;
     private boolean m_regSelect = false;
-    private boolean m_unTrackSelect = false;
+    //private boolean m_unTrackSelect = false;
     public boolean m_closeSelect = false;
-    private boolean m_quoteSelect = false;
-    private boolean m_trackSelect = false;
+    //private boolean m_quoteSelect = false;
+    //private boolean m_trackSelect = false;
     public boolean m_isLoggedIn = false;
 
     private String m_username = "";
@@ -107,7 +107,6 @@ public class ViewStockTicker extends WindowAdapter implements IStockTicker_UICom
     private String m_firstname = "";
     private String m_lastname = "";
 
-    //private List<String> m_trackedSymbols;
     private List<String> m_symbolList;
     private List<StockQuote> m_stockQuoteList;
 
@@ -543,25 +542,22 @@ public class ViewStockTicker extends WindowAdapter implements IStockTicker_UICom
 
 
                 case REFRESH:
-                    cardLayout.show(m_cardPanel, UI.TICKER.getName());
-
                     // Refresh stock quote list(includes tracked stocks)
-                    if(m_quoteSelect) {
+                    /*if(m_quoteSelect) {
                         this.showStockQuoteList();
                         System.out.println("Stock quote list refreshed");
                     }
                     else {
                         System.out.println("Stock quote list not refreshed"); 
                         System.out.println("symbols needs to be added to stock quote list first");
-                    }
-
+                    }*/
+                    System.out.println("Stocks not refreshed");
                     m_leftControlBtn.requestFocusInWindow();
                     m_quoteCard.clearQuote(m_isLoggedIn);
                     break;
 
                 case TRACK:
                     this.resetFlags();
-                    m_trackSelect = true;
                     m_tickerCard.getSelectedStock();
                     m_stockService.trackStock(m_username, m_tickerCard.getSelectedStock().getSymbol(), true);
                     this.resetLeftButton(UI.UNTRACK.getName());
@@ -569,7 +565,6 @@ public class ViewStockTicker extends WindowAdapter implements IStockTicker_UICom
                     
                 case UNTRACK:
                     this.resetFlags();
-                    m_unTrackSelect = true;
                     m_stockService.trackStock(m_username, m_tickerCard.getSelectedStock().getSymbol(), false);
                     this.resetLeftButton(UI.TRACK.getName());
                     break;
@@ -599,11 +594,11 @@ public class ViewStockTicker extends WindowAdapter implements IStockTicker_UICom
                         m_isLoggedIn = false;
                         System.out.println("User is logged out");
                         this.enableSymbolJList(false);
+                        //m_quoteSelect = false;
+                        m_tickerCard.clearStockList(m_isLoggedIn);
+                        m_quoteCard.clearQuote(m_isLoggedIn);
                         m_symbolList.clear();
                         m_stockQuoteList.clear();
-                        m_quoteSelect = false;
-                        m_tickerCard.clearStockList(m_isLoggedIn);
-                        m_quoteCard.clearQuote(m_isLoggedIn); 
                     }
                     else {
                         System.out.println("Unable to log user out");
@@ -718,8 +713,8 @@ public class ViewStockTicker extends WindowAdapter implements IStockTicker_UICom
             m_logInSelect = false;
             m_regSelect = false;
             m_closeSelect = false;
-            m_trackSelect = false;
-            m_unTrackSelect = false;
+            //m_trackSelect = false;
+            //m_unTrackSelect = false;
         }
 
 
@@ -747,7 +742,7 @@ public class ViewStockTicker extends WindowAdapter implements IStockTicker_UICom
             if(m_symbolList.size() > ZERO) {
                 m_tickerCard.setSymbolsTextField(m_symbolList, m_isLoggedIn);
                 System.out.println("Symbol selected");
-                m_quoteSelect = false;
+                //m_quoteSelect = false;
             }
             else {
                 System.out.println("Unable to select symbol");
@@ -759,30 +754,33 @@ public class ViewStockTicker extends WindowAdapter implements IStockTicker_UICom
          *
          */
         public void showStockQuoteList() {
-            if(m_symbolList.size() > ZERO && m_isLoggedIn) {
+            if(m_symbolList.size() > ZERO) {
+                m_tickerCard.getSymbolsInTable(m_symbolList);
                 m_stockQuoteList = m_stockService.getStockQuotes(m_symbolList);
-                if(m_stockQuoteList.size() > ZERO && m_stockQuoteList != null) {//
+
+                if(m_stockQuoteList.size() > ZERO && m_stockQuoteList != null) {
                     m_tickerCard.displayStockQuoteList(m_stockQuoteList, m_isLoggedIn);
-                    m_quoteSelect = true;
-                }
+                    //m_quoteSelect = true;
+                    System.out.println("Stock quotes added to stock quote list");                }
                 else {
-                    System.out.println("Unable to get Stock Quotes");
+                    System.out.println("Unable to get Stock Quotes; no quotes added to list");
                 }
             }
             else {
-                System.out.println("Symbols not added to stock quote list; ");
-                System.out.println("Check login status, or symbols list is empty, or failed to insert tracked files");
+                System.out.println("Symbols not added to quote text field.");
+                System.out.println("No symbols selected from symbols list.");
             }
+            m_symbolList.clear();
         }
 
 
         private void showTrackedStocks() {
-            m_symbolList = m_stockService.getTrackedStocks(m_username);
-            if(m_symbolList.size() > ZERO) {
-                m_stockQuoteList = m_stockService.getStockQuotes(m_symbolList);
+            List<String> trackedStockes = new ArrayList<>();
+            trackedStockes = m_stockService.getTrackedStocks(m_username);
+            if(trackedStockes.size() > ZERO) {          
+                m_stockQuoteList = m_stockService.getStockQuotes(trackedStockes);
                 if(m_stockQuoteList.size() > ZERO && m_stockQuoteList != null) {//
                     m_tickerCard.displayStockQuoteList(m_stockQuoteList, m_isLoggedIn);
-                    //m_trackedFilesAdded = true;
                 }
                 else {
                     System.out.println("Unable to get the users tracked stock quotes");
@@ -791,29 +789,7 @@ public class ViewStockTicker extends WindowAdapter implements IStockTicker_UICom
             else {
                 System.out.println("User has no tracked stocks");
             }
-        }
-
-
-        /*private boolean insertStockQuoteList(List<String> list) {
-            List<StockQuote> tmpList = m_stockService.getStockQuotes(list);
-            int origSize = m_stockQuoteList.size();
-            boolean isInserted = false;
-
-            for(StockQuote sq : tmpList) {
-                m_stockQuoteList.add(sq);
-            }
-
-            if(m_stockQuoteList.size() == (origSize + list.size())) {
-                isInserted = true;
-                m_trackedFilesAdded = false;
-                System.out.println("Files inserted into stock quote list");
-            }
-            else {
-                System.out.println("Unable to insert symbols and tracked files into stock quote list");
-            }
-
-            return isInserted;
-        }*/	
+        }	
 
 
         /**
