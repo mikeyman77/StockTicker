@@ -96,12 +96,11 @@ public class ViewStockTicker extends WindowAdapter implements IStockTicker_UICom
 
     private boolean m_logInSelect = false;
     private boolean m_regSelect = false;
+    private boolean m_unTrackSelect = false;
     public boolean m_closeSelect = false;
     private boolean m_quoteSelect = false;
-    private boolean m_cancelSelect = false;
     private boolean m_trackSelect = false;
     public boolean m_isLoggedIn = false;
-    //private boolean m_trackedFilesAdded = false;
 
     private String m_username = "";
     private String m_password = "";
@@ -460,25 +459,24 @@ public class ViewStockTicker extends WindowAdapter implements IStockTicker_UICom
             switch(selection) {
 
                 case USER_REG:
+                    this.resetFlags();
+                    m_regSelect = true;
                     m_regCard.clearTextFields();
                     cardLayout.show(m_cardPanel, UI.USER_REG.getName());
                     m_rightControlBtn.transferFocus();
                     this.resetLeftButton(UI.SUBMIT.getName());
-                    this.resetRightButton("Cancel");
-                    m_regSelect = true;
+                    this.resetRightButton(UI.CLOSE.getName());
                     break;
 
 
                 case LOGIN:
+                    this.resetFlags();
+                    m_logInSelect = true;
                     m_loginCard.clearTextFields();
+                    this.resetLeftButton(UI.SUBMIT.getName());
+                    this.resetRightButton(UI.CLOSE.getName());
                     cardLayout.show(m_cardPanel, UI.LOGIN.getName());
                     m_rightControlBtn.transferFocus();
-                    if(!m_logInSelect) {
-                        this.resetLeftButton("Submit");
-                        this.resetRightButton("Cancel");
-                        m_logInSelect = true;
-                        m_regSelect = false;
-                    }
                     break;
 
 
@@ -512,7 +510,7 @@ public class ViewStockTicker extends WindowAdapter implements IStockTicker_UICom
                         // Registration selcted; register user
                         if(!isEmpty) {   
                             this.registerUser(m_username, m_password);
-                        } 
+                        }
                     }
                     else if(m_logInSelect) {
                         if((m_username = m_loginCard.getUsername()).isEmpty() || m_loginCard.getUsername().startsWith(SPACE)) {
@@ -540,6 +538,7 @@ public class ViewStockTicker extends WindowAdapter implements IStockTicker_UICom
                             }
                         } 
                     }
+                    //this.resetFlags();
                     break;
 
 
@@ -561,49 +560,60 @@ public class ViewStockTicker extends WindowAdapter implements IStockTicker_UICom
                     break;
 
                 case TRACK:
+                    this.resetFlags();
                     m_trackSelect = true;
                     m_tickerCard.getSelectedStock();
-                    m_stockService.trackStock(m_username, m_tickerCard.getSelectedStock().getSymbol(), m_trackSelect);
-                    this.resetLeftButton("Refresh");
-                    this.resetRightButton("Logout");
-                    cardLayout.show(m_cardPanel, UI.TICKER.getName());
+                    m_stockService.trackStock(m_username, m_tickerCard.getSelectedStock().getSymbol(), true);
+                    this.resetLeftButton(UI.UNTRACK.getName());
                     break;
                     
                 case UNTRACK:
-                    m_trackSelect = false;
-                    m_stockService.trackStock(m_username, m_tickerCard.getSelectedStock().getSymbol(), m_trackSelect);
-                    this.resetLeftButton("Refresh");
-                    this.resetRightButton("Logout");
-                    cardLayout.show(m_cardPanel, UI.TICKER.getName());
+                    this.resetFlags();
+                    m_unTrackSelect = true;
+                    m_stockService.trackStock(m_username, m_tickerCard.getSelectedStock().getSymbol(), false);
+                    this.resetLeftButton(UI.TRACK.getName());
                     break;
 
                 // Log-out user on CLOSE or LOGOUT selected.
                 // Show Home screen if CANCEL or CLOSE selected.  
                 case  CLOSE:
                     m_closeSelect = true;
-                case CANCEL:
-                    m_cancelSelect = true;
-                case LOGOUT:
-                    if(!m_cancelSelect || m_closeSelect) {
-                        if(m_userAuth.logOut(m_username)) {
-                             m_isLoggedIn = false;
-                            System.out.println("User is logged out");
-                            this.enableSymbolJList(false);
-                            m_symbolList.clear();
-                            m_stockQuoteList.clear();
-                            m_quoteSelect = false;
-                            m_tickerCard.clearStockList(m_isLoggedIn);
-                            m_quoteCard.clearQuote(m_isLoggedIn); 
-                        }
-                        else {
-                            System.out.println("Unable to log user out");
-                        }
+                    
+                    if(!m_userAuth.isRegistered(m_username) || !m_isLoggedIn) {
+                        this.resetLeftButton(UI.USER_REG.getName());
+                        this.resetRightButton(UI.LOGIN.getName());
+                        cardLayout.show(m_cardPanel, UI.HOME.getName());
+                        m_leftControlBtn.requestFocusInWindow();
                     }
-                    this.resetLeftButton("Registration");
-                    this.resetRightButton("Login");
+                    else {
+                        this.resetLeftButton(UI.REFRESH.getName());
+                        this.resetRightButton(UI.LOGOUT.getName()); 
+                        this.enableSymbolJList(true);
+                        cardLayout.show(m_cardPanel, UI.TICKER.getName());
+                    }
                     this.resetFlags();
+                    break;
+                    
+                case LOGOUT:
+                    if(m_userAuth.logOut(m_username)) {
+                        m_isLoggedIn = false;
+                        System.out.println("User is logged out");
+                        this.enableSymbolJList(false);
+                        m_symbolList.clear();
+                        m_stockQuoteList.clear();
+                        m_quoteSelect = false;
+                        m_tickerCard.clearStockList(m_isLoggedIn);
+                        m_quoteCard.clearQuote(m_isLoggedIn); 
+                    }
+                    else {
+                        System.out.println("Unable to log user out");
+                    }
+
+                    this.resetLeftButton(UI.USER_REG.getName());
+                    this.resetRightButton(UI.LOGIN.getName());
                     cardLayout.show(m_cardPanel, UI.HOME.getName());
                     m_leftControlBtn.requestFocusInWindow();
+                    this.resetFlags();
                     break;
 
 
@@ -622,10 +632,7 @@ public class ViewStockTicker extends WindowAdapter implements IStockTicker_UICom
             if(!m_userAuth.isLoggedIn(username)) {
                 if(m_userAuth.logIn(username, password)) {
                     System.out.println("User successfully logged in");
-                    this.resetFlags();
-                    m_isLoggedIn = true;
-                    this.showTrackedStocks();
-                    this.enableSymbolJList(true);
+                    m_isLoggedIn = true;   
                 }
                 else {
                     System.out.println("User login failed, please check password");
@@ -635,18 +642,17 @@ public class ViewStockTicker extends WindowAdapter implements IStockTicker_UICom
             }
             else {
                 System.out.println("User is already logged in");
-                this.resetFlags();
-                m_isLoggedIn = true;
-                this.enableSymbolJList(true);
+                m_isLoggedIn = true;   
             }
 
-            // User is logged in,  show stock quote list screen & symbol list
-            if(!m_logInSelect && !m_regSelect) {
-                this.resetLeftButton("Refresh");
-                this.resetRightButton("Logout");
-                m_rightControlBtn.setEnabled(true);       
+            // New user and is logged in;  show stock quote list screen & symbol list
+            if(m_isLoggedIn && m_regSelect || m_isLoggedIn && m_logInSelect) { 
+                this.resetLeftButton(UI.REFRESH.getName());
+                this.resetRightButton(UI.LOGOUT.getName());
+                this.showTrackedStocks();
+                this.enableSymbolJList(true);
                 cardLayout.show(m_cardPanel, UI.TICKER.getName());
-            }            
+            }       
         }
 
 
@@ -660,13 +666,10 @@ public class ViewStockTicker extends WindowAdapter implements IStockTicker_UICom
                 m_userInfo = new UserInfo(m_firstname, m_lastname);
                 if(m_userAuth.register(username, password, m_userInfo)) {
                     System.out.println("New user successfully registered");
-                    m_regSelect = false;
-                    m_logInSelect = true;
                     this.logInUser(username, password);
                 }
                 else {
-                    System.err.println("Problem occured, unable to register user");
-                    this.resetFlags();
+                    System.err.println("Problem occured, unable to register user");               
                 }   
             }
             else {
@@ -677,11 +680,7 @@ public class ViewStockTicker extends WindowAdapter implements IStockTicker_UICom
                     }
                     else {
                         System.out.println("User is already registered and logged in");
-                        this.resetLeftButton("Refresh");
-                        this.resetRightButton("Logout");
-                        this.resetFlags();
-                        cardLayout.show(m_cardPanel, UI.TICKER.getName());
-                        m_leftControlBtn.requestFocusInWindow();
+
                     }
                 }
                 else {
@@ -718,9 +717,9 @@ public class ViewStockTicker extends WindowAdapter implements IStockTicker_UICom
         private void resetFlags() {
             m_logInSelect = false;
             m_regSelect = false;
-            m_cancelSelect = false;
             m_closeSelect = false;
             m_trackSelect = false;
+            m_unTrackSelect = false;
         }
 
 
@@ -823,7 +822,7 @@ public class ViewStockTicker extends WindowAdapter implements IStockTicker_UICom
          * 
          * @param enable        - boolean, enables/disables m_symbolJList
          */
-        private void enableSymbolJList(boolean enable) {
+        public void enableSymbolJList(boolean enable) {
             m_symbolJList.setEnabled(enable);
             m_symbolJList.setVisible(enable);
             m_scrollPane.setEnabled(enable);
