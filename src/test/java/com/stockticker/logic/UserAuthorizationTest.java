@@ -120,7 +120,6 @@ public class UserAuthorizationTest {
     
     @Test
     public void testFailedRegister() throws Exception {
-        persistentence.createUser(testUser.getUserName(), testUser.getPassword());
         boolean result = userAuth.register(testUser.getUserName(), 
                                             testUser.getPassword(),
                                             testUserInfo);
@@ -129,7 +128,6 @@ public class UserAuthorizationTest {
 
     @Test
     public void testUnRegister() throws Exception {
-        persistentence.createUser(testUser.getUserName(), testUser.getPassword());
         boolean result = userAuth.unRegister(testUser.getUserName());
         assertTrue("Unregister test", result);
     }
@@ -165,7 +163,6 @@ public class UserAuthorizationTest {
     
     @Test
     public void testUpdateUserInfo() {
-        persistentence.createUser(testUser.getUserName(), testUser.getPassword());
         persistentence.setLoginStatus(testUser.getUserName(), true);
         boolean result = userAuth.updateUserInfo(testUser.getUserName(), testUserInfo);
         assertTrue("Update user info test with user logged in", result);
@@ -173,14 +170,12 @@ public class UserAuthorizationTest {
     
     @Test
     public void testFailedUpdateUserInfo() {
-        persistentence.createUser(testUser.getUserName(), testUser.getPassword());
         boolean result = userAuth.updateUserInfo(testUser.getUserName(), testUserInfo);
         assertFalse("Update user info test with user logged out", result);
     }
     
     @Test
     public void testFailedUpdateUserInfoWithOtherUsersLoggedIn() {
-        persistentence.createUser(otherUser.getUserName(), otherUser.getPassword());
         persistentence.setLoginStatus(otherUser.getUserName(), true);
         boolean result = userAuth.updateUserInfo(testUser.getUserName(), testUserInfo);
         assertFalse("Update user info test with other users logged in", result);
@@ -188,7 +183,6 @@ public class UserAuthorizationTest {
 
     @Test
     public void testChangePassword() throws Exception {
-        persistentence.createUser(testUser.getUserName(), testUser.getPassword());
         persistentence.setLoginStatus(testUser.getUserName(), true);
         boolean result = userAuth.changePassword(testUser.getUserName(), testUser.getPassword(), newPassword);
         assertTrue("Successful change password", result);
@@ -196,7 +190,6 @@ public class UserAuthorizationTest {
     
     @Test
     public void testFailedChangePassword() throws Exception {
-        persistentence.createUser(testUser.getUserName(), testUser.getPassword());
         persistentence.setLoginStatus(testUser.getUserName(), true);
         boolean result = userAuth.changePassword(testUser.getUserName(), wrongPassword, newPassword);
         assertFalse("Failed change password (bad password)", result);
@@ -204,7 +197,6 @@ public class UserAuthorizationTest {
     
     @Test
     public void testFailedLoggedoutChangePassword() throws Exception {
-        persistentence.createUser(testUser.getUserName(), testUser.getPassword());
         persistentence.setLoginStatus(testUser.getUserName(), false);
         boolean result = userAuth.changePassword(testUser.getUserName(), testUser.getPassword(), newPassword);
         assertFalse("Failed change password (logged out user)", result);
