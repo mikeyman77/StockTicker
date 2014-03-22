@@ -25,31 +25,13 @@ public enum UserAuthorization implements AuthorizationService {
         User user;
         boolean successful = false;
         
-        // check if user exists
-        if (persistence.userExists(username)) {
-            user = persistence.getUser(username);
-        }
-        else {
-            return successful;
-        }
+        user = persistence.getUser(username);
         
-        // get all logged in users
-        List<String> loggedInUsers = persistence.getLoggedInUsers();
-        
-        // log out all users but the username
-        if (!loggedInUsers.isEmpty()) {
-            for (String uname : loggedInUsers) {
-                if (!username.equals(uname)) {
-                    persistence.setLoginStatus(uname, false);
-                }
+        if (user != null) {
+            if (checkPassword(password, user.getPassword())) {
+                persistence.setLoginStatus(user.getUserName(), true);
+                successful = true;
             }
-        }
-        
-        // check password
-        if (checkPassword(password, user.getPassword())) {
-            user.setLoggedIn(true);
-            persistence.setLoginStatus(user.getUserName(), true);
-            successful = true;
         }
         
         return successful;
@@ -63,13 +45,13 @@ public enum UserAuthorization implements AuthorizationService {
      */
     @Override
     public boolean logOut(String username) {
+        User user;
         boolean successful = false;
-        List<String> loggedInUsers = persistence.getLoggedInUsers();
         
-        if (!loggedInUsers.isEmpty()) {
-            if (loggedInUsers.contains(username)) {
-                successful = persistence.setLoginStatus(username, false);
-            }
+        user = persistence.getUser(username);
+        
+        if (user != null && user.isLoggedIn()) {
+            successful = persistence.setLoginStatus(username, false);
         }
         
         return successful;
@@ -96,10 +78,11 @@ public enum UserAuthorization implements AuthorizationService {
      */
     @Override
     public boolean register(String username, String password, UserInfo userInfo) {
+        User user;
         boolean successful = false;
         String encryptedPassword = passwordEncryptor.encryptPassword(password);
         
-        User user = persistence.createUser(username, encryptedPassword);
+        user = persistence.createUser(username, encryptedPassword);
         
         if (user != null) {
             user.setUserInfo(userInfo);
@@ -117,13 +100,7 @@ public enum UserAuthorization implements AuthorizationService {
      */
     @Override
     public boolean unRegister(String username) {
-        boolean successful = false;
-        
-        if (persistence.userExists(username)) {
-            successful = persistence.deleteUser(username);
-        }
-        
-        return successful;
+        return persistence.deleteUser(username);
     }
 
     /**
@@ -158,13 +135,12 @@ public enum UserAuthorization implements AuthorizationService {
      */
     @Override
     public boolean changePassword(String username, String oldPassword, String newPassword) {
+        User user;
         boolean successful = false;
-        List<String> loggedInUsers = persistence.getLoggedInUsers();
+
+        user = persistence.getUser(username);
         
-        // only allow logged in users to change password
-        if (loggedInUsers.contains(username)) {
-            User user = persistence.getUser(username);
-            
+        if (user != null && user.isLoggedIn()){
             if (checkPassword(oldPassword, user.getPassword())) {
                 user.setPassword(newPassword);
                 successful = true;
@@ -183,14 +159,12 @@ public enum UserAuthorization implements AuthorizationService {
      */
     @Override
     public boolean updateUserInfo(String username, UserInfo userInfo) {
+        User user;
         boolean successful = false;
-        List<String> loggedInUsers = persistence.getLoggedInUsers();
         
-        if (loggedInUsers.isEmpty())
-            return successful;
+        user = persistence.getUser(username);
         
-        if (loggedInUsers.contains(username)) {
-            User user = persistence.getUser(username);
+        if (user != null && user.isLoggedIn()) {
             user.setUserInfo(userInfo);
             successful = persistence.updateUser(user);
         }
@@ -200,12 +174,6 @@ public enum UserAuthorization implements AuthorizationService {
     
     // helper method to check password for user
     private boolean checkPassword(String password, String encryptedPassword) {
-        boolean successful = false;
-        
-        if (passwordEncryptor.checkPassword(password, encryptedPassword)) {
-            successful = true;
-        }
-        
-        return successful;
+        return passwordEncryptor.checkPassword(password, encryptedPassword);
     }
 }

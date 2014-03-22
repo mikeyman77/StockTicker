@@ -14,7 +14,7 @@ import org.junit.Before;
 
 public class UserAuthorizationTest {
 
-    private final PersistenceService persistentence = StockTickerPersistence.INSTANCE;
+    private final PersistenceService persistence = StockTickerPersistence.INSTANCE;
     private final AuthorizationService userAuth = UserAuthorization.INSTANCE;
     private BasicPasswordEncryptor passwordEncryptor = new BasicPasswordEncryptor();
 
@@ -28,17 +28,17 @@ public class UserAuthorizationTest {
     
     @Before
     public void setUp() {
-        persistentence.createUser(testUser.getUserName(), 
+        persistence.createUser(testUser.getUserName(), 
                 passwordEncryptor.encryptPassword(testUser.getPassword()));
-        persistentence.createUser(otherUser.getUserName(), 
+        persistence.createUser(otherUser.getUserName(), 
                 passwordEncryptor.encryptPassword(otherUser.getPassword()));
     }
     
     @After
     public void tearDown() {
-        persistentence.deleteUser(testUser.getUserName());
-        persistentence.deleteUser(otherUser.getUserName());
-        persistentence.deleteUser(anotherUser.getUserName());
+        persistence.deleteUser(testUser.getUserName());
+        persistence.deleteUser(otherUser.getUserName());
+        persistence.deleteUser(anotherUser.getUserName());
     }
     
     @Test
@@ -56,15 +56,15 @@ public class UserAuthorizationTest {
     
     @Test
     public void testLoginWithMultipleUsersLoggedIn() throws Exception {
-        persistentence.setLoginStatus(otherUser.getUserName(), true);
+        persistence.setLoginStatus(otherUser.getUserName(), true);
         boolean result = userAuth.logIn(testUser.getUserName(), testUser.getPassword());
         assertTrue("Successful Login Test with multiple users logged in", result);
     }
     
     @Test
     public void testLoginWithMultipleUsersLoggedInAndUserLoggedIn() throws Exception {
-        persistentence.setLoginStatus(otherUser.getUserName(), true);
-        persistentence.setLoginStatus(testUser.getUserName(), true);
+        persistence.setLoginStatus(otherUser.getUserName(), true);
+        persistence.setLoginStatus(testUser.getUserName(), true);
         boolean result = userAuth.logIn(testUser.getUserName(), testUser.getPassword());
         assertTrue("Successful Login Test with multiple users logged in", result);
     }
@@ -77,14 +77,14 @@ public class UserAuthorizationTest {
 
     @Test
     public void testLogOut() throws Exception {
-        persistentence.setLoginStatus(testUser.getUserName(), true);
+        persistence.setLoginStatus(testUser.getUserName(), true);
         boolean result = userAuth.logOut(testUser.getUserName());
         assertTrue("Log out test", result);
     }
     
     @Test
     public void testLogOutWhileNotLoggedIn() throws Exception {
-        persistentence.setLoginStatus(otherUser.getUserName(), true);
+        //persistentence.setLoginStatus(otherUser.getUserName(), false);
         boolean result = userAuth.logOut(testUser.getUserName());
         assertFalse("Log out test when not logged in", result);
     }
@@ -97,14 +97,14 @@ public class UserAuthorizationTest {
 
     @Test
     public void testIsLoggedIn() throws Exception {
-        persistentence.setLoginStatus(testUser.getUserName(), true);
+        persistence.setLoginStatus(testUser.getUserName(), true);
         boolean result = userAuth.isLoggedIn(testUser.getUserName());
         assertTrue("Is logged in test", result);
     }
 
     @Test
     public void testIsNotLoggedIn() throws Exception {
-        persistentence.setLoginStatus(testUser.getUserName(), false);
+        persistence.setLoginStatus(testUser.getUserName(), false);
         boolean result = userAuth.isLoggedIn(testUser.getUserName());
         assertFalse("Is not logged in test", result);
     }
@@ -152,9 +152,9 @@ public class UserAuthorizationTest {
 
     @Test
     public void testGetUserInfo() throws Exception {
-        User user = persistentence.getUser(testUser.getUserName());
+        User user = persistence.getUser(testUser.getUserName());
         user.setUserInfo(testUserInfo);
-        persistentence.updateUser(user);
+        persistence.updateUser(user);
         UserInfo userInfo = userAuth.getUserInfo(testUser.getUserName());
         boolean result = (testUserInfo.getFirstName().equals(userInfo.getFirstName()))
                 && (testUserInfo.getLastName().equals(userInfo.getLastName()));
@@ -163,7 +163,7 @@ public class UserAuthorizationTest {
     
     @Test
     public void testUpdateUserInfo() {
-        persistentence.setLoginStatus(testUser.getUserName(), true);
+        persistence.setLoginStatus(testUser.getUserName(), true);
         boolean result = userAuth.updateUserInfo(testUser.getUserName(), testUserInfo);
         assertTrue("Update user info test with user logged in", result);
     }
@@ -176,28 +176,28 @@ public class UserAuthorizationTest {
     
     @Test
     public void testFailedUpdateUserInfoWithOtherUsersLoggedIn() {
-        persistentence.setLoginStatus(otherUser.getUserName(), true);
+        persistence.setLoginStatus(otherUser.getUserName(), true);
         boolean result = userAuth.updateUserInfo(testUser.getUserName(), testUserInfo);
         assertFalse("Update user info test with other users logged in", result);
     }
 
     @Test
     public void testChangePassword() throws Exception {
-        persistentence.setLoginStatus(testUser.getUserName(), true);
+        persistence.setLoginStatus(testUser.getUserName(), true);
         boolean result = userAuth.changePassword(testUser.getUserName(), testUser.getPassword(), newPassword);
         assertTrue("Successful change password", result);
     }
     
     @Test
     public void testFailedChangePassword() throws Exception {
-        persistentence.setLoginStatus(testUser.getUserName(), true);
+        persistence.setLoginStatus(testUser.getUserName(), true);
         boolean result = userAuth.changePassword(testUser.getUserName(), wrongPassword, newPassword);
         assertFalse("Failed change password (bad password)", result);
     }
     
     @Test
     public void testFailedLoggedoutChangePassword() throws Exception {
-        persistentence.setLoginStatus(testUser.getUserName(), false);
+        persistence.setLoginStatus(testUser.getUserName(), false);
         boolean result = userAuth.changePassword(testUser.getUserName(), testUser.getPassword(), newPassword);
         assertFalse("Failed change password (logged out user)", result);
     }
