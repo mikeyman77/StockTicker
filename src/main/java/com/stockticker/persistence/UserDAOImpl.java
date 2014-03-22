@@ -220,6 +220,7 @@ public class UserDAOImpl implements UserDAO {
                     userInfoId = result.getInt(2);
                     user.setUserName(result.getString(3));
                     user.setPassword(result.getString(4));
+                    user.setLoggedIn(result.getBoolean(6));
                 }
 
                 //Retrieve the userinfo row
