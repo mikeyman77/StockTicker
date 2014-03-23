@@ -148,6 +148,26 @@ public class LoginCard extends JPanel {
 
 
     /**
+     * Grabs focus for the Username or Password text fields, based on the String
+     * argument.
+     * 
+     * @param field         - Indicates which field should have the focus
+     */
+    public void setFocusInField(String field) {
+        switch (field) {
+            case "Username":
+                m_usernameField.grabFocus();
+                break;
+            case "Password":
+                m_passwordField.grabFocus();
+                break;
+            default:
+                System.out.println("Invalid String field used to switch focus");
+        }
+    }
+
+
+    /**
      *
      */
     public void clearTextFields() {

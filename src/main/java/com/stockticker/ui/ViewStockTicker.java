@@ -147,11 +147,14 @@ public class ViewStockTicker extends WindowAdapter implements IStockTicker_UICom
         m_frame.addWindowListener(new WindowAdapter() {
             @Override
             public void windowClosing(WindowEvent windowEvent) {
-                if(m_userAuth.logOut(m_username)) {
-                    System.out.println("User logged out prior to closing");
+                if(m_isLoggedIn && m_userAuth.logOut(m_username)) {
+                    System.out.println("User is logged out user");
+                }
+                else if(m_isLoggedIn) {
+                    System.err.println("Unable to log user out prior to closing app");
                 }
                 else {
-                    System.err.println("Failed to log user out prior to closing");
+                    System.out.println("User logged prior to selecting close");
                 }
 
                 System.out.println("disposing");
@@ -342,7 +345,7 @@ public class ViewStockTicker extends WindowAdapter implements IStockTicker_UICom
             }
         };
 
-        m_leftControlBtn.getInputMap(JComponent.WHEN_FOCUSED).put(KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, 0, true), ENTER_PRESSED);
+        m_leftControlBtn.getInputMap(JComponent.WHEN_FOCUSED).put(KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, 0, false), ENTER_PRESSED);
         m_leftControlBtn.getActionMap().put(ENTER_PRESSED, m_leftButtonAction);
 
         Action rightButtonAction = new AbstractAction() {
@@ -352,7 +355,7 @@ public class ViewStockTicker extends WindowAdapter implements IStockTicker_UICom
             }
         };
 
-        m_rightControlBtn.getInputMap(JComponent.WHEN_FOCUSED).put(KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, 0, true), ENTER_PRESSED);
+        m_rightControlBtn.getInputMap(JComponent.WHEN_FOCUSED).put(KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, 0, false), ENTER_PRESSED);
         m_rightControlBtn.getActionMap().put(ENTER_PRESSED, rightButtonAction);
         
 
@@ -423,9 +426,8 @@ public class ViewStockTicker extends WindowAdapter implements IStockTicker_UICom
     }
 
 
-
     /**
-     *
+     * Inner class that provides the functionality of the UI and its main components.
      */
     public class OperateStockTicker implements ActionListener {
 
@@ -486,27 +488,28 @@ public class ViewStockTicker extends WindowAdapter implements IStockTicker_UICom
 
                 case SUBMIT:
                     m_leftControlBtn.requestFocusInWindow();
+                    m_buildStr = new StringBuilder("Warning: ");
                     if(m_regSelect) {
                         if((m_firstname = m_regCard.getfirstName()).isEmpty() || m_regCard.getfirstName().startsWith(SPACE)) {
-                            System.out.println("Firstname field is blank");
+                            m_buildStr.append("Firstname field is blank\n");      
                             m_firstname = "";
                             isEmpty = true;
                         }
 
                         if((m_lastname = m_regCard.getLastName()).isEmpty() || m_regCard.getLastName().startsWith(SPACE)) {
-                            System.out.println("Lastname field is blank");
+                            m_buildStr.append("Lastname field is blank\n");
                             m_lastname = "";
                             isEmpty = true;
                         }
 
                         if((m_username = m_regCard.getUsername()).isEmpty() || m_regCard.getUsername().startsWith(SPACE)) {
-                            System.out.println("Username field is blank");
+                            m_buildStr.append("Username field is blank\n");
                             m_username = "";
                             isEmpty = true;
                         } 
 
                         if((m_password = m_regCard.getPassword()).isEmpty() || m_regCard.getPassword().startsWith(SPACE)) {
-                            System.out.println("Password field is blank");
+                            m_buildStr.append("Password field is blank\n");
                             m_password = "";
                             isEmpty = true;
                         }
@@ -515,32 +518,41 @@ public class ViewStockTicker extends WindowAdapter implements IStockTicker_UICom
                         if(!isEmpty) {   
                             this.registerUser(m_username, m_password);
                         }
+                        else {
+                            this.showDialog(m_buildStr.toString());
+                            m_regCard.setFocusInField("Username");
+                        }
                     }
                     else if(m_logInSelect) {
                         if((m_username = m_loginCard.getUsername()).isEmpty() || m_loginCard.getUsername().startsWith(SPACE)) {
-                            System.out.println("Username field is blank");
+                            m_buildStr.append("Username field is blank\n");
                             m_username = "";
                             isEmpty = true;
                         }
 
                         if((m_password = m_loginCard.getPassword()).isEmpty() || m_loginCard.getPassword().startsWith(SPACE)) {
-                            System.out.println("Password field is blank");
+                            m_buildStr.append("Password field is blank\n");
                             m_password = "";
                             isEmpty = true;
                         }
 
                         // User is registered; login user
-                        if(!isEmpty) {      
+                        if(!isEmpty) {
                             if(m_userAuth.isRegistered(m_username)) {
                                 this.logInUser(m_username, m_password);
                             }
                             else {
-                                System.out.println("Not a recognized user, check username or register");
+                                m_buildStr = new StringBuilder("Warning: Not a recognized user, check username or register");
                                 m_username = "";
                                 m_password = "";
                                 m_loginCard.clearTextFields();
+                                this.showDialog(m_buildStr.toString());
                             }
-                        } 
+                        }
+                        else {
+                            this.showDialog(m_buildStr.toString());
+                            m_loginCard.setFocusInField("Username");
+                        }
                     }
                     break;
 
@@ -553,7 +565,7 @@ public class ViewStockTicker extends WindowAdapter implements IStockTicker_UICom
                     m_stockQuoteList.clear();
                     m_stockQuoteList = m_stockService.getStockQuotes(refreshList);
 
-                    if(m_stockQuoteList.size() > ZERO) {//&& m_stockQuoteList != null) {
+                    if(m_stockQuoteList.size() > ZERO) {
                         m_tickerCard.displayStockQuoteList(m_stockQuoteList, m_isLoggedIn);
                         System.out.println("Stock quote list refreshed");
                     }
@@ -633,19 +645,22 @@ public class ViewStockTicker extends WindowAdapter implements IStockTicker_UICom
          * @param password
          */
         private void logInUser(String username, String password) {
+            m_buildStr = new StringBuilder("Warning: ");
+
             if(!m_userAuth.isLoggedIn(username)) {
                 if(m_userAuth.logIn(username, password)) {
-                    System.out.println("User successfully logged in");
+                    System.out.println("User successfully logged in\n");
                     m_isLoggedIn = true;   
                 }
                 else {
-                    System.out.println("User login failed, please check password");
+                    m_buildStr.append("User login failed, please check password\n");
                     m_username = "";
                     m_password = "";
+                    this.showDialog(m_buildStr.toString());
                 }
             }
             else {
-                System.out.println("User is already logged in");
+                System.out.println("User is already logged in\n");
                 m_isLoggedIn = true;   
             }
 
@@ -668,6 +683,8 @@ public class ViewStockTicker extends WindowAdapter implements IStockTicker_UICom
          * @param password
          */
         private void registerUser(String username, String password) {
+            m_buildStr = new StringBuilder("Warning: ");
+
             if(!m_userAuth.isRegistered(username)) {
                 m_userInfo = new UserInfo(m_firstname, m_lastname);
                 if(m_userAuth.register(username, password, m_userInfo)) {
@@ -675,7 +692,8 @@ public class ViewStockTicker extends WindowAdapter implements IStockTicker_UICom
                     this.logInUser(username, password);
                 }
                 else {
-                    System.err.println("Problem occured, unable to register user");               
+                    m_buildStr.append("Unable to check credentials, please try again\n");
+                    this.showDialog(m_buildStr.toString());
                 }   
             }
             else {
@@ -696,7 +714,8 @@ public class ViewStockTicker extends WindowAdapter implements IStockTicker_UICom
                     }
                 }
                 else {
-                    System.out.println("Username is already taken, please choose another");
+                    m_buildStr.append("Username is already taken, please choose another\n");
+                    this.showDialog(m_buildStr.toString());
                 }  
             }
         }
