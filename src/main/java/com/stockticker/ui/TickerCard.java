@@ -177,6 +177,8 @@ public class TickerCard extends JPanel {
                         }
                     } 
                 }
+
+                setQuoteFieldFocus();
             }
         });
     }
@@ -200,12 +202,12 @@ public class TickerCard extends JPanel {
             public void actionPerformed(ActionEvent evt) {
                 m_quoteField.setText("");
                 m_operate.showStockQuoteList();
+                setQuoteFieldFocus();
             }
         });
 
 
         m_quoteField = new JTextField(40);
-        //m_quoteField.setEditable(false);
         m_quoteField.setBorder( BorderFactory.createCompoundBorder(BorderFactory.createRaisedBevelBorder(), BorderFactory.createLoweredBevelBorder()));
 
         Action enterAction = new AbstractAction() {
@@ -216,7 +218,7 @@ public class TickerCard extends JPanel {
             }
         };
 
-        m_quoteField.getInputMap(JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT).put(KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, 0, true), ENTER_PRESSED);
+        m_quoteField.getInputMap(JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT).put(KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, 0, false), ENTER_PRESSED);
         m_quoteField.getActionMap().put(ENTER_PRESSED, enterAction);
 
 
@@ -254,6 +256,21 @@ public class TickerCard extends JPanel {
         }
 
         return symbols;
+    }
+
+
+    /**
+     * Gets/returns the selected stock from stock quote list
+     * 
+     * @return
+     */
+    public StockQuote getSelectedStock() {
+        return m_selectedStock;
+    }
+
+
+    public void setQuoteFieldFocus() {
+        m_quoteField.grabFocus();
     }
 
 
@@ -302,16 +319,6 @@ public class TickerCard extends JPanel {
         m_selectedStock = null;
         m_quoteField.setText("");
         m_model.deleteAllRows();
-    }
-
-
-    /**
-     * Gets/returns the selected stock from stock quote list
-     * 
-     * @return
-     */
-    public StockQuote getSelectedStock() {
-        return m_selectedStock;
     }
 
 
