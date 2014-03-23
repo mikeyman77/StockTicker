@@ -66,7 +66,7 @@ public class PersistenceConnectionTest {
     public void testStartThrowsPersistenceServiceExceptionPropertiesFileNotFound() throws PersistenceServiceException {
 
         exception.expect(PersistenceServiceException.class);
-        exception.expectMessage(PersistenceServiceException.PROPERTIES_FILE_NOT_FOUND_MESSAGE);
+        exception.expectMessage(PersistenceServiceException.PSE100_PROPERTIES_FILE_NOT_FOUND_MESSAGE);
 
         PersistenceConnection persistenceConnection = PersistenceConnectionImpl.INSTANCE;
         persistenceConnection.start("./config/imaginary.properties");

@@ -50,8 +50,8 @@ public class TrackedStocksDAOImpl implements TrackedStocksDAO {
                 stockId = result.getInt(1);
         }
         catch (SQLException e) {
-            int errorCode = PersistenceServiceException.SQL_EXCEPTION_OCCURRED;
-            String message = "An SQL Exception occurred in the Persistence Service :";
+            int errorCode = PersistenceServiceException.PSE202_SQL_EXCEPTION_OCCURRED;
+            String message = PersistenceServiceException.PSE202_SQL_EXCEPTION_OCCURRED_MESSAGE;
             throw new PersistenceServiceException(message+" ["+errorCode+"]: "+e.getMessage(), e, errorCode);
         }
 
@@ -81,8 +81,8 @@ public class TrackedStocksDAOImpl implements TrackedStocksDAO {
                 prepared.execute();
             }
             catch (SQLException e) {
-                int errorCode = PersistenceServiceException.SQL_EXCEPTION_OCCURRED;
-                String message = "An SQL Exception occurred in the Persistence Service :";
+                int errorCode = PersistenceServiceException.PSE202_SQL_EXCEPTION_OCCURRED;
+                String message = PersistenceServiceException.PSE202_SQL_EXCEPTION_OCCURRED_MESSAGE;
                 throw new PersistenceServiceException(message+" ["+errorCode+"]: "+e.getMessage(), e, errorCode);
             }
             stockAdded = true;
@@ -112,8 +112,8 @@ public class TrackedStocksDAOImpl implements TrackedStocksDAO {
                 exists = true;
         }
         catch (SQLException e) {
-            int errorCode = PersistenceServiceException.SQL_EXCEPTION_OCCURRED;
-            String message = "An SQL Exception occurred in the Persistence Service :";
+            int errorCode = PersistenceServiceException.PSE202_SQL_EXCEPTION_OCCURRED;
+            String message = PersistenceServiceException.PSE202_SQL_EXCEPTION_OCCURRED_MESSAGE;
             throw new PersistenceServiceException(message+" ["+errorCode+"]: "+e.getMessage(), e, errorCode);
         }
 
@@ -140,8 +140,8 @@ public class TrackedStocksDAOImpl implements TrackedStocksDAO {
             }
         }
         catch (SQLException e) {
-            int errorCode = PersistenceServiceException.SQL_EXCEPTION_OCCURRED;
-            String message = "An SQL Exception occurred in the Persistence Service :";
+            int errorCode = PersistenceServiceException.PSE202_SQL_EXCEPTION_OCCURRED;
+            String message = PersistenceServiceException.PSE202_SQL_EXCEPTION_OCCURRED_MESSAGE;
             throw new PersistenceServiceException(message+" ["+errorCode+"]: "+e.getMessage(), e, errorCode);
         }
 
@@ -171,8 +171,8 @@ public class TrackedStocksDAOImpl implements TrackedStocksDAO {
                 deleteSuccessful = false;
         }
         catch (SQLException e) {
-            int errorCode = PersistenceServiceException.SQL_EXCEPTION_OCCURRED;
-            String message = "An SQL Exception occurred in the Persistence Service :";
+            int errorCode = PersistenceServiceException.PSE202_SQL_EXCEPTION_OCCURRED;
+            String message = PersistenceServiceException.PSE202_SQL_EXCEPTION_OCCURRED_MESSAGE;
             throw new PersistenceServiceException(message+" ["+errorCode+"]: "+e.getMessage(), e, errorCode);
         }
 
@@ -199,8 +199,8 @@ public class TrackedStocksDAOImpl implements TrackedStocksDAO {
                 deleteSuccessful = false;
         }
         catch (SQLException e) {
-            int errorCode = PersistenceServiceException.SQL_EXCEPTION_OCCURRED;
-            String message = "An SQL Exception occurred in the Persistence Service :";
+            int errorCode = PersistenceServiceException.PSE202_SQL_EXCEPTION_OCCURRED;
+            String message = PersistenceServiceException.PSE202_SQL_EXCEPTION_OCCURRED_MESSAGE;
             throw new PersistenceServiceException(message+" ["+errorCode+"]: "+e.getMessage(), e, errorCode);
         }
 

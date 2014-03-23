@@ -9,6 +9,7 @@ import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
+
 /**
  * This class is responsible for creating and initializing the
  * database and providing connections.
@@ -57,7 +58,7 @@ public enum PersistenceConnectionImpl implements PersistenceConnection {
      * Invokes the start method with a properties file override.
      *
      * @param propertiesFileOverride an alternate properties file to use
-     * @exception PersistenceServiceException provides message and error code
+     * @throws PersistenceServiceException provides message and error code
      *              for specific error situations
      */
     public void start(String propertiesFileOverride) throws PersistenceServiceException {
@@ -77,7 +78,7 @@ public enum PersistenceConnectionImpl implements PersistenceConnection {
      * To setup the database as in memory, i.e., the database doesn't not persist after the application
      *   closes, then set dbInMemory=1 in stockticker.properties. The default is 0, to persist the database.
      *
-     * @exception PersistenceServiceException provides message and error code
+     * @throws PersistenceServiceException provides message and error code
      *              for specific error situations
      */
     public void start() throws PersistenceServiceException {
@@ -99,20 +100,20 @@ public enum PersistenceConnectionImpl implements PersistenceConnection {
                 retryConnection = false;
             }
             catch (IOException e) {
-                int errorCode = PersistenceServiceException.PROPERTIES_FILE_NOT_FOUND;
-                String message = PersistenceServiceException.PROPERTIES_FILE_NOT_FOUND_MESSAGE;
+                int errorCode = PersistenceServiceException.PSE100_PROPERTIES_FILE_NOT_FOUND;
+                String message = PersistenceServiceException.PSE100_PROPERTIES_FILE_NOT_FOUND_MESSAGE;
                 throw new PersistenceServiceException(message+" ["+errorCode+"]: "+e.getMessage(), e, errorCode);
             }
             catch (ClassNotFoundException e) {
-                int errorCode = PersistenceServiceException.DATABASE_DRIVER_NOT_FOUND;
-                String message = PersistenceServiceException.DATABASE_DRIVER_NOT_FOUND_MESSAGE;
+                int errorCode = PersistenceServiceException.PSE200_DATABASE_DRIVER_NOT_FOUND;
+                String message = PersistenceServiceException.PSE200_DATABASE_DRIVER_NOT_FOUND_MESSAGE;
                 throw new PersistenceServiceException(message+" ["+errorCode+"]: "+e.getMessage(), e, errorCode);
             }
             catch (SQLException e) {
                 //if this is not a database not found condition, throw an exception.
                 if (!e.getSQLState().equals(PersistenceServiceException.SQLSTATE_DATABASE_NOT_FOUND)) {
-                    int errorCode = PersistenceServiceException.DATABASE_CONNECTION_FAILED;
-                    String message = PersistenceServiceException.DATABASE_CONNECTION_FAILED_MESSAGE;
+                    int errorCode = PersistenceServiceException.PSE201_DATABASE_CONNECTION_FAILED;
+                    String message = PersistenceServiceException.PSE201_DATABASE_CONNECTION_FAILED_MESSAGE;
                     throw new PersistenceServiceException(message+" ["+errorCode+"]: "+e.getMessage(), e, errorCode);
                 } else { //SQLSTATE="90013"
                     //if this is a database not found condition, retry the connection with sqlscript
