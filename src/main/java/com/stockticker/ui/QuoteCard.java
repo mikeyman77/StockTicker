@@ -10,6 +10,7 @@ import com.stockticker.StockQuote;
 
 import java.awt.BorderLayout;
 import java.awt.Dimension;
+import java.awt.Font;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
@@ -71,7 +72,7 @@ public final class QuoteCard extends JPanel {
         m_detailModel = new DetailTableModel(m_detailHeader);
 
         m_quoteCard = new JPanel();
-        m_quoteCard.setPreferredSize(new Dimension(600, 520));
+        m_quoteCard.setPreferredSize(new Dimension(550, 520));
 
         setQuotesTable();
         m_quoteCard.setBorder(BorderFactory.createTitledBorder(BorderFactory.createEtchedBorder(EtchedBorder.LOWERED), "Quote"));
@@ -87,20 +88,22 @@ public final class QuoteCard extends JPanel {
         m_quotePanel = new JPanel(new GridBagLayout());
         m_quotePanel.setOpaque(true);
         m_quoteTable = new JTable(m_quoteModel);
-        m_quoteTable.setPreferredScrollableViewportSize(new Dimension(580, 30));
+        m_quoteTable.setPreferredScrollableViewportSize(new Dimension(630, 30));
         m_quoteTable.setFillsViewportHeight(true);
         m_quoteTable.setOpaque(true);
+        m_quoteTable.setFont(m_quoteTable.getFont().deriveFont(Font.PLAIN, 11));
+        m_quoteTable.setEnabled(false);
         m_scrollPane = new JScrollPane(m_quoteTable);
 
 
         m_detailPanel = new JPanel(new GridBagLayout());
         m_detailPanel.setOpaque(true);
-
         m_detailTable = new JTable(m_detailModel);
-        m_detailTable.setPreferredScrollableViewportSize(new Dimension(580, 30));
+        m_detailTable.setPreferredScrollableViewportSize(new Dimension(630, 30));
         m_detailTable.setFillsViewportHeight(true);
         m_detailTable.setOpaque(true);
-
+        m_detailTable.setFont(m_detailTable.getFont().deriveFont(Font.PLAIN, 11));
+        m_detailTable.setEnabled(false);
         m_detailScrollPane = new JScrollPane(m_detailTable);
 
 

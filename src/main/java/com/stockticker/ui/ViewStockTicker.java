@@ -147,6 +147,13 @@ public class ViewStockTicker extends WindowAdapter implements IStockTicker_UICom
         m_frame.addWindowListener(new WindowAdapter() {
             @Override
             public void windowClosing(WindowEvent windowEvent) {
+                if(m_userAuth.logOut(m_username)) {
+                    System.out.println("User logged out prior to closing");
+                }
+                else {
+                    System.err.println("Failed to log user out prior to closing");
+                }
+
                 System.out.println("disposing");
                 m_frame.dispose();
                 System.out.println("Closing");
@@ -551,7 +558,7 @@ public class ViewStockTicker extends WindowAdapter implements IStockTicker_UICom
                         System.out.println("Stock quote list refreshed");
                     }
                     else {
-                        m_buildStr = new StringBuilder("Warning: No stocks listed in table");
+                        m_buildStr = new StringBuilder("Warning: No stocks listed in table to refresh");
                         this.showDialog(m_buildStr.toString());
                     }
 
@@ -677,8 +684,14 @@ public class ViewStockTicker extends WindowAdapter implements IStockTicker_UICom
                         System.out.println("User is already a registered user, attempting to login...");
                         this.logInUser(username, password);
                     }
-                    else {
+                    else {  // Problem occured when logging user out while apt was closing
                         System.out.println("User is already registered and logged in");
+                        if(m_userAuth.logOut(username)) {
+                            System.out.println("Forced user log out");
+                        }
+                        else {
+                            System.out.println("Forced log out failed");
+                        }
 
                     }
                 }
@@ -776,7 +789,7 @@ public class ViewStockTicker extends WindowAdapter implements IStockTicker_UICom
                 }
             }
             else {
-                m_buildStr = new StringBuilder("Warning: No symbols selected from symbols list");
+                m_buildStr = new StringBuilder("Warning: At least one quote symbol must be entered");
                 this.showDialog(m_buildStr.toString());
             }
             m_symbolList.clear();
