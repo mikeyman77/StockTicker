@@ -69,7 +69,7 @@ public enum StockTickerPersistence implements PersistenceService {
      * @return list of stock symbols
      */
     @Override
-    public List<String> getTrackedStocks(String username) {
+    public List<String> getTrackedStocks(String username) throws PersistenceServiceException {
         int userId = userDAO.getUserId(username);
         return trackedDAO.get(userId);
     }
@@ -83,7 +83,7 @@ public enum StockTickerPersistence implements PersistenceService {
      * @return true or false
      */
     @Override
-    public boolean trackStock(String username, String stock, boolean track) {
+    public boolean trackStock(String username, String stock, boolean track) throws PersistenceServiceException {
         boolean stockTracked = true;
 
         int userId = userDAO.getUserId(username);
@@ -113,7 +113,7 @@ public enum StockTickerPersistence implements PersistenceService {
      * @return         true if tracked, false otherwise
      */
     @Override
-    public boolean isStockTracked(String username, String stock) {
+    public boolean isStockTracked(String username, String stock) throws PersistenceServiceException {
         int userId = userDAO.getUserId(username);
         int stockId = trackedDAO.getStockId(stock);
         return trackedDAO.exists(userId, stockId);
@@ -164,7 +164,7 @@ public enum StockTickerPersistence implements PersistenceService {
      * @return a User object if exists, null otherwise
      */
     @Override
-    public User getUser(String username) {
+    public User getUser(String username) throws PersistenceServiceException {
         return userDAO.get(username);
     }
 
@@ -186,7 +186,7 @@ public enum StockTickerPersistence implements PersistenceService {
      * @return true if logged in, false otherwise
      */
     @Override
-    public boolean isLoggedIn(String username) {
+    public boolean isLoggedIn(String username) throws PersistenceServiceException {
         return userDAO.isLoggedIn(username);
     }
 
@@ -198,7 +198,7 @@ public enum StockTickerPersistence implements PersistenceService {
      * @return true if successful, false otherwise
      */
     @Override
-    public boolean setLoginStatus(String username, boolean status) {
+    public boolean setLoginStatus(String username, boolean status) throws PersistenceServiceException {
         return userDAO.setLoginStatus(username, status);
     }
 
@@ -208,7 +208,7 @@ public enum StockTickerPersistence implements PersistenceService {
      * @return list of logged in users or an empty List
      */
     @Override
-    public List<String> getLoggedInUsers() {
+    public List<String> getLoggedInUsers() throws PersistenceServiceException {
         return userDAO.getLoggedInUsers();
     }
 
@@ -219,7 +219,7 @@ public enum StockTickerPersistence implements PersistenceService {
      * @return a UserInfo object or null
      */
     @Override
-    public UserInfo getUserInfo(String username) {
+    public UserInfo getUserInfo(String username) throws PersistenceServiceException {
         User user = getUser(username);
         return user == null ? null : user.getUserInfo();
     }
