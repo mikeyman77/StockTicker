@@ -27,7 +27,9 @@ import javax.swing.KeyStroke;
 import javax.swing.border.EtchedBorder;
 
 /**
- * J308
+ * RegistratioinCard class
+ * Provides fields to allow a user to register with the Stock Ticker Portfolio
+ * Manager api
  * @author prwallace
  */
 public class RegistrationCard extends JPanel {
@@ -44,8 +46,10 @@ public class RegistrationCard extends JPanel {
     private final OperateStockTicker m_operate;
 
 
+    
     /**
-     *
+     * Constructs the RegistrationCard class
+     * @param operate   - Instance variable of the OperateStockTicker class
      */
     public RegistrationCard(OperateStockTicker operate) {
         m_constraints = new GridBagConstraints();
@@ -55,9 +59,10 @@ public class RegistrationCard extends JPanel {
 
 
     /**
-    *
-    *
-    */
+     * Adds the components and the components panel for this screen.  Lays out
+     * the components onto the component panel and add the component panel to the 
+     * Card panel.
+     */
     public final void setCard() {
         m_regCard = new JPanel(new GridBagLayout());
         m_regCard.setPreferredSize(new Dimension(550, 520));
@@ -148,16 +153,15 @@ public class RegistrationCard extends JPanel {
         m_constraints.insets = new Insets(0, 120, 0, 30);
         compPanel.add(m_lastnameField, m_constraints);
 
-        // Add this main panel to the main Card panel
         m_regCard.setBorder(BorderFactory.createTitledBorder(BorderFactory.createEtchedBorder(EtchedBorder.LOWERED), "Registration"));
         m_regCard.add(compPanel, new GridBagConstraints());
     }
 
 
     /**
+     * Gets/returns the card object of this JPanel.  
      *
-     *
-     * @return 
+     * @return          - The card object for this panel
      */
     public JPanel getCard() {
         return m_regCard;
@@ -165,17 +169,19 @@ public class RegistrationCard extends JPanel {
 
 
     /**
+     * Gets/returns the first name entered into the first name text field.
      *
-     *
-     * @return 
+     * @return          - Returns the first name from the firstname text field
      */
     public String getfirstName() {
         return m_firstnameField.getText();
     }
 
+
     /**
-     *
-     * @return
+     * Gets/returns the last name entered into the last name text field.
+     * 
+     * @return          - Returns the last name from the lastname text field
      */
     public String getLastName() {
         return m_lastnameField.getText();
@@ -183,8 +189,9 @@ public class RegistrationCard extends JPanel {
 
 
     /**
-     *
-     * @return
+     * Gets/Returns the username entered into the username text field.
+     * 
+     * @return          - Returns the username from username text field
      */
     public String getUsername() {
         return m_usernameField.getText();
@@ -192,8 +199,9 @@ public class RegistrationCard extends JPanel {
 
 
     /**
-     *
-     * @return
+     * Gets/returns the password entered into the password text field.
+     * 
+     * @return          - Returns the entered password from password field
      */
     public String getPassword() {
         return String.valueOf(m_passwordField.getPassword());
@@ -201,7 +209,31 @@ public class RegistrationCard extends JPanel {
 
 
     /**
-     *
+     * Grabs focus for the Username or Password text fields, based on the String
+     * argument.
+     * 
+     * @param field         - Indicates which field should have the focus
+     */
+    public void setFocusInField(String field) {
+        switch (field) {
+            case "Username":
+                m_usernameField.grabFocus();
+                break;
+            case "Password":
+                m_passwordField.grabFocus();
+            case "Firstname":
+                m_firstnameField.grabFocus();
+            case "Lastname":
+                m_lastnameField.grabFocus();
+                break;
+            default:
+                System.out.println("Invalid String field used to switch focus");
+        }
+    }
+
+
+    /**
+     * Clears all text fields
      */
     public void clearTextFields() {
         m_usernameField.setText("");
