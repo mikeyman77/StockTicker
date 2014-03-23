@@ -21,7 +21,7 @@ public interface PersistenceService {
      * @param username name of user
      * @return list of stock symbols
      */
-    public List<String> getTrackedStocks(String username);
+    public List<String> getTrackedStocks(String username) throws PersistenceServiceException;
 
     /**
      * Sets whether or not a stock is to be tracked
@@ -31,7 +31,7 @@ public interface PersistenceService {
      * @param track    true to track, false to un-track
      * @return true or false
      */
-    public boolean trackStock(String username, String stock, boolean track);
+    public boolean trackStock(String username, String stock, boolean track) throws PersistenceServiceException;
 
     /**
      * Tests if a stock is being tracked for a specific user
@@ -40,7 +40,7 @@ public interface PersistenceService {
      * @param stock    stock symbol to check
      * @return         true if tracked, false otherwise
      */
-    public boolean isStockTracked(String username, String stock);
+    public boolean isStockTracked(String username, String stock) throws PersistenceServiceException;
 
     /**
      * Checks if a user exists in the database
@@ -75,7 +75,7 @@ public interface PersistenceService {
      * @param username the name of the user
      * @return a User object if exists, null otherwise
      */
-    public User    getUser(String username);
+    public User    getUser(String username) throws PersistenceServiceException;
 
     /**
      * Deletes the specified user's information
@@ -91,7 +91,7 @@ public interface PersistenceService {
      * @param username the name of the user
      * @return true if logged in, false otherwise
      */
-    public boolean isLoggedIn(String username);
+    public boolean isLoggedIn(String username) throws PersistenceServiceException;
 
     /**
      * Sets the login status of the specified user
@@ -100,14 +100,14 @@ public interface PersistenceService {
      * @param status the login status to set (true or false)
      * @return true if successful, false otherwise
      */
-    public boolean setLoginStatus(String username, boolean status);
+    public boolean setLoginStatus(String username, boolean status) throws PersistenceServiceException;
 
     /**
      * Returns a list of all logged in users
      *
      * @return list of logged in users
      */
-    public List<String> getLoggedInUsers();
+    public List<String> getLoggedInUsers() throws PersistenceServiceException;
 
 
     /**
@@ -116,5 +116,5 @@ public interface PersistenceService {
      * @param username the name of the user
      * @return a UserInfo object or null
      */
-    public UserInfo getUserInfo(String username);
+    public UserInfo getUserInfo(String username) throws PersistenceServiceException;
 }
