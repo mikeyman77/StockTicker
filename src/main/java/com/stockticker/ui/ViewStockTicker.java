@@ -38,6 +38,7 @@ import javax.swing.Action;
 import javax.swing.KeyStroke;
 import javax.swing.ListModel;
 import javax.swing.JComponent;
+import javax.swing.JOptionPane;
 
 import com.stockticker.StockQuote;
 import com.stockticker.SymbolMap;
@@ -103,6 +104,8 @@ public class ViewStockTicker extends WindowAdapter implements IStockTicker_UICom
     private String m_password = "";
     private String m_firstname = "";
     private String m_lastname = "";
+
+    private StringBuilder m_buildStr;
 
     private List<String> m_symbolList;
     private List<StockQuote> m_stockQuoteList;
@@ -193,7 +196,7 @@ public class ViewStockTicker extends WindowAdapter implements IStockTicker_UICom
         m_symbolField = new JTextField(6);
         m_symbolField.setEditable(false);
         m_symbolField.setVisible(false);
-  
+
         // Select symbol in list after a double mouse click and track this symbol.  
         // Verify user is signed in
         m_symbolJList.addMouseListener(new MouseAdapter() {
@@ -548,12 +551,11 @@ public class ViewStockTicker extends WindowAdapter implements IStockTicker_UICom
                         System.out.println("Stock quote list refreshed");
                     }
                     else {
-                        System.out.println("Stock quote list not refreshed"); 
-                        System.out.println("No stock quotes displayed in stock quote table");
+                        m_buildStr = new StringBuilder("Warning: No stocks listed in table");
+                        this.showDialog(m_buildStr.toString());
                     }
 
-                    m_leftControlBtn.requestFocusInWindow();
-                    m_quoteCard.clearQuote(m_isLoggedIn);
+                    m_tickerCard.setQuoteFieldFocus();
                     break;
 
                 case TRACK:
@@ -574,17 +576,19 @@ public class ViewStockTicker extends WindowAdapter implements IStockTicker_UICom
                 case  CLOSE:
                     m_closeSelect = true;
                     
+                    // Close selected from Registration or LogIn screens
                     if(!m_userAuth.isRegistered(m_username) || !m_isLoggedIn) {
                         this.resetLeftButton(UI.USER_REG.getName());
                         this.resetRightButton(UI.LOGIN.getName());
                         cardLayout.show(m_cardPanel, UI.HOME.getName());
                         m_leftControlBtn.requestFocusInWindow();
                     }
-                    else {
+                    else {  // Close selected from Quote Detail screen
                         this.resetLeftButton(UI.REFRESH.getName());
                         this.resetRightButton(UI.LOGOUT.getName()); 
                         this.enableSymbolJList(true);
                         cardLayout.show(m_cardPanel, UI.TICKER.getName());
+                        m_tickerCard.setQuoteFieldFocus();
                     }
                     this.resetFlags();
                     break;
@@ -644,7 +648,9 @@ public class ViewStockTicker extends WindowAdapter implements IStockTicker_UICom
                 this.resetRightButton(UI.LOGOUT.getName());
                 this.showTrackedStocks();
                 this.enableSymbolJList(true);
+                
                 cardLayout.show(m_cardPanel, UI.TICKER.getName());
+                m_tickerCard.setQuoteFieldFocus();
             }       
         }
 
@@ -770,8 +776,8 @@ public class ViewStockTicker extends WindowAdapter implements IStockTicker_UICom
                 }
             }
             else {
-                System.out.println("Symbols not added to quote text field.");
-                System.out.println("No symbols selected from symbols list.");
+                m_buildStr = new StringBuilder("Warning: No symbols selected from symbols list");
+                this.showDialog(m_buildStr.toString());
             }
             m_symbolList.clear();
         }
@@ -811,6 +817,15 @@ public class ViewStockTicker extends WindowAdapter implements IStockTicker_UICom
             m_scrollPane.setVisible(enable);
             m_symbolField.setEditable(enable);
             m_symbolField.setVisible(enable);
+        }
+
+
+        /**
+         *
+         * @param message
+         */
+        public void showDialog( String message ) {
+            JOptionPane.showMessageDialog( m_frame, message, "Stock Ticker Portfolio", JOptionPane.WARNING_MESSAGE);
         }
     }
 }
