@@ -41,6 +41,7 @@ import java.util.List;
 import com.stockticker.ui.ViewStockTicker.OperateStockTicker;
 import com.stockticker.ui.IStockTicker_UIComponents.UI;
 import com.stockticker.StockQuote;
+import java.awt.Font;
 
 
 /**
@@ -104,7 +105,7 @@ public class TickerCard extends JPanel {
         m_model = new StockTableModel(m_header);
 
         m_tickerCard = new JPanel();
-        m_tickerCard.setPreferredSize(new Dimension(600, 520));
+        m_tickerCard.setPreferredSize(new Dimension(550, 520));
 
         setStockTable();
         m_tickerCard.setBorder(BorderFactory.createTitledBorder(BorderFactory.createEtchedBorder(EtchedBorder.LOWERED), "Stocks"));
@@ -125,15 +126,17 @@ public class TickerCard extends JPanel {
         m_tablePanel = new JPanel(new GridLayout(1, 0));
         m_tablePanel.setOpaque(true);
         m_table = new JTable(m_model);
-        m_table.setPreferredScrollableViewportSize(new Dimension(580, 240));
+        m_table.setPreferredScrollableViewportSize(new Dimension(630, 240));
         m_table.setFillsViewportHeight(true);
         m_table.putClientProperty("terminateEditOnFocusLost", Boolean.TRUE);
+        m_table.setFont(m_table.getFont().deriveFont(Font.PLAIN, 11));
 
         TableColumn column = m_table.getColumnModel().getColumn(8);
         DefaultTableCellRenderer cellRenderer = new DefaultTableCellRenderer();
         cellRenderer.setHorizontalAlignment(SwingConstants.CENTER);
         column.setCellRenderer(cellRenderer);
         cellRenderer.setBackground(m_tablePanel.getBackground());
+        cellRenderer.setFont(cellRenderer.getFont().deriveFont(Font.PLAIN, 20));
 
         m_scrollPane = new JScrollPane(m_table);
         m_tablePanel.add(m_scrollPane);
