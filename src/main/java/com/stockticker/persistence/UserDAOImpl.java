@@ -48,8 +48,8 @@ public class UserDAOImpl implements UserDAO {
                 userId = result.getInt(1);
         }
         catch (SQLException e) {
-            int errorCode = PersistenceServiceException.SQL_EXCEPTION_OCCURRED;
-            String message = "An SQL Exception occurred in the Persistence Service :";
+            int errorCode = PersistenceServiceException.PSE202_SQL_EXCEPTION_OCCURRED;
+            String message = PersistenceServiceException.PSE202_SQL_EXCEPTION_OCCURRED_MESSAGE;
             throw new PersistenceServiceException(message+" ["+errorCode+"]: "+e.getMessage(), e, errorCode);
         }
 
@@ -104,8 +104,8 @@ public class UserDAOImpl implements UserDAO {
                 user.setUserInfo(new UserInfo("", ""));
             }
             catch (SQLException e) {
-                int errorCode = PersistenceServiceException.SQL_EXCEPTION_OCCURRED;
-                String message = "An SQL Exception occurred in the Persistence Service :";
+                int errorCode = PersistenceServiceException.PSE202_SQL_EXCEPTION_OCCURRED;
+                String message = PersistenceServiceException.PSE202_SQL_EXCEPTION_OCCURRED_MESSAGE;
                 throw new PersistenceServiceException(message+" ["+errorCode+"]: "+e.getMessage(), e, errorCode);
             }
         }
@@ -131,8 +131,8 @@ public class UserDAOImpl implements UserDAO {
             }
         }
         catch (SQLException e) {
-            int errorCode = PersistenceServiceException.SQL_EXCEPTION_OCCURRED;
-            String message = "An SQL Exception occurred in the Persistence Service :";
+            int errorCode = PersistenceServiceException.PSE202_SQL_EXCEPTION_OCCURRED;
+            String message = PersistenceServiceException.PSE202_SQL_EXCEPTION_OCCURRED_MESSAGE;
             throw new PersistenceServiceException(message+" ["+errorCode+"]: "+e.getMessage(), e, errorCode);
         }
 
@@ -189,8 +189,8 @@ public class UserDAOImpl implements UserDAO {
                     }
                 }
                 catch (SQLException e) {
-                    int errorCode = PersistenceServiceException.SQL_EXCEPTION_OCCURRED;
-                    String message = "An SQL Exception occurred in the Persistence Service :";
+                    int errorCode = PersistenceServiceException.PSE202_SQL_EXCEPTION_OCCURRED;
+                    String message = PersistenceServiceException.PSE202_SQL_EXCEPTION_OCCURRED_MESSAGE;
                     throw new PersistenceServiceException(message+" ["+errorCode+"]: "+e.getMessage(), e, errorCode);
                 }
             }
@@ -234,8 +234,8 @@ public class UserDAOImpl implements UserDAO {
                 }
             }
             catch (SQLException e) {
-                int errorCode = PersistenceServiceException.SQL_EXCEPTION_OCCURRED;
-                String message = "An SQL Exception occurred in the Persistence Service :";
+                int errorCode = PersistenceServiceException.PSE202_SQL_EXCEPTION_OCCURRED;
+                String message = PersistenceServiceException.PSE202_SQL_EXCEPTION_OCCURRED_MESSAGE;
                 throw new PersistenceServiceException(message+" ["+errorCode+"]: "+e.getMessage(), e, errorCode);
             }
         }
@@ -284,8 +284,8 @@ public class UserDAOImpl implements UserDAO {
                 }
             }
             catch (SQLException e) {
-                int errorCode = PersistenceServiceException.SQL_EXCEPTION_OCCURRED;
-                String message = "An SQL Exception occurred in the Persistence Service :";
+                int errorCode = PersistenceServiceException.PSE202_SQL_EXCEPTION_OCCURRED;
+                String message = PersistenceServiceException.PSE202_SQL_EXCEPTION_OCCURRED_MESSAGE;
                 throw new PersistenceServiceException(message+" ["+errorCode+"]: "+e.getMessage(), e, errorCode);
             }
         }
@@ -314,8 +314,8 @@ public class UserDAOImpl implements UserDAO {
             }
         }
         catch (SQLException e) {
-            int errorCode = PersistenceServiceException.SQL_EXCEPTION_OCCURRED;
-            String message = "An SQL Exception occurred in the Persistence Service :";
+            int errorCode = PersistenceServiceException.PSE202_SQL_EXCEPTION_OCCURRED;
+            String message = PersistenceServiceException.PSE202_SQL_EXCEPTION_OCCURRED_MESSAGE;
             throw new PersistenceServiceException(message+" ["+errorCode+"]: "+e.getMessage(), e, errorCode);
         }
 
@@ -346,8 +346,8 @@ public class UserDAOImpl implements UserDAO {
             }
         }
         catch (SQLException e) {
-            int errorCode = PersistenceServiceException.SQL_EXCEPTION_OCCURRED;
-            String message = "An SQL Exception occurred in the Persistence Service :";
+            int errorCode = PersistenceServiceException.PSE202_SQL_EXCEPTION_OCCURRED;
+            String message = PersistenceServiceException.PSE202_SQL_EXCEPTION_OCCURRED_MESSAGE;
             throw new PersistenceServiceException(message+" ["+errorCode+"]: "+e.getMessage(), e, errorCode);
         }
 
@@ -374,8 +374,8 @@ public class UserDAOImpl implements UserDAO {
             }
         }
         catch (SQLException e) {
-            int errorCode = PersistenceServiceException.SQL_EXCEPTION_OCCURRED;
-            String message = "An SQL Exception occurred in the Persistence Service :";
+            int errorCode = PersistenceServiceException.PSE202_SQL_EXCEPTION_OCCURRED;
+            String message = PersistenceServiceException.PSE202_SQL_EXCEPTION_OCCURRED_MESSAGE;
             throw new PersistenceServiceException(message+" ["+errorCode+"]: "+e.getMessage(), e, errorCode);
         }
 

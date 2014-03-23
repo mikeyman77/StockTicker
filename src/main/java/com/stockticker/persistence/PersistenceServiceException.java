@@ -9,33 +9,49 @@ package com.stockticker.persistence;
 public class PersistenceServiceException extends RuntimeException {
 
     /**
-     * SQLState representing database not found
+     * SQLState [90013] representing database not found
      */
     public static final String SQLSTATE_DATABASE_NOT_FOUND = "90013";
 
     /**
-     * Error code thrown when the Stock Ticker properties file is not located.
+     * Error code [100] provided when the Stock Ticker properties file is not located.
      */
-    public static final int    PROPERTIES_FILE_NOT_FOUND = 100;
-    public static final String PROPERTIES_FILE_NOT_FOUND_MESSAGE = "Persistence Service unable to open properties file";
-    /**
-     * Error code thrown when the JDBC database driver class is not located.
-     */
-    public static final int    DATABASE_DRIVER_NOT_FOUND = 200;
-    public static final String DATABASE_DRIVER_NOT_FOUND_MESSAGE = "Persistence Service unable to locate database driver";
+    public static final int    PSE100_PROPERTIES_FILE_NOT_FOUND = 100;
 
     /**
-     * Error code thrown when the JDBC database connection fails.
+     * Error message provided when the Stock Ticker properties file is not located.
      */
-    public static final int    DATABASE_CONNECTION_FAILED = 201;
-    public static final String DATABASE_CONNECTION_FAILED_MESSAGE = "Persistence Service unable to obtain database connection";
+    public static final String PSE100_PROPERTIES_FILE_NOT_FOUND_MESSAGE = "Persistence Service unable to open properties file";
 
     /**
-     * Error code thrown when an SQL Exception occurs during
-     * execution of SQL statement.
+     * Error code [200] provided when the JDBC database driver class is not located.
      */
-    public static final int    SQL_EXCEPTION_OCCURRED = 202;
-    public static final String SQL_EXCEPTION_OCCURRED_MESSAGE = "Persistence Service unable to locate database driver";
+    public static final int    PSE200_DATABASE_DRIVER_NOT_FOUND = 200;
+
+    /**
+     * Error message provided when the JDBC database driver class is not located.
+     */
+    public static final String PSE200_DATABASE_DRIVER_NOT_FOUND_MESSAGE = "Persistence Service unable to locate database driver";
+
+    /**
+     * Error code [201] provided when the JDBC database connection fails.
+     */
+    public static final int    PSE201_DATABASE_CONNECTION_FAILED = 201;
+
+    /**
+     * Error message provided when the JDBC database connection fails.
+     */
+    public static final String PSE201_DATABASE_CONNECTION_FAILED_MESSAGE = "Persistence Service unable to obtain database connection";
+
+    /**
+     * Error code [202] provided when an SQL Exception occurs during execution of SQL statement.
+     */
+    public static final int    PSE202_SQL_EXCEPTION_OCCURRED = 202;
+
+    /**
+     * Error message provided when an SQL Exception occurs during execution of SQL statement.
+     */
+    public static final String PSE202_SQL_EXCEPTION_OCCURRED_MESSAGE = "An SQL Exception occurred in the Persistence Service";
 
     private int errorCode;
     private int reasonCode;
