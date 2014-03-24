@@ -6,6 +6,7 @@
 
 package com.stockticker.ui;
 
+import com.stockticker.ui.IStockTicker_UIComponents.Fields;
 import com.stockticker.ui.ViewStockTicker.OperateStockTicker;
 import java.awt.Dimension;
 import java.awt.GridBagConstraints;
@@ -42,6 +43,7 @@ public class RegistrationCard extends JPanel {
 
     private JTextField m_usernameField;
     private JPasswordField m_passwordField;
+    private JPasswordField m_verifyField;
     private JTextField m_firstnameField;
     private JTextField m_lastnameField;
     private final OperateStockTicker m_operate;
@@ -71,6 +73,7 @@ public class RegistrationCard extends JPanel {
 
         JLabel userLbl = new JLabel("User Name:");
         JLabel passLbl = new JLabel("Password:");
+        JLabel verPassLbl = new JLabel("Re-enter Password:");
         JLabel fistNameLbl = new JLabel("First name:");
         JLabel lastNameLbl = new JLabel("Last name:");
 
@@ -80,6 +83,10 @@ public class RegistrationCard extends JPanel {
         m_passwordField = new JPasswordField(20);
         m_passwordField.setEchoChar('*');
         m_passwordField.setText("");
+
+        m_verifyField = new JPasswordField(20);
+        m_verifyField.setEchoChar('*');
+        m_verifyField.setText("");
 
         m_firstnameField = new JTextField(40);
         m_firstnameField.setText("");
@@ -106,7 +113,7 @@ public class RegistrationCard extends JPanel {
         m_constraints.weightx = 0.00001;
         m_constraints.anchor = GridBagConstraints.WEST;
         m_constraints.fill = GridBagConstraints.NONE;
-        m_constraints.insets = new Insets(10, 30, 10, 0);
+        m_constraints.insets = new Insets(10, 45, 10, 0);
         compPanel.add(userLbl, m_constraints);
 
         m_constraints.gridy = 0;
@@ -118,7 +125,7 @@ public class RegistrationCard extends JPanel {
 
         m_constraints.gridx = 0;
         m_constraints.gridy = 1;
-        m_constraints.insets = new Insets(10, 30, 10, 0);
+        m_constraints.insets = new Insets(10, 50, 10, 0);
         compPanel.add(passLbl, m_constraints);
 
         m_constraints.gridx = GridBagConstraints.REMAINDER;
@@ -131,8 +138,8 @@ public class RegistrationCard extends JPanel {
 
         m_constraints.gridx = 0;
         m_constraints.gridy = 2;
-        m_constraints.insets = new Insets(10, 30, 10, 0);
-        compPanel.add(fistNameLbl, m_constraints);
+        m_constraints.insets = new Insets(10, 0, 10, 0);
+        compPanel.add(verPassLbl, m_constraints);
 
         m_constraints.gridx = GridBagConstraints.REMAINDER;
         m_constraints.gridy = 2;
@@ -140,15 +147,28 @@ public class RegistrationCard extends JPanel {
         m_constraints.weightx = 1.0;
         m_constraints.fill = GridBagConstraints.HORIZONTAL;
         m_constraints.insets = new Insets(0, 120, 0, 30);
-        compPanel.add(m_firstnameField, m_constraints);
+        compPanel.add(m_verifyField, m_constraints);
 
         m_constraints.gridx = 0;
         m_constraints.gridy = 3;
-        m_constraints.insets = new Insets(10, 30, 10, 0);
-        compPanel.add(lastNameLbl, m_constraints);
+        m_constraints.insets = new Insets(10, 50, 10, 0);
+        compPanel.add(fistNameLbl, m_constraints);
 
         m_constraints.gridx = GridBagConstraints.REMAINDER;
         m_constraints.gridy = 3;
+        m_constraints.gridwidth = 2;
+        m_constraints.weightx = 1.0;
+        m_constraints.fill = GridBagConstraints.HORIZONTAL;
+        m_constraints.insets = new Insets(0, 120, 0, 30);
+        compPanel.add(m_firstnameField, m_constraints);
+
+        m_constraints.gridx = 0;
+        m_constraints.gridy = 4;
+        m_constraints.insets = new Insets(10, 50, 10, 0);
+        compPanel.add(lastNameLbl, m_constraints);
+
+        m_constraints.gridx = GridBagConstraints.REMAINDER;
+        m_constraints.gridy = 4;
         m_constraints.gridwidth = 2;
         m_constraints.weightx = 1.0;
         m_constraints.fill = GridBagConstraints.HORIZONTAL;
@@ -211,6 +231,16 @@ public class RegistrationCard extends JPanel {
 
 
     /**
+     * Gets/returns the re-entered password into the verify password text field.
+     * 
+     * @return          - Returns the re-entered password from verify password field
+     */
+    public String getVerifiedPasswd() {
+        return String.valueOf(m_verifyField.getPassword());
+    }
+
+
+    /**
      * Sets the focus into one of the four text fields when that text field isEmpty.
      * If multiple fields are empty, the focus will go to the first empty field,
      * starting from top to bottom.
@@ -218,18 +248,32 @@ public class RegistrationCard extends JPanel {
      * @param isEmpty         - boolean array that indicates an empty text field when true
      */
     public void setFocusInField(boolean[] isEmpty) {
-        if(isEmpty[0]) {
+        if(isEmpty[Fields.USER.getValue()]) {
             m_usernameField.grabFocus();
         }
-        else if(isEmpty[1]) {
+        else if(isEmpty[Fields.PASSWD.getValue()]) {
             m_passwordField.grabFocus();
         }
-        else if(isEmpty[2]) {
+        else if(isEmpty[Fields.VER_PASS.getValue()]) {
+            m_verifyField.grabFocus();
+        }
+        else if(isEmpty[Fields.FIRST_NM.getValue()]) {
             m_firstnameField.grabFocus();
         }
-        else if(isEmpty[3]) {
+        else if(isEmpty[Fields.LAST_NM.getValue()]) {
              m_lastnameField.grabFocus();
         }
+    }
+
+
+    /**
+     * Clears both the password field and the verify password field.
+     */
+    public void clearPasswordFields() {
+        Arrays.fill(m_passwordField.getPassword(), '0');
+        m_passwordField.setText("");
+        Arrays.fill(m_verifyField.getPassword(), '0');
+        m_verifyField.setText("");
     }
 
 
@@ -240,8 +284,10 @@ public class RegistrationCard extends JPanel {
         m_usernameField.setText("");
         m_usernameField.grabFocus();
         Arrays.fill(m_passwordField.getPassword(), '0');
+        m_passwordField.setText("");
+        Arrays.fill(m_verifyField.getPassword(), '0');
+        m_verifyField.setText("");
         m_firstnameField.setText("");
         m_lastnameField.setText("");
-        m_passwordField.setText("");
     }
 }
