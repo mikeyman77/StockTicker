@@ -29,7 +29,9 @@ import javax.swing.border.EtchedBorder;
 
 
 /**
- * J308
+ * LoginCard class
+ * Provides fields to allow a user to log into the Stock Ticker Portfolio Manager
+ * api
  * 
  * @author prwallace
  */
@@ -46,19 +48,23 @@ public class LoginCard extends JPanel {
     private final OperateStockTicker m_operate;
 
 
+    
     /**
-    *
-    *
-    */
+     * Constructor for the LoginCard class
+     * 
+     * @param operate   - Instance variable of the OperateStockTicker class
+     */
     public LoginCard(OperateStockTicker operate) {
         m_constraints = new GridBagConstraints();
         m_operate = operate;
         setCard();
     }
 
+
    /**
-    *
-    *
+    * Adds the components and the components panel for this screen.  Lays out
+    * the components onto the component panel and adds the component panel to the
+    * Card panel.
     */
     public final void setCard() {
         m_loginCard = new JPanel(new GridBagLayout());
@@ -81,7 +87,7 @@ public class LoginCard extends JPanel {
             }
         };
 
-        m_passwordField.getInputMap(JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT).put(KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, 0, true), ENTER_PRESSED);
+        m_passwordField.getInputMap(JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT).put(KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, 0, false), ENTER_PRESSED);
         m_passwordField.getActionMap().put(ENTER_PRESSED, enterAction);
 
         JPanel compPanel = new JPanel(new GridBagLayout());
@@ -121,8 +127,9 @@ public class LoginCard extends JPanel {
 
 
     /**
-     *
-     * @return
+     * Gets/returns the card object of this JPanel.
+     * 
+     * @return          - The card object for this panel
      */
     public JPanel getCard() {
         return m_loginCard;
@@ -139,8 +146,9 @@ public class LoginCard extends JPanel {
 
 
     /**
-     *
-     * @return
+     * Gets/returns the user name entered into the user name text field.
+     * 
+     * @return          - Returns the user name from the user name text field
      */
     public String getPassword() {
         return String.valueOf(m_passwordField.getPassword());
@@ -148,27 +156,24 @@ public class LoginCard extends JPanel {
 
 
     /**
-     * Grabs focus for the Username or Password text fields, based on the String
-     * argument.
+     * Sets the focus into one of the two text fields when that text field isEmpty.
+     * If both text fields are empty, the focus will go to the first empty  field,
+     * starting from top to bottom.
      * 
-     * @param field         - Indicates which field should have the focus
+     * @param isEmpty         - boolean array that indicates an empty text field when true
      */
-    public void setFocusInField(String field) {
-        switch (field) {
-            case "Username":
-                m_usernameField.grabFocus();
-                break;
-            case "Password":
-                m_passwordField.grabFocus();
-                break;
-            default:
-                System.out.println("Invalid String field used to switch focus");
+    public void setFocusInField(boolean[] isEmpty) {
+        if(isEmpty[0]) {
+            m_usernameField.grabFocus();
+        }
+        else if(isEmpty[1]) {
+            m_passwordField.grabFocus();
         }
     }
 
 
     /**
-     *
+     * Clears all text fields
      */
     public void clearTextFields() {
         m_usernameField.setText("");

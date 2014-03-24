@@ -30,6 +30,7 @@ import javax.swing.border.EtchedBorder;
  * RegistratioinCard class
  * Provides fields to allow a user to register with the Stock Ticker Portfolio
  * Manager api
+ * 
  * @author prwallace
  */
 public class RegistrationCard extends JPanel {
@@ -49,6 +50,7 @@ public class RegistrationCard extends JPanel {
     
     /**
      * Constructs the RegistrationCard class
+     * 
      * @param operate   - Instance variable of the OperateStockTicker class
      */
     public RegistrationCard(OperateStockTicker operate) {
@@ -92,7 +94,7 @@ public class RegistrationCard extends JPanel {
             }
         };
 
-        m_lastnameField.getInputMap(JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT).put(KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, 0, true), ENTER_PRESSED);
+        m_lastnameField.getInputMap(JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT).put(KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, 0, false), ENTER_PRESSED);
         m_lastnameField.getActionMap().put(ENTER_PRESSED, enterAction);
         
 
@@ -159,8 +161,8 @@ public class RegistrationCard extends JPanel {
 
 
     /**
-     * Gets/returns the card object of this JPanel.  
-     *
+     * Gets/returns the card object of this JPanel.
+     * 
      * @return          - The card object for this panel
      */
     public JPanel getCard() {
@@ -171,7 +173,7 @@ public class RegistrationCard extends JPanel {
     /**
      * Gets/returns the first name entered into the first name text field.
      *
-     * @return          - Returns the first name from the firstname text field
+     * @return          - Returns the first name from the first name text field
      */
     public String getfirstName() {
         return m_firstnameField.getText();
@@ -181,7 +183,7 @@ public class RegistrationCard extends JPanel {
     /**
      * Gets/returns the last name entered into the last name text field.
      * 
-     * @return          - Returns the last name from the lastname text field
+     * @return          - Returns the last name from the last name text field
      */
     public String getLastName() {
         return m_lastnameField.getText();
@@ -209,25 +211,24 @@ public class RegistrationCard extends JPanel {
 
 
     /**
-     * Grabs focus for the Username or Password text fields, based on the String
-     * argument.
+     * Sets the focus into one of the four text fields when that text field isEmpty.
+     * If multiple fields are empty, the focus will go to the first empty field,
+     * starting from top to bottom.
      * 
-     * @param field         - Indicates which field should have the focus
+     * @param isEmpty         - boolean array that indicates an empty text field when true
      */
-    public void setFocusInField(String field) {
-        switch (field) {
-            case "Username":
-                m_usernameField.grabFocus();
-                break;
-            case "Password":
-                m_passwordField.grabFocus();
-            case "Firstname":
-                m_firstnameField.grabFocus();
-            case "Lastname":
-                m_lastnameField.grabFocus();
-                break;
-            default:
-                System.out.println("Invalid String field used to switch focus");
+    public void setFocusInField(boolean[] isEmpty) {
+        if(isEmpty[0]) {
+            m_usernameField.grabFocus();
+        }
+        else if(isEmpty[1]) {
+            m_passwordField.grabFocus();
+        }
+        else if(isEmpty[2]) {
+            m_firstnameField.grabFocus();
+        }
+        else if(isEmpty[3]) {
+             m_lastnameField.grabFocus();
         }
     }
 

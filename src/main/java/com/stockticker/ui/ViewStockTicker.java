@@ -42,7 +42,6 @@ import javax.swing.JOptionPane;
 
 import com.stockticker.StockQuote;
 import com.stockticker.SymbolMap;
-//import com.stockticker.User;
 import com.stockticker.UserInfo;
 import com.stockticker.logic.AuthorizationService;
 import com.stockticker.logic.StockTicker;
@@ -54,7 +53,7 @@ import java.util.List;
 
 
 /**
- * GUI for Stock Ticker Portfolio Manager J308 Project
+ * GUI for Stock Ticker Portfolio Manager api
  * 
  * @author prwallace
  */
@@ -62,6 +61,10 @@ public class ViewStockTicker extends WindowAdapter implements IStockTicker_UICom
     private static final String ENTER_PRESSED = "ENTER_RELEASED";
     private static final String SPACE = " ";
 
+    private static final int USER = 0;
+    private static final int PASSWD = 1;
+    private static final int FIRST_NM = 2;
+    private static final int LAST_NM = 3;
     private static final int ROW_OFFSET = 7;
     private static final int ZERO = 0;
 
@@ -99,6 +102,7 @@ public class ViewStockTicker extends WindowAdapter implements IStockTicker_UICom
     private boolean m_regSelect = false;
     public boolean m_closeSelect = false;
     public boolean m_isLoggedIn = false;
+    public boolean[] m_isInvalidInput = new boolean[4];
 
     private String m_username = "";
     private String m_password = "";
@@ -113,20 +117,16 @@ public class ViewStockTicker extends WindowAdapter implements IStockTicker_UICom
     private final AuthorizationService m_userAuth = UserAuthorization.INSTANCE;
     private final StockTickerService m_stockService =  StockTicker.INSTANCE;
     private UserInfo m_userInfo;
-    //private User m_user;
-    //private User m_user;
 
     private final OperateStockTicker m_operate;
 
 
     /**
-     * Construct a ViewStockTicker object
-     * 
+     * Constructor for theViewStockTicker class
      */
     public ViewStockTicker() {
         this.m_symbolList = new ArrayList<>();
         this.m_stockQuoteList = new ArrayList<>();
-        //this.m_trackedSymbols = new ArrayList<>();
         m_frame = new JFrame();
         m_operate = new OperateStockTicker();
     }
@@ -148,7 +148,7 @@ public class ViewStockTicker extends WindowAdapter implements IStockTicker_UICom
             @Override
             public void windowClosing(WindowEvent windowEvent) {
                 if(m_isLoggedIn && m_userAuth.logOut(m_username)) {
-                    System.out.println("User is logged out user");
+                    System.out.println("User is logged out");
                 }
                 else if(m_isLoggedIn) {
                     System.err.println("Unable to log user out prior to closing app");
@@ -207,8 +207,8 @@ public class ViewStockTicker extends WindowAdapter implements IStockTicker_UICom
         m_symbolField.setEditable(false);
         m_symbolField.setVisible(false);
 
-        // Select symbol in list after a double mouse click and track this symbol.  
-        // Verify user is signed in
+        // Mouse listener that listens for mouse clicks in the stock symbols list.
+        // Selects a symbol from the list after a double mouse click.
         m_symbolJList.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
@@ -239,6 +239,8 @@ public class ViewStockTicker extends WindowAdapter implements IStockTicker_UICom
             }
         });
 
+        // Key listener that listens for key pressed in the stock symbols list.
+        // Will search the list for matches or close matches to the user input.
         m_symbolField.addKeyListener(new KeyAdapter() {
             @Override
             public void keyReleased(KeyEvent evt) {
@@ -263,8 +265,8 @@ public class ViewStockTicker extends WindowAdapter implements IStockTicker_UICom
             } 
         });
 
-
-        // Action listener for JList; gets fired when enter pressed in list or text field
+        // Abstract Action listener that listens for the enter button to be released.
+        // Saves selected symbol symbol list and displays symbols in quote text field.
         Action enterAction = new AbstractAction() {
             @Override
             public void actionPerformed(ActionEvent actionEvent) {
@@ -488,29 +490,34 @@ public class ViewStockTicker extends WindowAdapter implements IStockTicker_UICom
 
                 case SUBMIT:
                     m_leftControlBtn.requestFocusInWindow();
+                    this.resetValidation();
                     m_buildStr = new StringBuilder("Warning: ");
                     if(m_regSelect) {
                         if((m_firstname = m_regCard.getfirstName()).isEmpty() || m_regCard.getfirstName().startsWith(SPACE)) {
                             m_buildStr.append("Firstname field is blank\n");      
                             m_firstname = "";
+                            m_isInvalidInput[FIRST_NM] = true; 
                             isEmpty = true;
                         }
 
                         if((m_lastname = m_regCard.getLastName()).isEmpty() || m_regCard.getLastName().startsWith(SPACE)) {
                             m_buildStr.append("Lastname field is blank\n");
                             m_lastname = "";
+                            m_isInvalidInput[LAST_NM] = true;
                             isEmpty = true;
                         }
 
                         if((m_username = m_regCard.getUsername()).isEmpty() || m_regCard.getUsername().startsWith(SPACE)) {
                             m_buildStr.append("Username field is blank\n");
                             m_username = "";
+                            m_isInvalidInput[USER] = true;
                             isEmpty = true;
                         } 
 
                         if((m_password = m_regCard.getPassword()).isEmpty() || m_regCard.getPassword().startsWith(SPACE)) {
                             m_buildStr.append("Password field is blank\n");
                             m_password = "";
+                            m_isInvalidInput[PASSWD] = true;
                             isEmpty = true;
                         }
 
@@ -520,19 +527,21 @@ public class ViewStockTicker extends WindowAdapter implements IStockTicker_UICom
                         }
                         else {
                             this.showDialog(m_buildStr.toString());
-                            m_regCard.setFocusInField("Username");
+                            m_regCard.setFocusInField(m_isInvalidInput);
                         }
                     }
                     else if(m_logInSelect) {
                         if((m_username = m_loginCard.getUsername()).isEmpty() || m_loginCard.getUsername().startsWith(SPACE)) {
                             m_buildStr.append("Username field is blank\n");
                             m_username = "";
+                            m_isInvalidInput[USER] = true;
                             isEmpty = true;
                         }
 
                         if((m_password = m_loginCard.getPassword()).isEmpty() || m_loginCard.getPassword().startsWith(SPACE)) {
                             m_buildStr.append("Password field is blank\n");
                             m_password = "";
+                            m_isInvalidInput[PASSWD] = true;
                             isEmpty = true;
                         }
 
@@ -551,7 +560,7 @@ public class ViewStockTicker extends WindowAdapter implements IStockTicker_UICom
                         }
                         else {
                             this.showDialog(m_buildStr.toString());
-                            m_loginCard.setFocusInField("Username");
+                            m_loginCard.setFocusInField(m_isInvalidInput);
                         }
                     }
                     break;
@@ -623,7 +632,8 @@ public class ViewStockTicker extends WindowAdapter implements IStockTicker_UICom
                         m_stockQuoteList.clear();
                     }
                     else {
-                        System.out.println("Unable to log user out");
+                        m_buildStr = new StringBuilder("Warning: Unable to log user out, please try again");
+                        this.showDialog(m_buildStr.toString());
                     }
 
                     this.resetLeftButton(UI.USER_REG.getName());
@@ -657,6 +667,14 @@ public class ViewStockTicker extends WindowAdapter implements IStockTicker_UICom
                     m_username = "";
                     m_password = "";
                     this.showDialog(m_buildStr.toString());
+                    m_isInvalidInput[PASSWD] = true;
+                    if(m_logInSelect) {
+                        m_loginCard.setFocusInField(m_isInvalidInput);
+                    }
+                    else if(m_regSelect) {
+                        m_regCard.setFocusInField(m_isInvalidInput);
+                    }
+                    
                 }
             }
             else {
@@ -692,7 +710,7 @@ public class ViewStockTicker extends WindowAdapter implements IStockTicker_UICom
                     this.logInUser(username, password);
                 }
                 else {
-                    m_buildStr.append("Unable to check credentials, please try again\n");
+                    m_buildStr.append("Unable to check verify credentials, please try again\n");
                     this.showDialog(m_buildStr.toString());
                 }   
             }
@@ -716,6 +734,8 @@ public class ViewStockTicker extends WindowAdapter implements IStockTicker_UICom
                 else {
                     m_buildStr.append("Username is already taken, please choose another\n");
                     this.showDialog(m_buildStr.toString());
+                    m_isInvalidInput[USER] = true;
+                    m_regCard.setFocusInField(m_isInvalidInput);
                 }  
             }
         }
@@ -753,6 +773,17 @@ public class ViewStockTicker extends WindowAdapter implements IStockTicker_UICom
 
 
         /**
+         * Resets the validation boolean to false.  Array is used to verify user
+         * input for the RegistrationCard and LoginCard text fields.
+         */
+        private void resetValidation() {
+            for(int i = 0; i < m_isInvalidInput.length; i++) {
+                m_isInvalidInput[i] = false;
+            }
+        }
+
+
+        /**
          * Gets/returns the left control button.
          * This is main control button in UI.  This button changes state depending
          * on the active screen.  Control by Action Listener in this class.
@@ -782,7 +813,6 @@ public class ViewStockTicker extends WindowAdapter implements IStockTicker_UICom
             if(m_symbolList.size() > ZERO) {
                 m_tickerCard.setSymbolsTextField(m_symbolList, m_isLoggedIn);
                 System.out.println("Symbol selected");
-                //m_quoteSelect = false;
             }
             else {
                 System.out.println("Unable to select symbol");
@@ -801,8 +831,8 @@ public class ViewStockTicker extends WindowAdapter implements IStockTicker_UICom
 
                 if(m_stockQuoteList.size() > ZERO) {
                     m_tickerCard.displayStockQuoteList(m_stockQuoteList, m_isLoggedIn);
-                    //m_quoteSelect = true;
-                    System.out.println("Stock quotes added to stock quote list");                }
+                    System.out.println("Stock quotes added to stock quote list");   
+                }
                 else {
                     System.out.println("Unable to get Stock Quotes; no quotes added to list");
                 }
@@ -811,6 +841,7 @@ public class ViewStockTicker extends WindowAdapter implements IStockTicker_UICom
                 m_buildStr = new StringBuilder("Warning: At least one quote symbol must be entered");
                 this.showDialog(m_buildStr.toString());
             }
+
             m_symbolList.clear();
         }
 
