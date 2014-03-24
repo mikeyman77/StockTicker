@@ -102,10 +102,11 @@ public class ViewStockTicker extends WindowAdapter implements IStockTicker_UICom
     private boolean m_regSelect = false;
     public boolean m_closeSelect = false;
     public boolean m_isLoggedIn = false;
-    public boolean[] m_isInvalidInput = new boolean[4];
+    public boolean[] m_isInvalidInput = new boolean[5];
 
     private String m_username = "";
     private String m_password = "";
+    private String m_verifyPasswd = "";
     private String m_firstname = "";
     private String m_lastname = "";
 
@@ -496,29 +497,45 @@ public class ViewStockTicker extends WindowAdapter implements IStockTicker_UICom
                         if((m_firstname = m_regCard.getfirstName()).isEmpty() || m_regCard.getfirstName().startsWith(SPACE)) {
                             m_buildStr.append("Firstname field is blank\n");      
                             m_firstname = "";
-                            m_isInvalidInput[FIRST_NM] = true; 
+                            m_isInvalidInput[Fields.FIRST_NM.getValue()] = true; 
                             isEmpty = true;
                         }
 
                         if((m_lastname = m_regCard.getLastName()).isEmpty() || m_regCard.getLastName().startsWith(SPACE)) {
                             m_buildStr.append("Lastname field is blank\n");
                             m_lastname = "";
-                            m_isInvalidInput[LAST_NM] = true;
+                            m_isInvalidInput[Fields.LAST_NM.getValue()] = true;
                             isEmpty = true;
                         }
 
                         if((m_username = m_regCard.getUsername()).isEmpty() || m_regCard.getUsername().startsWith(SPACE)) {
                             m_buildStr.append("Username field is blank\n");
                             m_username = "";
-                            m_isInvalidInput[USER] = true;
+                            m_isInvalidInput[Fields.USER.getValue()] = true;
                             isEmpty = true;
                         } 
 
                         if((m_password = m_regCard.getPassword()).isEmpty() || m_regCard.getPassword().startsWith(SPACE)) {
                             m_buildStr.append("Password field is blank\n");
                             m_password = "";
-                            m_isInvalidInput[PASSWD] = true;
+                            m_isInvalidInput[Fields.PASSWD.getValue()] = true;
                             isEmpty = true;
+                        }
+
+                        if((m_verifyPasswd = m_regCard.getVerifiedPasswd()).isEmpty() || m_regCard.getVerifiedPasswd().startsWith(SPACE)) {
+                            m_buildStr.append("Re-enter password field is blank\n");
+                            m_verifyPasswd = "";
+                            m_isInvalidInput[Fields.VER_PASS.getValue()] = true;
+                            isEmpty = true;
+                        }
+
+                        // Verify both entered passwords match
+                        if(!isEmpty && !m_verifyPasswd.equalsIgnoreCase(m_password)) {
+                           m_buildStr.append("The entered passwords do not match\n");
+                           m_buildStr.append("Please re-enter the passwords");
+                           m_regCard.clearPasswordFields();
+                           m_isInvalidInput[Fields.PASSWD.getValue()] = true;
+                           isEmpty = true;
                         }
 
                         // Registration selcted; register user
@@ -534,15 +551,31 @@ public class ViewStockTicker extends WindowAdapter implements IStockTicker_UICom
                         if((m_username = m_loginCard.getUsername()).isEmpty() || m_loginCard.getUsername().startsWith(SPACE)) {
                             m_buildStr.append("Username field is blank\n");
                             m_username = "";
-                            m_isInvalidInput[USER] = true;
+                            m_isInvalidInput[Fields.USER.getValue()] = true;
                             isEmpty = true;
                         }
 
                         if((m_password = m_loginCard.getPassword()).isEmpty() || m_loginCard.getPassword().startsWith(SPACE)) {
                             m_buildStr.append("Password field is blank\n");
                             m_password = "";
-                            m_isInvalidInput[PASSWD] = true;
+                            m_isInvalidInput[Fields.PASSWD.getValue()] = true;
                             isEmpty = true;
+                        }
+
+                        if((m_verifyPasswd = m_loginCard.getVerifiedPasswd()).isEmpty() || m_loginCard.getVerifiedPasswd().startsWith(SPACE)) {
+                            m_buildStr.append("Re-enter password field is blank\n");
+                            m_verifyPasswd = "";
+                            m_isInvalidInput[Fields.VER_PASS.getValue()] = true;
+                            isEmpty = true;
+                        }
+
+                        // Verify both entered password match
+                        if(!isEmpty && !m_verifyPasswd.equalsIgnoreCase(m_password)) {
+                           m_buildStr.append("The entered passwords do not match\n");
+                           m_buildStr.append("Please re-enter the passwords");
+                           m_loginCard.clearPasswordFields();
+                           m_isInvalidInput[Fields.PASSWD.getValue()] = true;
+                           isEmpty = true;
                         }
 
                         // User is registered; login user

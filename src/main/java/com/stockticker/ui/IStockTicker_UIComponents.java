@@ -68,4 +68,19 @@ public interface IStockTicker_UIComponents {
         }
     }
 
+
+    public enum Fields {
+        USER(0), PASSWD(1), VER_PASS(3), FIRST_NM(2), LAST_NM(4);
+        
+        private int value;
+
+        private Fields(int value) {
+            this.value = value;
+        }
+
+        public int getValue() {
+            return value;
+        }
+        
+    }
 }

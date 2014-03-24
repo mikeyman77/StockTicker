@@ -6,6 +6,7 @@
 
 package com.stockticker.ui;
 
+import com.stockticker.ui.IStockTicker_UIComponents.Fields;
 import com.stockticker.ui.ViewStockTicker.OperateStockTicker;
 import java.util.Arrays;
 
@@ -44,6 +45,7 @@ public class LoginCard extends JPanel {
 
     private JTextField m_usernameField;
     private JPasswordField m_passwordField;
+    private JPasswordField m_verifyField;
 
     private final OperateStockTicker m_operate;
 
@@ -72,6 +74,7 @@ public class LoginCard extends JPanel {
 
         JLabel userLbl = new JLabel("User Name:");
         JLabel passLbl = new JLabel("Password:");
+        JLabel verPassLbl = new JLabel("Re-enter Password:");
 
         m_usernameField = new JTextField(40);
         m_usernameField.setText("");
@@ -80,6 +83,10 @@ public class LoginCard extends JPanel {
         m_passwordField.setEchoChar('*');
         m_passwordField.setText("");
 
+        m_verifyField = new JPasswordField(20);
+        m_verifyField.setEchoChar('*');
+        m_verifyField.setText("");
+
         Action enterAction = new AbstractAction() {
             @Override
             public void actionPerformed(ActionEvent actionEvent) {
@@ -87,8 +94,8 @@ public class LoginCard extends JPanel {
             }
         };
 
-        m_passwordField.getInputMap(JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT).put(KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, 0, false), ENTER_PRESSED);
-        m_passwordField.getActionMap().put(ENTER_PRESSED, enterAction);
+        m_verifyField.getInputMap(JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT).put(KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, 0, false), ENTER_PRESSED);
+        m_verifyField.getActionMap().put(ENTER_PRESSED, enterAction);
 
         JPanel compPanel = new JPanel(new GridBagLayout());
         compPanel.setPreferredSize(new Dimension(400, 150));
@@ -98,7 +105,7 @@ public class LoginCard extends JPanel {
         m_constraints.weightx = 0.00001;
         m_constraints.anchor = GridBagConstraints.WEST;
         m_constraints.fill = GridBagConstraints.NONE;
-        m_constraints.insets = new Insets(10, 30, 10, 0);
+        m_constraints.insets = new Insets(10, 45, 10, 0);
         compPanel.add(userLbl, m_constraints);
 
         m_constraints.gridy = 0;
@@ -110,7 +117,7 @@ public class LoginCard extends JPanel {
 
         m_constraints.gridx = 0;
         m_constraints.gridy = 1;
-        m_constraints.insets = new Insets(10, 30, 10, 0);
+        m_constraints.insets = new Insets(10, 50, 10, 0);
         compPanel.add(passLbl, m_constraints);
 
         m_constraints.gridx = GridBagConstraints.REMAINDER;
@@ -120,6 +127,19 @@ public class LoginCard extends JPanel {
         m_constraints.fill = GridBagConstraints.HORIZONTAL;
         m_constraints.insets = new Insets(0, 120, 0, 30);
         compPanel.add(m_passwordField, m_constraints);
+
+        m_constraints.gridx = 0;
+        m_constraints.gridy = 2;
+        m_constraints.insets = new Insets(10, 0, 10, 0);
+        compPanel.add(verPassLbl, m_constraints);
+
+        m_constraints.gridx = GridBagConstraints.REMAINDER;
+        m_constraints.gridy = 2;
+        m_constraints.gridwidth = 2;
+        m_constraints.weightx = 1.0;
+        m_constraints.fill = GridBagConstraints.HORIZONTAL;
+        m_constraints.insets = new Insets(0, 120, 0, 30);
+        compPanel.add(m_verifyField, m_constraints);
 
         m_loginCard.setBorder(BorderFactory.createTitledBorder(BorderFactory.createEtchedBorder(EtchedBorder.LOWERED), "Login"));
         m_loginCard.add(compPanel, new GridBagConstraints());
@@ -146,12 +166,22 @@ public class LoginCard extends JPanel {
 
 
     /**
-     * Gets/returns the user name entered into the user name text field.
+     * Gets/returns the password entered into the password text field.
      * 
-     * @return          - Returns the user name from the user name text field
+     * @return          - Returns the entered password from password field
      */
     public String getPassword() {
         return String.valueOf(m_passwordField.getPassword());
+    }
+
+
+    /**
+     * Gets/returns the re-entered password into the verify password text field.
+     * 
+     * @return          - Returns the re-entered password from verify password field
+     */
+    public String getVerifiedPasswd() {
+        return String.valueOf(m_verifyField.getPassword());
     }
 
 
@@ -163,12 +193,26 @@ public class LoginCard extends JPanel {
      * @param isEmpty         - boolean array that indicates an empty text field when true
      */
     public void setFocusInField(boolean[] isEmpty) {
-        if(isEmpty[0]) {
+        if(isEmpty[Fields.USER.getValue()]) {
             m_usernameField.grabFocus();
         }
-        else if(isEmpty[1]) {
+        else if(isEmpty[Fields.PASSWD.getValue()]) {
             m_passwordField.grabFocus();
         }
+        else if(isEmpty[Fields.VER_PASS.getValue()]) {
+            m_verifyField.grabFocus();
+        }
+    }
+
+
+    /**
+     * Clears both the password field and the verify password field.
+     */
+    public void clearPasswordFields() {
+        Arrays.fill(m_passwordField.getPassword(), '0');
+        m_passwordField.setText("");
+        Arrays.fill(m_verifyField.getPassword(), '0');
+        m_verifyField.setText("");
     }
 
 
@@ -180,5 +224,7 @@ public class LoginCard extends JPanel {
         m_usernameField.grabFocus();
         Arrays.fill(m_passwordField.getPassword(), '0');
         m_passwordField.setText("");
+        Arrays.fill(m_verifyField.getPassword(), '0');
+        m_verifyField.setText("");
     }
 }
