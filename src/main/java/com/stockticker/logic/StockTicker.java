@@ -15,7 +15,7 @@ import java.util.List;
 public enum StockTicker implements StockTickerService {
     INSTANCE;
     
-    private final PersistenceService persistentence = StockTickerPersistence.INSTANCE;
+    private final PersistenceService persistence = StockTickerPersistence.INSTANCE;
     private final StockQuoteService ysqs = YahooStockQuoteService.INSTANCE;
     
     /**
@@ -28,8 +28,7 @@ public enum StockTicker implements StockTickerService {
     @Override
     public List<StockQuote> getStockQuotes(List<String> symbols) {
         
-        return ysqs.getStockQuotes(ysqs
-                .getInputStream(ysqs.getURL(symbols)));
+        return ysqs.getStockQuotes(ysqs.getURL(symbols));
     }
 
     /**
@@ -40,7 +39,7 @@ public enum StockTicker implements StockTickerService {
      */
     @Override
     public List<String> getTrackedStocks(String username) {
-        return persistentence.getTrackedStocks(username);
+        return persistence.getTrackedStocks(username);
     }
     
     /**
@@ -53,7 +52,7 @@ public enum StockTicker implements StockTickerService {
      */
     @Override
     public boolean trackStock(String username, String symbol, boolean tracked) {
-        return persistentence.trackStock(username, symbol, tracked);
+        return persistence.trackStock(username, symbol, tracked);
     }
     
     /**
@@ -65,6 +64,6 @@ public enum StockTicker implements StockTickerService {
      */
     @Override
     public boolean isStockTracked(String username, String symbol) {
-        return persistentence.isStockTracked(username, symbol);
+        return persistence.isStockTracked(username, symbol);
     }
 }

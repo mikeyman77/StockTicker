@@ -3,7 +3,6 @@ package com.stockticker.logic;
 
 import com.stockticker.StockQuote;
 import java.io.File;
-import java.io.InputStream;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
@@ -126,83 +125,55 @@ public class YahooStockQuoteServiceTest {
     }
     
     /**
-     * test getInputStream method with 2 stock quote results returned.
+     * Test of getStockQuotes method with one symbol
      */
     @Test
-    public void testGetInputStreamWith2Results() throws Exception {
+    public void testGetStockQuotesWithNoSymbols() throws Exception {
         
-        File file = new File("resources/stockquotedata2results.json");
-        URL fileUrl = file.toURI().toURL();
-        
-        InputStream inputStream = instance.getInputStream(fileUrl);
-        int bytesCount = inputStream.available();
-        int expResult = 984;
-        
-        assertEquals(expResult, bytesCount);
-    }
-    
-    /**
-     * test getInputStream method with 1 stock quote result returned.
-     */
-    @Test
-    public void testGetInputStreamWith1Result() throws Exception {
-        
-        File file = new File("resources/stockquotedata1result.json");
-        URL fileUrl = file.toURI().toURL();
-        
-        InputStream inputStream = instance.getInputStream(fileUrl);
-        int bytesCount = inputStream.available();
-        int expResult = 538;
-        
-        assertEquals(expResult, bytesCount);
-    }
-    
-    /**
-     * test getInputStream method with no stock quote results returned.
-     */
-    @Test
-    public void testGetInputStreamWithNoResults() throws Exception {
-        
+        // use test json results file
         File file = new File("resources/stockquotedata0results.json");
         URL fileUrl = file.toURI().toURL();
         
-        InputStream inputStream = instance.getInputStream(fileUrl);
-        int bytesCount = inputStream.available();
-        int expResult = 84;
+        int stockQuoteCount = instance.getStockQuotes(fileUrl).size();
+        int expResult = 0;
         
-        assertEquals(expResult, bytesCount);
+        assertEquals(expResult, stockQuoteCount);
     }
     
     /**
-     * test getInputStream method when URL is null.
+     * Test of getStockQuotes method with one symbol
      */
     @Test
-    public void testGetInputStreamWithNullURL() throws Exception {
+    public void testGetStockQuotesWithOneSymbol() throws Exception {
         
-        InputStream inputStream = instance.getInputStream(null);
-        assertNull(inputStream);
+        // use test json results file
+        File file = new File("resources/stockquotedata1result.json");
+        URL fileUrl = file.toURI().toURL();
+        
+        int stockQuoteCount = instance.getStockQuotes(fileUrl).size();
+        int expResult = 1;
+        
+        assertEquals(expResult, stockQuoteCount);
     }
     
     /**
      * Test of getStockQuotes method with multiple symbols
      */
     @Test
-    public void testGetStockQuotes() throws Exception {
+    public void testGetStockQuotesWithMultipleSymbols() throws Exception {
         
         // use test json results file
         File file = new File("resources/stockquotedata2results.json");
         URL fileUrl = file.toURI().toURL();
         
-        InputStream is = instance.getInputStream(fileUrl);
-        
-        int stockQuoteCount = instance.getStockQuotes(is).size();
+        int stockQuoteCount = instance.getStockQuotes(fileUrl).size();
         int expResult = 2;
         
         assertEquals(expResult, stockQuoteCount);
     }
     
     /**
-     * Test of getStockQuotes method with null input stream.
+     * Test of getStockQuotes method with null symbol list.
      */
     @Test
     public void testGetStockQuotesWithNull() throws Exception {
