@@ -3,6 +3,7 @@ package com.stockticker.logic;
 import com.stockticker.StockQuote;
 import com.stockticker.persistence.PersistenceService;
 import com.stockticker.persistence.StockTickerPersistence;
+import java.util.ArrayList;
 import java.util.List;
 
 
@@ -26,9 +27,19 @@ public enum StockTicker implements StockTickerService {
      * @return a list of StockQuote objects
      */
     @Override
-    public List<StockQuote> getStockQuotes(List<String> symbols) {
+    public List<StockQuote> getStockQuotes(List<String> symbols) 
+            throws BusinessLogicException {
         
-        return ysqs.getStockQuotes(ysqs.getURL(symbols));
+        List<StockQuote> stockQuoteList = new ArrayList<>();
+        
+        try {
+            stockQuoteList = ysqs.getStockQuotes(ysqs.getURL(symbols));
+        }
+        catch (BusinessLogicException ex) {
+            throw new BusinessLogicException("Error: Could not get stock quotes, check logs", ex);
+        }
+        
+        return stockQuoteList;
     }
 
     /**
@@ -38,8 +49,19 @@ public enum StockTicker implements StockTickerService {
      * @return a list of tracked stocks
      */
     @Override
-    public List<String> getTrackedStocks(String username) {
-        return persistence.getTrackedStocks(username);
+    public List<String> getTrackedStocks(String username) 
+            throws BusinessLogicException {
+        
+        List<String> trackedStocksList = new ArrayList<>();
+        
+        try {
+            trackedStocksList = persistence.getTrackedStocks(username);
+        }
+        catch (BusinessLogicException ex) {
+            throw new BusinessLogicException("Error: Could not get tracked stocks, check logs", ex);
+        }
+        
+        return trackedStocksList;
     }
     
     /**
@@ -51,8 +73,18 @@ public enum StockTicker implements StockTickerService {
      * @return true if the operation was successful
      */
     @Override
-    public boolean trackStock(String username, String symbol, boolean tracked) {
-        return persistence.trackStock(username, symbol, tracked);
+    public boolean trackStock(String username, String symbol, boolean tracked) 
+            throws BusinessLogicException {
+        boolean successful = false;
+        
+        try {
+            successful = persistence.trackStock(username, symbol, tracked);
+        }
+        catch (BusinessLogicException ex) {
+            throw new BusinessLogicException("Error: Could not tracked/untrack stock, check logs", ex);
+        }
+        
+        return successful;
     }
     
     /**
@@ -63,7 +95,18 @@ public enum StockTicker implements StockTickerService {
      * @return true if the stock is tracked
      */
     @Override
-    public boolean isStockTracked(String username, String symbol) {
-        return persistence.isStockTracked(username, symbol);
+    public boolean isStockTracked(String username, String symbol) 
+            throws BusinessLogicException {
+        
+        boolean successful = false;
+        
+        try {
+            successful = persistence.isStockTracked(username, symbol);
+        }
+        catch (BusinessLogicException ex) {
+            throw new BusinessLogicException("Error: Could not get if stock is tracked, check logs", ex);
+        }
+        
+        return successful;
     }
 }

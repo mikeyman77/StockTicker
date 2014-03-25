@@ -15,7 +15,7 @@ import java.util.List;
  */
 public interface StockQuoteService {
     
-    public URL getURL(List<String> symbols);
-    public List<StockQuote> getStockQuotes(URL url);
+    public URL getURL(List<String> symbols) throws BusinessLogicException;
+    public List<StockQuote> getStockQuotes(URL url) throws BusinessLogicException;
     
 }

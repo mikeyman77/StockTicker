@@ -28,7 +28,7 @@ public enum YahooStockQuoteService implements StockQuoteService {
      * @return URL
      */
     @Override
-    public URL getURL(List<String> symbols) {
+    public URL getURL(List<String> symbols) throws BusinessLogicException {
         
         StringBuilder symbolString = new StringBuilder();
         URL queryUrl = null;
@@ -68,7 +68,7 @@ public enum YahooStockQuoteService implements StockQuoteService {
             queryUrl = new URL(yahooQueryUrl + yahooQueryStr);
         }
         catch (MalformedURLException ex) {
-            System.err.println("ERROR: A MalformedURLException exception was thrown!");
+            throw new BusinessLogicException("Error: Could not generate URL, check logs", ex);
         }
         
         return queryUrl;
@@ -101,8 +101,7 @@ public enum YahooStockQuoteService implements StockQuoteService {
             rootNode = mapper.readTree(inputStream);
         }
         catch (IOException ex) {
-            System.err.println("ERROR: An IO exception has occurred!");
-            return stockQuoteList; // return empty list
+            throw new BusinessLogicException("Error: Could not get stock quotes, check logs", ex);
         }
         
         // get the count of quotes returned

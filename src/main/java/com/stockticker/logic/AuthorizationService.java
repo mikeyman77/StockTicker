@@ -11,14 +11,18 @@ import com.stockticker.UserInfo;
  */
 public interface AuthorizationService {
 
-    public boolean logIn(String username, String password);
-    public boolean logOut(String username);
-    public boolean isLoggedIn(String username);
-    public boolean register(String username, String password, UserInfo userInfo);
-    public boolean unRegister(String username);
-    public boolean isRegistered(String username);
-    public UserInfo getUserInfo(String username);
-    public boolean updateUserInfo(String username, UserInfo userInfo);
-    public boolean changePassword(String username, String oldPassword, String newPassword);
+    public boolean logIn(String username, String password) 
+            throws BusinessLogicException;
+    public boolean logOut(String username) throws BusinessLogicException;
+    public boolean isLoggedIn(String username) throws BusinessLogicException;
+    public boolean register(String username, String password, UserInfo userInfo) 
+            throws BusinessLogicException;
+    public boolean unRegister(String username) throws BusinessLogicException;
+    public boolean isRegistered(String username) throws BusinessLogicException;
+    public UserInfo getUserInfo(String username) throws BusinessLogicException;
+    public boolean updateUserInfo(String username, UserInfo userInfo) 
+            throws BusinessLogicException;
+    public boolean changePassword(String username, String oldPassword, 
+            String newPassword) throws BusinessLogicException;
 
 }

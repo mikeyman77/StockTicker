@@ -3,8 +3,8 @@ package com.stockticker.logic;
 import com.stockticker.User;
 import com.stockticker.UserInfo;
 import com.stockticker.persistence.PersistenceService;
+import com.stockticker.persistence.PersistenceServiceException;
 import com.stockticker.persistence.StockTickerPersistence;
-import java.util.List;
 import org.jasypt.util.password.BasicPasswordEncryptor;
 
 public enum UserAuthorization implements AuthorizationService {
@@ -19,19 +19,25 @@ public enum UserAuthorization implements AuthorizationService {
      * @param username the username of the user
      * @param password the password of the user
      * @return true if user was logged in
+     * @throws com.stockticker.logic.BusinessLogicException
      */
     @Override
-    public boolean logIn(String username, String password) {
+    public boolean logIn(String username, String password) throws BusinessLogicException {
         User user;
         boolean successful = false;
         
-        user = persistence.getUser(username);
-        
-        if (user != null) {
-            if (checkPassword(password, user.getPassword())) {
-                persistence.setLoginStatus(user.getUserName(), true);
-                successful = true;
+        try {
+            user = persistence.getUser(username);
+
+            if (user != null) {
+                if (checkPassword(password, user.getPassword())) {
+                    persistence.setLoginStatus(user.getUserName(), true);
+                    successful = true;
+                }
             }
+        }
+        catch (PersistenceServiceException e) {
+            throw new BusinessLogicException("Error: Unable to log in user, check logs", e);
         }
         
         return successful;
@@ -42,16 +48,22 @@ public enum UserAuthorization implements AuthorizationService {
      *
      * @param username the username of the user
      * @return true if user was logged out
+     * @throws com.stockticker.logic.BusinessLogicException
      */
     @Override
-    public boolean logOut(String username) {
+    public boolean logOut(String username) throws BusinessLogicException {
         User user;
         boolean successful = false;
         
-        user = persistence.getUser(username);
-        
-        if (user != null && user.isLoggedIn()) {
-            successful = persistence.setLoginStatus(username, false);
+        try {
+            user = persistence.getUser(username);
+
+            if (user != null && user.isLoggedIn()) {
+                successful = persistence.setLoginStatus(username, false);
+            }
+        }
+        catch (PersistenceServiceException e) {
+            throw new BusinessLogicException("Error: Unable to log out user, check logs", e);
         }
         
         return successful;
@@ -62,10 +74,19 @@ public enum UserAuthorization implements AuthorizationService {
      *
      * @param username the username of the user
      * @return true if user is currently logged in
+     * @throws com.stockticker.logic.BusinessLogicException
      */
     @Override
-    public boolean isLoggedIn(String username) {
-        return persistence.isLoggedIn(username);
+    public boolean isLoggedIn(String username) throws BusinessLogicException {
+        boolean isLoggedIn = false;
+        
+        try {
+            isLoggedIn = persistence.isLoggedIn(username);
+        }
+        catch (PersistenceServiceException e) {
+            throw new BusinessLogicException("Error: Unable to get the login status for user, check logs", e);
+        }
+        return isLoggedIn;
     }
 
     /**
@@ -75,18 +96,26 @@ public enum UserAuthorization implements AuthorizationService {
      * @param password the password of the user
      * @param userInfo a UserInfo object containing name
      * @return true if user was registered
+     * @throws com.stockticker.logic.BusinessLogicException
      */
     @Override
-    public boolean register(String username, String password, UserInfo userInfo) {
+    public boolean register(String username, String password, UserInfo userInfo) 
+            throws BusinessLogicException {
+        
         User user;
         boolean successful = false;
         String encryptedPassword = passwordEncryptor.encryptPassword(password);
         
-        user = persistence.createUser(username, encryptedPassword);
-        
-        if (user != null) {
-            user.setUserInfo(userInfo);
-            successful = persistence.updateUser(user);
+        try {
+            user = persistence.createUser(username, encryptedPassword);
+
+            if (user != null) {
+                user.setUserInfo(userInfo);
+                successful = persistence.updateUser(user);
+            }
+        }
+        catch (PersistenceServiceException e) {
+            throw new BusinessLogicException("Error: Unable to register user, check logs", e);
         }
 
         return successful;
@@ -97,10 +126,20 @@ public enum UserAuthorization implements AuthorizationService {
      *
      * @param username the username of the user
      * @return true if the user was unregistered
+     * @throws com.stockticker.logic.BusinessLogicException
      */
     @Override
-    public boolean unRegister(String username) {
-        return persistence.deleteUser(username);
+    public boolean unRegister(String username) throws BusinessLogicException {
+        boolean successful = false;
+        
+        try {
+            successful = persistence.deleteUser(username);
+        }
+        catch (PersistenceServiceException e) {
+            throw new BusinessLogicException("Error: Unable to unregister user, check logs", e);
+        }
+        
+        return successful;
     }
 
     /**
@@ -108,10 +147,20 @@ public enum UserAuthorization implements AuthorizationService {
      *
      * @param username the username of the user
      * @return true if the user is registered
+     * @throws com.stockticker.logic.BusinessLogicException
      */
     @Override
-    public boolean isRegistered(String username) {
-        return persistence.userExists(username);
+    public boolean isRegistered(String username) throws BusinessLogicException {
+        boolean successful = false;
+        
+        try {
+            successful = persistence.userExists(username);
+        }
+        catch (PersistenceServiceException e) {
+            throw new BusinessLogicException("Error: Unable to registeration status for user, check logs", e);
+        }
+        
+        return successful;
     }
 
     /**
@@ -119,10 +168,20 @@ public enum UserAuthorization implements AuthorizationService {
      *
      * @param username the username of the user
      * @return UserInfo object related to the username
+     * @throws com.stockticker.logic.BusinessLogicException
      */
     @Override
-    public UserInfo getUserInfo(String username) {
-        return persistence.getUserInfo(username);
+    public UserInfo getUserInfo(String username) throws BusinessLogicException {
+        UserInfo userInfo;
+        
+        try {
+            userInfo = persistence.getUserInfo(username);
+        }
+        catch (PersistenceServiceException e) {
+            throw new BusinessLogicException("Error: Unable to get user info for user, check logs", e);
+        }
+        
+        return userInfo;
     }
 
     /**
@@ -132,19 +191,27 @@ public enum UserAuthorization implements AuthorizationService {
      * @param oldPassword the user's old password
      * @param newPassword the user's new password
      * @return true if the password was changed
+     * @throws com.stockticker.logic.BusinessLogicException
      */
     @Override
-    public boolean changePassword(String username, String oldPassword, String newPassword) {
+    public boolean changePassword(String username, String oldPassword, String newPassword) 
+            throws BusinessLogicException {
+        
         User user;
         boolean successful = false;
-
-        user = persistence.getUser(username);
         
-        if (user != null && user.isLoggedIn()){
-            if (checkPassword(oldPassword, user.getPassword())) {
-                user.setPassword(newPassword);
-                successful = true;
+        try {
+            user = persistence.getUser(username);
+
+            if (user != null && user.isLoggedIn()) {
+                if (checkPassword(oldPassword, user.getPassword())) {
+                    user.setPassword(newPassword);
+                    successful = persistence.updateUser(user);
+                }
             }
+        }
+        catch (PersistenceServiceException e) {
+            throw new BusinessLogicException("Error: Unable to change password for user, check logs", e);
         }
         
         return successful;
@@ -156,17 +223,25 @@ public enum UserAuthorization implements AuthorizationService {
      * @param username the username of the user
      * @param userInfo a UserInfo object with the user's information
      * @return true if the user's information was changed
+     * @throws com.stockticker.logic.BusinessLogicException
      */
     @Override
-    public boolean updateUserInfo(String username, UserInfo userInfo) {
+    public boolean updateUserInfo(String username, UserInfo userInfo) 
+            throws BusinessLogicException {
+        
         User user;
         boolean successful = false;
         
-        user = persistence.getUser(username);
-        
-        if (user != null && user.isLoggedIn()) {
-            user.setUserInfo(userInfo);
-            successful = persistence.updateUser(user);
+        try {
+            user = persistence.getUser(username);
+
+            if (user != null && user.isLoggedIn()) {
+                user.setUserInfo(userInfo);
+                successful = persistence.updateUser(user);
+            }
+        }
+        catch (PersistenceServiceException e) {
+            throw new BusinessLogicException("Error: Unable to update user info for user, check logs", e);
         }
         
         return successful;

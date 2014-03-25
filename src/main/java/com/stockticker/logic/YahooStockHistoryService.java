@@ -31,7 +31,7 @@ public enum YahooStockHistoryService implements StockHistoryService {
      * @return a URL object to get stock history data
      */
     @Override
-    public URL getURL(String symbol, Date startDate, Date endDate) {
+    public URL getURL(String symbol, Date startDate, Date endDate) throws BusinessLogicException {
         
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
         URL queryUrl = null;
@@ -64,7 +64,7 @@ public enum YahooStockHistoryService implements StockHistoryService {
             queryUrl = new URL(yahooQueryUrl + yahooQueryStr);
         }
         catch (MalformedURLException ex) {
-            throw new RuntimeException("Error: The URL was malformed, please try again!");
+            throw new BusinessLogicException("Error: Could not generate URL, check logs", ex);
         }
         
         return queryUrl;
@@ -77,7 +77,7 @@ public enum YahooStockHistoryService implements StockHistoryService {
      * @return a list of StockHistory objects
      */
     @Override
-    public List<StockHistory> getStockHistory(URL url) {
+    public List<StockHistory> getStockHistory(URL url) throws BusinessLogicException {
         
         ObjectMapper mapper = new ObjectMapper();
         List<StockHistory> stockHistoryList = new ArrayList<>();
@@ -94,7 +94,7 @@ public enum YahooStockHistoryService implements StockHistoryService {
             rootNode = mapper.readTree(url.openConnection().getInputStream());
         }
         catch (IOException ex) {
-            throw new RuntimeException("Error: An IOException has occurred, please try again!");
+            throw new BusinessLogicException("Error: Could not get stock history, check logs", ex);
         }
         
         // get the count of quotes returned
@@ -107,7 +107,6 @@ public enum YahooStockHistoryService implements StockHistoryService {
             else {
                 historyNode = rootNode.path("query").path("results").path("quote");
             }
-            historyNode = rootNode.path("query").path("results").path("quote").path(i);
             YahooStockHistory yahooStockHistory = mapper.convertValue(historyNode, YahooStockHistory.class);
             stockHistoryList.add(yahooStockHistory);
         }
