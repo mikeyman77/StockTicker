@@ -39,6 +39,7 @@ import javax.swing.KeyStroke;
 import javax.swing.ListModel;
 import javax.swing.JComponent;
 import javax.swing.JOptionPane;
+import javax.swing.ListSelectionModel;
 
 import com.stockticker.StockQuote;
 import com.stockticker.SymbolMap;
@@ -102,6 +103,7 @@ public class ViewStockTicker extends WindowAdapter implements IStockTicker_UICom
     private boolean m_regSelect = false;
     public boolean m_closeSelect = false;
     public boolean m_isLoggedIn = false;
+    public boolean m_isMultSelect = false;
     public boolean[] m_isInvalidInput = new boolean[5];
 
     private String m_username = "";
@@ -113,6 +115,7 @@ public class ViewStockTicker extends WindowAdapter implements IStockTicker_UICom
     private StringBuilder m_buildStr;
 
     private List<String> m_symbolList;
+    private List<String> m_multSymbols;
     private List<StockQuote> m_stockQuoteList;
 
     private final AuthorizationService m_userAuth = UserAuthorization.INSTANCE;
@@ -120,6 +123,7 @@ public class ViewStockTicker extends WindowAdapter implements IStockTicker_UICom
     private UserInfo m_userInfo;
 
     private final OperateStockTicker m_operate;
+    private int m_clickCntr = 0;
 
 
     /**
@@ -128,6 +132,7 @@ public class ViewStockTicker extends WindowAdapter implements IStockTicker_UICom
     public ViewStockTicker() {
         this.m_symbolList = new ArrayList<>();
         this.m_stockQuoteList = new ArrayList<>();
+        this.m_multSymbols = new ArrayList<>();
         m_frame = new JFrame();
         m_operate = new OperateStockTicker();
     }
@@ -194,6 +199,7 @@ public class ViewStockTicker extends WindowAdapter implements IStockTicker_UICom
 
 
         m_symbolJList = new JList<>(SymbolMap.getSymbols().keySet().toArray());
+        m_symbolJList.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
         m_symbolJList.setVisibleRowCount(8);
         m_symbolJList.setEnabled(false);
         m_symbolJList.setVisible(false);
@@ -208,8 +214,10 @@ public class ViewStockTicker extends WindowAdapter implements IStockTicker_UICom
         m_symbolField.setEditable(false);
         m_symbolField.setVisible(false);
 
-        // Mouse listener that listens for mouse clicks in the stock symbols list.
-        // Selects a symbol from the list after a double mouse click.
+
+        // Mouse listener that listens for single or double clicks within the stock
+        // symbols list.  A double click selects the one symbol and a single click
+        // selects a group of symbols by using cntrl or shift keys.
         m_symbolJList.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
@@ -217,31 +225,40 @@ public class ViewStockTicker extends WindowAdapter implements IStockTicker_UICom
                 if(e.getClickCount() == 2) {
                     symbol = m_symbolJList.getSelectedValue().toString();
 
-                    if(m_username.isEmpty() || m_username.startsWith(SPACE)) {
-                        System.out.println("User has not logged in");
-                    }
-                    else if(!m_userAuth.isLoggedIn(m_username)) {
-                        System.err.println("User is not logged in");
-                    }
-                    else if(symbol == null) {
+                    if(symbol == null) {
                         System.err.println("Unable to read symbol");
                     }
                     else {
                         m_symbolList.add(symbol);
                         m_operate.setSymbolList();
+                        m_symbolJList.clearSelection();
+                        m_clickCntr = 0;
                     }
                 }
                 else {
                     if(e.getClickCount() == 1) {
-                        String selection = m_symbolJList.getSelectedValue().toString();
-                        m_symbolField.setText(selection);
+                        m_clickCntr++;
+                        if(m_clickCntr > 1) {
+                            m_multSymbols.clear();
+                            for(Object obj : m_symbolJList.getSelectedValuesList()) {
+                                m_multSymbols.add(obj.toString());
+                            }
+
+                            m_isMultSelect = true;
+                        }
+                        else {
+                            String selection = m_symbolJList.getSelectedValue().toString();
+                            m_symbolField.setText(selection);
+                        }
                     }
                 }
             }
         });
 
-        // Key listener that listens for key pressed in the stock symbols list.
-        // Will search the list for matches or close matches to the user input.
+
+        // Key listener that parses the stock symbol lists for symbols that match
+        // or a close match, to the user input.  User single cliks a symbol to get
+        // focus, then can begin typing to find a specific symbol.
         m_symbolField.addKeyListener(new KeyAdapter() {
             @Override
             public void keyReleased(KeyEvent evt) {
@@ -266,37 +283,50 @@ public class ViewStockTicker extends WindowAdapter implements IStockTicker_UICom
             } 
         });
 
-        // Abstract Action listener that listens for the enter button to be released.
-        // Saves selected symbol symbol list and displays symbols in quote text field.
+
+        // Abstract Action listener that saves the selected stock symbols from stock
+        // symbol list when the enter button is depressed and then released.  The
+        // symbols are then displaed in the quote text field.
         Action enterAction = new AbstractAction() {
             @Override
             public void actionPerformed(ActionEvent actionEvent) {
-                String symbol = m_symbolJList.getSelectedValue().toString();
-                if(symbol != null) {
-                    m_symbolField.setText(symbol);
+                String symbol = null;
+                if(!m_isMultSelect) {
+                    symbol = m_symbolJList.getSelectedValue().toString();
+
+                   if(symbol != null) {
+                        m_symbolField.setText(symbol);
+                    }
+                    else {
+                        System.out.println("No selection made in list");
+                    }
+
+                    int row_pos = m_symbolJList.getSelectedIndex();
+                    m_symbolJList.ensureIndexIsVisible(row_pos + ROW_OFFSET);
+
+                    
+                    if(symbol.isEmpty()) {
+                        System.err.println("Unable to select symbol");
+                    }
+                    else if(!m_symbolField.getText().equals(symbol)) {
+                        System.err.println("Unable to read symbol from text field");
+                    }
+                    else {
+                        m_symbolList.add(symbol);
+                        m_operate.setSymbolList();
+                        m_symbolJList.clearSelection();
+                        m_clickCntr = 0;
+                    }
                 }
                 else {
-                    System.out.println("No selection made in list");
-                }
-
-                int row_pos = m_symbolJList.getSelectedIndex();
-                m_symbolJList.ensureIndexIsVisible(row_pos + ROW_OFFSET);
-
-                if(m_username.isEmpty() || m_username.startsWith(SPACE)) {
-                    System.out.println("User has not logged in");
-                }
-                else if(symbol.isEmpty()) {
-                    System.err.println("Unable to select symbol");
-                }
-                else if(!m_symbolField.getText().equals(symbol)) {
-                    System.err.println("Unable to read symbol from text field");
-                }
-                else if(!m_userAuth.isLoggedIn(m_username)) {
-                    System.err.println("User is not logged in");
-                }
-                else {
-                    m_symbolList.add(symbol);
+                    for(String str : m_multSymbols){
+                        m_symbolList.add(str);
+                    }
+                    m_multSymbols.clear();
                     m_operate.setSymbolList();
+                    m_symbolJList.clearSelection();
+                    m_isMultSelect = false;
+                    m_clickCntr = 0;
                 }
             }
         };
@@ -625,7 +655,7 @@ public class ViewStockTicker extends WindowAdapter implements IStockTicker_UICom
                     m_stockService.trackStock(m_username, m_tickerCard.getSelectedStock().getSymbol(), true);
                     this.resetLeftButton(UI.UNTRACK.getName());
                     break;
-                    
+
                 case UNTRACK:
                     this.resetFlags();
                     m_stockService.trackStock(m_username, m_tickerCard.getSelectedStock().getSymbol(), false);
@@ -636,7 +666,7 @@ public class ViewStockTicker extends WindowAdapter implements IStockTicker_UICom
                 // Show Home screen if CANCEL or CLOSE selected.  
                 case  CLOSE:
                     m_closeSelect = true;
-                    
+
                     // Close selected from Registration or LogIn screens
                     if(!m_userAuth.isRegistered(m_username) || !m_isLoggedIn) {
                         this.resetLeftButton(UI.USER_REG.getName());
@@ -653,7 +683,7 @@ public class ViewStockTicker extends WindowAdapter implements IStockTicker_UICom
                     }
                     this.resetFlags();
                     break;
-                    
+
                 case LOGOUT:
                     if(m_userAuth.logOut(m_username)) {
                         m_isLoggedIn = false;
@@ -840,7 +870,7 @@ public class ViewStockTicker extends WindowAdapter implements IStockTicker_UICom
 
 
         /**
-         * Gets the user entered symbols and adds them to a symbols List<String>.
+         * Gets the user entered symbols and adds them to a quote text field.
          */
         public void setSymbolList() {
             if(m_symbolList.size() > ZERO) {
