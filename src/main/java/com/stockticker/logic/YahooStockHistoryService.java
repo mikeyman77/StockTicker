@@ -107,8 +107,11 @@ public enum YahooStockHistoryService implements StockHistoryService {
             else {
                 historyNode = rootNode.path("query").path("results").path("quote");
             }
-            YahooStockHistory yahooStockHistory = mapper.convertValue(historyNode, YahooStockHistory.class);
-            stockHistoryList.add(yahooStockHistory);
+            
+            if (!historyNode.isMissingNode()) {
+                YahooStockHistory yahooStockHistory = mapper.convertValue(historyNode, YahooStockHistory.class);
+                stockHistoryList.add(yahooStockHistory);
+            }
         }
         
         return stockHistoryList;

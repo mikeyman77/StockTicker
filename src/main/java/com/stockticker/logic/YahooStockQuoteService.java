@@ -116,8 +116,11 @@ public enum YahooStockQuoteService implements StockQuoteService {
                 // parse a single quote
                 quoteNode = rootNode.path("query").path("results").path("quote");
             }
-            YahooStockQuote yahooStockQuote = mapper.convertValue(quoteNode, YahooStockQuote.class);
-            stockQuoteList.add(yahooStockQuote);
+            
+            if (!quoteNode.isMissingNode()) {
+                YahooStockQuote yahooStockQuote = mapper.convertValue(quoteNode, YahooStockQuote.class);
+                stockQuoteList.add(yahooStockQuote);
+            }
         }
         
         return stockQuoteList;
