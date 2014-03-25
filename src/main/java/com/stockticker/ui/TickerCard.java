@@ -97,9 +97,7 @@ public class TickerCard extends JPanel {
 
 
     /**
-     * 
-     * 
-     * @return 
+     * Adds the Card JPanel and its children panels and their components.
      */
     public final JPanel setCard() {
         m_model = new StockTableModel(m_header);
@@ -119,8 +117,8 @@ public class TickerCard extends JPanel {
 
 
     /**
-     * 
-     * 
+     * Adds the stock quote table to its JPanel and provides an action listener for
+     * the selected rows.
      */
     public void setStockTable() {
         m_tablePanel = new JPanel(new GridLayout(1, 0));
@@ -145,6 +143,8 @@ public class TickerCard extends JPanel {
         final ListSelectionModel rowSelection = m_table.getSelectionModel();
         rowSelection.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 
+        // Mouse listener for the table.  Allows user to select a stock quote from
+        // the table to track and get more details on the indivudual Stock
         m_table.addMouseListener(new MouseAdapter() {
             @Override
             public void mousePressed(MouseEvent evt) {
@@ -197,7 +197,7 @@ public class TickerCard extends JPanel {
     public void setButtonPanel() {
         m_buttonPanel = new JPanel(new GridBagLayout());
         m_buttonPanel.setPreferredSize(new Dimension(300, 100));
-        
+
 
         JButton quote = new JButton("Quote");
         quote.addActionListener(new ActionListener() {
@@ -208,7 +208,6 @@ public class TickerCard extends JPanel {
                 setQuoteFieldFocus();
             }
         });
-
 
         m_quoteField = new JTextField(40);
         m_quoteField.setBorder( BorderFactory.createCompoundBorder(BorderFactory.createRaisedBevelBorder(), BorderFactory.createLoweredBevelBorder()));
@@ -243,7 +242,7 @@ public class TickerCard extends JPanel {
 
 
     /**
-     * 
+     * Gets/returns this Card JPanel
      * @return 
      */
     public JPanel getCard() {
@@ -251,6 +250,11 @@ public class TickerCard extends JPanel {
     }
 
 
+    /**
+     *
+     * @param symbols
+     * @return
+     */
     public List<String> getSymbolsInTable(List<String> symbols) {
         if(m_model.getRowCount() > 0) {
             for(int i = 0; i < m_model.getRowCount(); i++) {
@@ -272,6 +276,9 @@ public class TickerCard extends JPanel {
     }
 
 
+    /**
+     * Sets the focus in the quote text field
+     */
     public void setQuoteFieldFocus() {
         m_quoteField.grabFocus();
     }
@@ -423,6 +430,9 @@ public class TickerCard extends JPanel {
         }
 
 
+        /*
+         * Adds the list of StockQuote's to the table models List<StockQuote>
+         */
         public void addStocks(List<StockQuote> stock) {
             m_stocks = stock;
             fireTableDataChanged();
