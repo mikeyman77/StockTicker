@@ -12,9 +12,13 @@ import java.util.List;
  */
 public interface StockTickerService {
     
-    public List<StockQuote> getStockQuotes(List<String> symbols);
-    public List<String> getTrackedStocks(String username);
-    public boolean trackStock(String username, String symbol, boolean tracked);
-    public boolean isStockTracked(String username, String symbol);
+    public List<StockQuote> getStockQuotes(List<String> symbols) 
+            throws BusinessLogicException;
+    public List<String> getTrackedStocks(String username) 
+            throws BusinessLogicException;
+    public boolean trackStock(String username, String symbol, boolean tracked) 
+            throws BusinessLogicException;
+    public boolean isStockTracked(String username, String symbol) 
+            throws BusinessLogicException;
 
 }
