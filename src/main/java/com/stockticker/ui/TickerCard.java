@@ -81,11 +81,11 @@ public class TickerCard extends JPanel {
 
 
     /**
-     * Construct the TickerCard.
-     * Set the argument CardLayout to the main JPanel of this class.
-     *  
-     * @param cards     - JPanel containing a CardLayout
-     * @param quoteCard
+     * Constructs the TickerCard object.
+     *
+     * @param cards         - Base card JPanel for CardLayout
+     * @param quoteCard     - Quote card JPanel
+     * @param operate       - Instance of OperateStockTicker
      */
     public TickerCard(JPanel cards, QuoteCard quoteCard, OperateStockTicker operate) {
         m_constraints = new GridBagConstraints();
@@ -97,9 +97,11 @@ public class TickerCard extends JPanel {
 
 
     /**
-     * Adds the Card JPanel and its children panels and their components.
+     * Creates the Card JPanel for this ui screen and adds the child JPanels for
+     * the JTable, Quote button, and Quote text field.  Also creates the model for
+     * the JTable.
      */
-    public final JPanel setCard() {
+    public final void setCard() {
         m_model = new StockTableModel(m_header);
 
         m_tickerCard = new JPanel();
@@ -111,8 +113,6 @@ public class TickerCard extends JPanel {
 
         setButtonPanel();
         m_tickerCard.add(m_buttonPanel, BorderLayout.SOUTH);
-
-        return m_tickerCard;
     }
 
 
@@ -155,7 +155,7 @@ public class TickerCard extends JPanel {
 
                         //Insure there is at least one stock selected from table
                         if(m_selectedStock != null) {
-                            if(m_isLoggedIn) {                      
+                            //if(m_isLoggedIn) {                      
                                 m_quoteCard.displayStockQuote(m_selectedStock, FIRST_ROW, true);
 
                                 if(m_operate.getTrackingStatus(m_selectedStock.getSymbol())) {
@@ -170,10 +170,10 @@ public class TickerCard extends JPanel {
                                 m_cardLayout = (CardLayout) m_cardPanel.getLayout();
                                 m_cardLayout.show(m_cardPanel, UI.QUOTE.getName());
                                 System.out.println("Display stock qoute table");
-                            }
+                            /*}
                             else {
                                 System.out.println("Unable to display stock quote, user not logged in");
-                            }
+                            }*/
                         }
                         else {
                             System.out.println("Unable to get stock from stock quote list");
@@ -243,7 +243,8 @@ public class TickerCard extends JPanel {
 
     /**
      * Gets/returns this Card JPanel
-     * @return 
+     * 
+     * @return      - Ticker card panel
      */
     public JPanel getCard() {
         return m_tickerCard;
@@ -315,7 +316,7 @@ public class TickerCard extends JPanel {
     public void displayStockQuoteList(List<StockQuote> stocks, boolean enable) {
         m_isLoggedIn = enable;
         m_model.addStocks(stocks);
-        System.out.println("Stock quotes displayed in table");
+        //System.out.println("Stock quotes displayed in table");
     }
 
 
