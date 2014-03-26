@@ -63,10 +63,12 @@ public final class QuoteCard extends JPanel {
     }
 
 
+   
     /**
-    *
-    *
-    */
+     * Creates the Card JPanel for this individual ui screen and the JPanels for 
+     * the JTables.  Adds the tables JPanels to this Card Panel.  Creates the models
+     * models for the JTables.
+     */
     public void setCard() {
         m_quoteModel = new QuoteTableModel(m_quoteHeader);
         m_detailModel = new DetailTableModel(m_detailHeader);
@@ -82,7 +84,7 @@ public final class QuoteCard extends JPanel {
 
 
     /**
-     *
+     * Lays out the JTables and add them to their JPanel.
      */
     public void setQuotesTable() {
         m_quotePanel = new JPanel(new GridBagLayout());
@@ -95,6 +97,12 @@ public final class QuoteCard extends JPanel {
         m_quoteTable.setEnabled(false);
         m_scrollPane = new JScrollPane(m_quoteTable);
 
+        m_constraints.gridx = 0;
+        m_constraints.gridy = 0;
+        m_constraints.anchor = GridBagConstraints.NORTH;
+        m_constraints.fill = GridBagConstraints.NONE;
+        m_constraints.insets = new Insets(30, 0, 0, 0);
+        m_quotePanel.add(m_scrollPane, m_constraints);
 
         m_detailPanel = new JPanel(new GridBagLayout());
         m_detailPanel.setOpaque(true);
@@ -106,14 +114,6 @@ public final class QuoteCard extends JPanel {
         m_detailTable.setEnabled(false);
         m_detailScrollPane = new JScrollPane(m_detailTable);
 
-
-        m_constraints.gridx = 0;
-        m_constraints.gridy = 0;
-        m_constraints.anchor = GridBagConstraints.NORTH;
-        m_constraints.fill = GridBagConstraints.NONE;
-        m_constraints.insets = new Insets(30, 0, 0, 0);
-        m_quotePanel.add(m_scrollPane, m_constraints);
-        
         m_constraints.gridx = 0;
         m_constraints.gridy = 0;
         m_constraints.anchor = GridBagConstraints.SOUTH;
@@ -122,256 +122,253 @@ public final class QuoteCard extends JPanel {
         m_detailPanel.add(m_detailScrollPane, m_constraints);
     }
 
-
+    
     /**
-    *
-    *
-     * @return 
-    */
+     * Gets/returns this Card JPanel
+     * @return      - Quote card JPanl
+     */
     public JPanel getCard() {
         return m_quoteCard;
     }
 
 
     /**
-     * Adds the Stock to this List<StockQuote> list by calling method addQuoteFields in 
-     * JTable model.  The model then adds the stock quote to the first row, index 0.  
-     * The model will delete any previous entries to the models List<StockQuote> to 
-     * insure only 1 stock quote is displayed in the JTable.
+     * Adds the StockQuote to the JTables by calling the JTable models.  The models
+     * then add the StockQuote to the first row, index 0 in their respective table.  
      * 
-     * @param quote
-     * @param index
-     * @param enable
+     * @param quote     - listing of an individual StockQuote
+     * @param index     - Row location to display StockQuote in table
+     * @param enable    - Indicates whether the user is logged in
      */
     public void displayStockQuote(StockQuote quote,  int index, boolean enable) {
-        m_isLoggedIn = enable;
-        if(m_isLoggedIn) {
+        //m_isLoggedIn = enable;
+        //if(m_isLoggedIn) {
             m_quoteModel.addQuoteFields(quote, index);
             m_detailModel.addQuoteFields(quote, index);
-        }
-        else {
+        //}
+        //else {
             System.out.println("No Quote list to display, user not logged in");
-        }
+        //}
     }
 
 
     /**
-     *
+     * Clears the Tables of their content
      * @param disable
      */
     public void clearQuote(boolean disable) {
-        m_isLoggedIn = disable;
+        //m_isLoggedIn = disable;
         m_quoteModel.deleteRow();
         m_detailModel.deleteRow();
     }       
-}
+//}
 
-
-/*
- * class QuoteTableModel extends AbstractTableModel
- * Model for JTable.  Adds/displays/removes StockQuote entries to the JTable.  
- *
- */
-class QuoteTableModel extends AbstractTableModel {
-    private List<StockQuote> m_quotes;
-    private final String[] m_header;
-
-    public QuoteTableModel(String[] header) {
-        this.m_header = header;
-        this.m_quotes = new ArrayList<>();
-    }
 
     /*
-     * Gets the number of rows of the models List<StockQuote>
+     * inner class QuoteTableModel extends AbstractTableModel
+     * Model for JTable.  Adds/displays/removes StockQuote entries to the JTable.  
      */
-    @Override
-    public int getRowCount() {
-        return m_quotes.size();
-    }
+    class QuoteTableModel extends AbstractTableModel {
+        private List<StockQuote> m_quotes;
+        private final String[] m_header;
 
-
-    @Override
-    public int getColumnCount() {
-        return m_header.length;
-    }
-
-
-    @Override
-    public String getColumnName(int column) {
-        return m_header[column];
-    }
-
-
-    @Override
-    public Object getValueAt(int rowIndex, int columnIndex) {
-        StockQuote sq = m_quotes.get(rowIndex);
-        Object value = null;
-
-        switch(columnIndex) {
-            case 0:
-                value = sq.getSymbol();
-                break;
-            case 1:
-                value = sq.getDate();
-                break;
-            case 2:
-                value = sq.getPrice();
-                break;
-            case 3:
-                value = sq.getChange();
-                break;
-            case 4:
-                value = sq.getChangePercent();
-                break;
-            case 5:
-                value = sq.getVolume();
-                break;
-            case 6:
-                value = sq.getLow();
-                break;
-            case 7:
-                value = sq.getHigh();
-                break;
-            case 8:
-                value = sq.getAvgVolume();
-                break;
-            default:
-                System.err.println("Problems displaying quote");
+        public QuoteTableModel(String[] header) {
+            this.m_header = header;
+            this.m_quotes = new ArrayList<>();
         }
 
-        return value;
-    }
-
-
-    public void addQuoteFields(StockQuote quote, int index) {
-        if(m_quotes.size() > 0) {
-            this.deleteRow();
-        }
-        m_quotes.add(index, quote);
-        fireTableRowsInserted(index, index);
-    }
-
-
-    public void removeQuote(StockQuote quote) {
-        int index = m_quotes.indexOf(quote);
-        m_quotes.remove(index);
-        fireTableRowsInserted(index, index);
-    }
-
-
-    public Object getStock(int row) {
-        return m_quotes.get(row);
-    }
-
-
-    public void deleteRow() {
-        for(int i = m_quotes.size() - 1; i >= 0; i--) {
-            m_quotes.remove(i);
-        }
-    }
-}
-
-
-
-/*
- * class DetailTableModel extends AbstractTableModel
- * Model for JTable.  Adds/displays/removes 2nd portion of StockQuote details
- * to the JTable.  
- *
- */
-class DetailTableModel extends AbstractTableModel {
-    private List<StockQuote> m_quotes;
-    private final String[] m_header;
-
-
-    public DetailTableModel(String[] header) {
-        this.m_header = header;
-        this.m_quotes = new ArrayList<>();
-    }
-
-
-    @Override
-    public int getRowCount() {
-        return m_quotes.size();
-    }
-
-    @Override
-    public int getColumnCount() {
-        return m_header.length;
-    }
-
-
-    @Override
-    public String getColumnName(int column) {
-        return m_header[column];
-    }
-
-
-    @Override
-    public Object getValueAt(int rowIndex, int columnIndex) {
-        StockQuote sq = m_quotes.get(rowIndex);
-        Object value = null;
-
-        switch(columnIndex) {
-            case 0:
-                value = sq.getYearLow();
-                break;
-            case 1:
-                value = sq.getYearHigh();
-                break;
-            case 2:
-                value = sq.getPrevClose();
-                break;
-            case 3:
-                value = sq.getMarketCap();
-                break;
-            case 4:
-                value = sq.getOpen();
-                break;
-            case 5:
-                value = sq.getPE();
-                break;
-            case 6:
-                value = sq.getBid();
-                break;
-            case 7:
-                value = sq.getEPS();
-                break;
-            case 8:
-                value = sq.getAsk();
-                break;
-            default:
-                System.err.println("Problems displaying quote details");
+        /*
+         * Gets the number of rows of the models List<StockQuote>
+         */
+        @Override
+        public int getRowCount() {
+            return m_quotes.size();
         }
 
-        return value;
-    }
 
-
-    public void addQuoteFields(StockQuote quote, int index) {
-        if(m_quotes.size() > 0) {
-            this.deleteRow();
+        @Override
+        public int getColumnCount() {
+            return m_header.length;
         }
-        m_quotes.add(index, quote);
-        fireTableRowsInserted(index, index);
+
+
+        @Override
+        public String getColumnName(int column) {
+            return m_header[column];
+        }
+
+
+        @Override
+        public Object getValueAt(int rowIndex, int columnIndex) {
+            StockQuote sq = m_quotes.get(rowIndex);
+            Object value = null;
+
+            switch(columnIndex) {
+                case 0:
+                    value = sq.getSymbol();
+                    break;
+                case 1:
+                    value = sq.getDate();
+                    break;
+                case 2:
+                    value = sq.getPrice();
+                    break;
+                case 3:
+                    value = sq.getChange();
+                    break;
+                case 4:
+                    value = sq.getChangePercent();
+                    break;
+                case 5:
+                    value = sq.getVolume();
+                    break;
+                case 6:
+                    value = sq.getLow();
+                    break;
+                case 7:
+                    value = sq.getHigh();
+                    break;
+                case 8:
+                    value = sq.getAvgVolume();
+                    break;
+                default:
+                    System.err.println("Problems displaying quote");
+            }
+
+            return value;
+        }
+
+
+        public void addQuoteFields(StockQuote quote, int index) {
+            if(m_quotes.size() > 0) {
+                this.deleteRow();
+            }
+            m_quotes.add(index, quote);
+            fireTableRowsInserted(index, index);
+        }
+
+
+        public void removeQuote(StockQuote quote) {
+            int index = m_quotes.indexOf(quote);
+            m_quotes.remove(index);
+            fireTableRowsInserted(index, index);
+        }
+
+
+        public Object getStock(int row) {
+            return m_quotes.get(row);
+        }
+
+
+        public void deleteRow() {
+            for(int i = m_quotes.size() - 1; i >= 0; i--) {
+                m_quotes.remove(i);
+            }
+        }
     }
 
 
-    public void removeQuote(StockQuote quote) {
-        int index = m_quotes.indexOf(quote);
-        m_quotes.remove(index);
-        fireTableRowsInserted(index, index);
-    }
+
+    /*
+     * class DetailTableModel extends AbstractTableModel
+     * Model for JTable.  Adds/displays/removes 2nd portion of StockQuote details
+     * to the JTable.  
+     *
+     */
+    class DetailTableModel extends AbstractTableModel {
+        private List<StockQuote> m_quotes;
+        private final String[] m_header;
 
 
-    public Object getStock(int row) {
-        return m_quotes.get(row);
-    }
+        public DetailTableModel(String[] header) {
+            this.m_header = header;
+            this.m_quotes = new ArrayList<>();
+        }
 
 
-    public void deleteRow() {
-        for(int i = m_quotes.size() - 1; i >= 0; i--) {
-            m_quotes.remove(i);
+        @Override
+        public int getRowCount() {
+            return m_quotes.size();
+        }
+
+        @Override
+        public int getColumnCount() {
+            return m_header.length;
+        }
+
+
+        @Override
+        public String getColumnName(int column) {
+            return m_header[column];
+        }
+
+
+        @Override
+        public Object getValueAt(int rowIndex, int columnIndex) {
+            StockQuote sq = m_quotes.get(rowIndex);
+            Object value = null;
+
+            switch(columnIndex) {
+                case 0:
+                    value = sq.getYearLow();
+                    break;
+                case 1:
+                    value = sq.getYearHigh();
+                    break;
+                case 2:
+                    value = sq.getPrevClose();
+                    break;
+                case 3:
+                    value = sq.getMarketCap();
+                    break;
+                case 4:
+                    value = sq.getOpen();
+                    break;
+                case 5:
+                    value = sq.getPE();
+                    break;
+                case 6:
+                    value = sq.getBid();
+                    break;
+                case 7:
+                    value = sq.getEPS();
+                    break;
+                case 8:
+                    value = sq.getAsk();
+                    break;
+                default:
+                    System.err.println("Problems displaying quote details");
+            }
+
+            return value;
+        }
+
+
+        public void addQuoteFields(StockQuote quote, int index) {
+            if(m_quotes.size() > 0) {
+                this.deleteRow();
+            }
+            m_quotes.add(index, quote);
+            fireTableRowsInserted(index, index);
+        }
+
+
+        public void removeQuote(StockQuote quote) {
+            int index = m_quotes.indexOf(quote);
+            m_quotes.remove(index);
+            fireTableRowsInserted(index, index);
+        }
+
+
+        public Object getStock(int row) {
+            return m_quotes.get(row);
+        }
+
+
+        public void deleteRow() {
+            for(int i = m_quotes.size() - 1; i >= 0; i--) {
+                m_quotes.remove(i);
+            }
         }
     }
 }

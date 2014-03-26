@@ -70,16 +70,17 @@ public class ViewStockTicker extends WindowAdapter implements IStockTicker_UICom
 
     private final JFrame m_frame;
     private JPanel m_bottomPanel;
-    private JPanel m_toolPanel;
+    private JPanel m_leftPanel;
     private JPanel m_topPanel;
-    private JPanel m_sidePanel;
-    private JPanel m_statusPanel;
+    private JPanel m_rightPanel;
+    private JPanel m_componentPanel;
 
     private JList<Object> m_symbolJList;
     private JScrollPane m_scrollPane;
 
     public JButton m_leftControlBtn;
     public JButton m_rightControlBtn;
+    public JButton m_historyBtn;
     private JTextField m_symbolField;
 
     private final Toolkit toolKit = Toolkit.getDefaultToolkit();
@@ -93,7 +94,7 @@ public class ViewStockTicker extends WindowAdapter implements IStockTicker_UICom
     private TickerCard m_tickerCard;
     private RegistrationCard m_regCard;
     private LoginCard m_loginCard;
-    private final String m_icon = "./images/stock_ticker.png";
+    private HistoryCard m_historyCard;  
 
     private boolean m_logInSelect = false;
     private boolean m_regSelect = false;
@@ -107,8 +108,9 @@ public class ViewStockTicker extends WindowAdapter implements IStockTicker_UICom
     private String m_verifyPasswd = "";
     private String m_firstname = "";
     private String m_lastname = "";
+    private final String m_icon = "./images/stock_ticker.png";
 
-    private StringBuilder m_buildStr;
+    private StringBuilder m_message;
 
     private List<String> m_symbolList;
     private List<String> m_multSymbols;
@@ -141,7 +143,7 @@ public class ViewStockTicker extends WindowAdapter implements IStockTicker_UICom
     public void build() {
         m_titleIcon = new ImageIcon(toolKit.getImage(m_icon)).getImage();
         m_frame.setIconImage(m_titleIcon);
-        m_frame.setSize(920, 600);
+        m_frame.setSize(940, 600);
         m_frame.setLocation(screenSize.width / 4, screenSize.height / 4);
         JFrame.setDefaultLookAndFeelDecorated(true);
         m_constraints = new GridBagConstraints();
@@ -179,21 +181,22 @@ public class ViewStockTicker extends WindowAdapter implements IStockTicker_UICom
         m_bottomPanel = new JPanel();
         m_bottomPanel.setPreferredSize(new Dimension(700, 80));
 
-        m_toolPanel = new JPanel();
-        m_toolPanel.setPreferredSize(new Dimension(120, 520));
+        m_leftPanel = new JPanel();
+        m_leftPanel.setPreferredSize(new Dimension(120, 520));
 
         m_topPanel = new JPanel();
         m_topPanel.setPreferredSize(new Dimension(700, 60));
 
-        m_sidePanel = new JPanel();
-        m_sidePanel.setPreferredSize(new Dimension(120, 520));
+        m_rightPanel = new JPanel();
+        m_rightPanel.setPreferredSize(new Dimension(120, 520));
 
+        // Main JPanel for the CardLayout.  Positioned in center of UI.
         m_cardPanel = new JPanel(new CardLayout());
         m_cardPanel.setLayout(cardLayout = new CardLayout());
         m_cardPanel.setPreferredSize(new Dimension(550, 520));
         m_cardPanel.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createRaisedBevelBorder(), BorderFactory.createLoweredBevelBorder()));
 
-
+        // Create the symbols JList, its scroll pane, and a symbols text field
         m_symbolJList = new JList<>(SymbolMap.getSymbols().keySet().toArray());
         m_symbolJList.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
         m_symbolJList.setVisibleRowCount(8);
@@ -220,16 +223,18 @@ public class ViewStockTicker extends WindowAdapter implements IStockTicker_UICom
                 String symbol = null;
                 if(e.getClickCount() == 2) {
                     symbol = m_symbolJList.getSelectedValue().toString();
+                    m_isMultSelect = false;
 
                     if(symbol == null) {
-                        System.err.println("Unable to read symbol");
+                        System.out.println("Unable to select symbol from list");
                     }
                     else {
                         m_symbolList.add(symbol);
                         m_operate.setSymbolList();
                         m_symbolJList.clearSelection();
-                        m_clickCntr = 0;
                     }
+                    
+                    m_clickCntr = 0;
                 }
                 else {
                     if(e.getClickCount() == 1) {
@@ -240,11 +245,17 @@ public class ViewStockTicker extends WindowAdapter implements IStockTicker_UICom
                                 m_multSymbols.add(obj.toString());
                             }
 
+                            m_symbolField.setText(m_symbolJList.getSelectedValue().toString());
                             m_isMultSelect = true;
                         }
                         else {
                             String selection = m_symbolJList.getSelectedValue().toString();
-                            m_symbolField.setText(selection);
+                            if(selection != null) {
+                                m_symbolField.setText(selection);
+                            }
+                            else {
+                                System.err.println("Unable to select symbol from list");
+                            }
                         }
                     }
                 }
@@ -287,6 +298,8 @@ public class ViewStockTicker extends WindowAdapter implements IStockTicker_UICom
             @Override
             public void actionPerformed(ActionEvent actionEvent) {
                 String symbol = null;
+                m_clickCntr = 0;
+
                 if(!m_isMultSelect) {
                     symbol = m_symbolJList.getSelectedValue().toString();
 
@@ -297,21 +310,16 @@ public class ViewStockTicker extends WindowAdapter implements IStockTicker_UICom
                         System.out.println("No selection made in list");
                     }
 
+                    // Reposition viewable area of list after selection
                     int row_pos = m_symbolJList.getSelectedIndex();
                     m_symbolJList.ensureIndexIsVisible(row_pos + ROW_OFFSET);
 
-                    
-                    if(symbol.isEmpty()) {
-                        System.err.println("Unable to select symbol");
-                    }
-                    else if(!m_symbolField.getText().equals(symbol)) {
-                        System.err.println("Unable to read symbol from text field");
+                    if(!m_symbolField.getText().equals(symbol)) {
+                        System.err.println("Unable to read symbol from symbols text field");
                     }
                     else {
                         m_symbolList.add(symbol);
                         m_operate.setSymbolList();
-                        m_symbolJList.clearSelection();
-                        m_clickCntr = 0;
                     }
                 }
                 else {
@@ -320,10 +328,10 @@ public class ViewStockTicker extends WindowAdapter implements IStockTicker_UICom
                     }
                     m_multSymbols.clear();
                     m_operate.setSymbolList();
-                    m_symbolJList.clearSelection();
                     m_isMultSelect = false;
-                    m_clickCntr = 0;
                 }
+
+                m_symbolJList.clearSelection();
             }
         };
 
@@ -333,36 +341,38 @@ public class ViewStockTicker extends WindowAdapter implements IStockTicker_UICom
         m_symbolJList.getActionMap().put(ENTER_PRESSED, enterAction);
 
 
-        // Create/add child panels to the main frame JPanels and layout their
-        // individual controls using GridBagLayout.
-        JPanel toolPanel = new JPanel();
-        toolPanel.setPreferredSize(new Dimension(160, 180));
-        JPanel midPanel = new JPanel(new GridBagLayout());
-        midPanel.setPreferredSize(new Dimension(160, 200));
-        JPanel listPanel = new JPanel(new GridBagLayout());
-        listPanel.setPreferredSize(new Dimension(160, 50));
+        // Creates the child panel to the left side JPanel and lays out the symbols
+        // JList and the symbols text field.
+        JPanel fillerPanel = new JPanel();
+        fillerPanel.setPreferredSize(new Dimension(160, 180));
 
-        // Layout the JList JScrollPane
+        JPanel listPanel = new JPanel(new GridBagLayout());
+        listPanel.setPreferredSize(new Dimension(160, 200));
+
+        JPanel textFieldPanel = new JPanel(new GridBagLayout());
+        textFieldPanel.setPreferredSize(new Dimension(160, 50));
+
+        // Layout the JScrollPane for the Symbols JList
         m_constraints.gridx = 0;
         m_constraints.gridy = 0;
         m_constraints.ipadx = 10;
         m_constraints.insets = new Insets(50, 0, 0, 0);
-        midPanel.add(m_scrollPane, m_constraints);
+        listPanel.add(m_scrollPane, m_constraints);
 
-        // Layout the JList's set button
-        m_constraints.gridx = 1;
+        // Layout the Symbols text field, under Symbols JList
+        m_constraints.gridx = 0;
         m_constraints.weighty = 0.1;
         m_constraints.anchor = GridBagConstraints.NORTH;
         m_constraints.insets = new Insets(0, 0, 0, 0);
-        listPanel.add(m_symbolField, m_constraints);
-        m_constraints.insets = new Insets(0, 0, 0, 0);
-        m_statusPanel = new JPanel();
-        m_statusPanel.setPreferredSize(new Dimension(650, 65));
+        textFieldPanel.add(m_symbolField, m_constraints);
+        
 
+        // Creates a JPanel for the UI's right and left control buttons.  Adds Action
+        // listeners, bound to the enter key, for each button. Layouts the right and
+        // left buttons on their JPanal and adds the JPanel to its parrent JPanel.
+        JPanel controlBtnPanel = new JPanel(new GridBagLayout());
+        controlBtnPanel.setPreferredSize(new Dimension(200, 40));
 
-        // Create the JPanel containing the UI control buttons
-        JPanel btnPanel = new JPanel(new GridBagLayout());
-        btnPanel.setPreferredSize(new Dimension(200, 40));
         m_leftControlBtn = new JButton(UI.USER_REG.getName());
         m_rightControlBtn = new JButton(UI.LOGIN.getName());
 
@@ -386,38 +396,43 @@ public class ViewStockTicker extends WindowAdapter implements IStockTicker_UICom
 
         m_rightControlBtn.getInputMap(JComponent.WHEN_FOCUSED).put(KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, 0, false), ENTER_PRESSED);
         m_rightControlBtn.getActionMap().put(ENTER_PRESSED, rightButtonAction);
+
         
+        // Layout the right, left control and history button onto their JPanel.
+        // Add the JPanels to their parent panels and parent panels to frame.
+        m_componentPanel = new JPanel();
+        m_componentPanel.setPreferredSize(new Dimension(650, 65));
 
         // Layout the left control button
         m_constraints.gridx = 0;
         m_constraints.gridy = 0;
         m_constraints.anchor = GridBagConstraints.PAGE_START;
         m_constraints.insets = new Insets(0, 0, 10, 10);
-        btnPanel.add(m_leftControlBtn, m_constraints);
+        controlBtnPanel.add(m_leftControlBtn, m_constraints);
 
         // Layout the right control button
         m_constraints.gridx = 1;
         m_constraints.gridy = 0;
         m_constraints.insets = new Insets(0, 0, 0, 0);
-        btnPanel.add(m_rightControlBtn, m_constraints);
+        controlBtnPanel.add(m_rightControlBtn, m_constraints);
 
         // Add action listeners to the control buttons
         m_leftControlBtn.addActionListener(m_operate);
         m_rightControlBtn.addActionListener(m_operate);
 
         // Add all child JPanels their parent JPanel
-        m_toolPanel.add(toolPanel, BorderLayout.NORTH);
-        m_toolPanel.add(midPanel, BorderLayout.CENTER);
-        m_toolPanel.add(listPanel, BorderLayout.SOUTH);
-        m_statusPanel.add(btnPanel, BorderLayout.NORTH);
-        m_bottomPanel.add(m_statusPanel, BorderLayout.CENTER);
+        m_leftPanel.add(fillerPanel, BorderLayout.NORTH);
+        m_leftPanel.add(listPanel, BorderLayout.CENTER);
+        m_leftPanel.add(textFieldPanel, BorderLayout.SOUTH);
+        m_componentPanel.add(controlBtnPanel, BorderLayout.NORTH);
+        m_bottomPanel.add(m_componentPanel, BorderLayout.CENTER);
 
-        // Add all main JPanels to the main frame
+        // Add all base JPanels to the JFrame
         m_frame.getContentPane().add(m_bottomPanel, BorderLayout.SOUTH);
         m_frame.getContentPane().add(m_topPanel, BorderLayout.NORTH);
         m_frame.getContentPane().add(m_cardPanel, BorderLayout.CENTER);
-        m_frame.getContentPane().add(m_toolPanel, BorderLayout.WEST);
-        m_frame.getContentPane().add(m_sidePanel, BorderLayout.EAST);
+        m_frame.getContentPane().add(m_leftPanel, BorderLayout.WEST);
+        m_frame.getContentPane().add(m_rightPanel, BorderLayout.EAST);
 
         // Layout the individual Card's and make GUI visiable
         this.setCardLayout();
@@ -427,9 +442,7 @@ public class ViewStockTicker extends WindowAdapter implements IStockTicker_UICom
 
 
     /**
-     * Layout the individual Cards (screens) of the UI. Instantiates the
-     * children JPanels that will make up the entire CardLayout.
-     * 
+     * Creates the card objects and adds them to the main card panel.
      */
     private void setCardLayout() {
         try {
@@ -439,18 +452,18 @@ public class ViewStockTicker extends WindowAdapter implements IStockTicker_UICom
             System.err.println(ex.getMessage());
         }
 
-        m_detailCard = new DetailCard();
         m_quoteCard = new QuoteCard();
         m_tickerCard = new TickerCard(m_cardPanel, m_quoteCard, m_operate);
         m_regCard = new RegistrationCard(m_operate);
         m_loginCard = new LoginCard(m_operate);
+        m_historyCard = new HistoryCard(m_operate);
 
         m_cardPanel.add(UI.HOME.getName(), m_homeCard.getCard());
-        m_cardPanel.add(UI.DETAIL.getName(), m_detailCard.getCard());
         m_cardPanel.add(UI.QUOTE.getName(), m_quoteCard.getCard());
         m_cardPanel.add(UI.TICKER.getName(), m_tickerCard.getCard());
         m_cardPanel.add(UI.USER_REG.getName(), m_regCard.getCard());
         m_cardPanel.add(UI.LOGIN.getName(), m_loginCard.getCard());
+        m_cardPanel.add(UI.HISTORY.getName(), m_historyCard.getCard());
         m_frame.add(m_cardPanel, BorderLayout.CENTER);
     }
 
@@ -524,38 +537,38 @@ public class ViewStockTicker extends WindowAdapter implements IStockTicker_UICom
                 case SUBMIT:
                     m_leftControlBtn.requestFocusInWindow();
                     this.resetValidation();
-                    m_buildStr = new StringBuilder("Warning: ");
+                    m_message = new StringBuilder("Warning: ");
                     if(m_regSelect) {
                         if((m_firstname = m_regCard.getfirstName()).isEmpty() || m_regCard.getfirstName().startsWith(SPACE)) {
-                            m_buildStr.append("Firstname field is blank\n");      
+                            m_message.append("Firstname field is blank\n");      
                             m_firstname = "";
                             m_isInvalidInput[Fields.FIRST_NM.getValue()] = true; 
                             isEmpty = true;
                         }
 
                         if((m_lastname = m_regCard.getLastName()).isEmpty() || m_regCard.getLastName().startsWith(SPACE)) {
-                            m_buildStr.append("Lastname field is blank\n");
+                            m_message.append("Lastname field is blank\n");
                             m_lastname = "";
                             m_isInvalidInput[Fields.LAST_NM.getValue()] = true;
                             isEmpty = true;
                         }
 
                         if((m_username = m_regCard.getUsername()).isEmpty() || m_regCard.getUsername().startsWith(SPACE)) {
-                            m_buildStr.append("Username field is blank\n");
+                            m_message.append("Username field is blank\n");
                             m_username = "";
                             m_isInvalidInput[Fields.USER.getValue()] = true;
                             isEmpty = true;
                         } 
 
                         if((m_password = m_regCard.getPassword()).isEmpty() || m_regCard.getPassword().startsWith(SPACE)) {
-                            m_buildStr.append("Password field is blank\n");
+                            m_message.append("Password field is blank\n");
                             m_password = "";
                             m_isInvalidInput[Fields.PASSWD.getValue()] = true;
                             isEmpty = true;
                         }
 
                         if((m_verifyPasswd = m_regCard.getVerifiedPasswd()).isEmpty() || m_regCard.getVerifiedPasswd().startsWith(SPACE)) {
-                            m_buildStr.append("Re-enter password field is blank\n");
+                            m_message.append("Re-enter password field is blank\n");
                             m_verifyPasswd = "";
                             m_isInvalidInput[Fields.VER_PASS.getValue()] = true;
                             isEmpty = true;
@@ -563,8 +576,8 @@ public class ViewStockTicker extends WindowAdapter implements IStockTicker_UICom
 
                         // Verify both entered passwords match
                         if(!isEmpty && !m_verifyPasswd.equalsIgnoreCase(m_password)) {
-                           m_buildStr.append("The entered passwords do not match\n");
-                           m_buildStr.append("Please re-enter the passwords");
+                           m_message.append("The entered passwords do not match\n");
+                           m_message.append("Please re-enter the passwords");
                            m_regCard.clearPasswordFields();
                            m_isInvalidInput[Fields.PASSWD.getValue()] = true;
                            isEmpty = true;
@@ -575,20 +588,20 @@ public class ViewStockTicker extends WindowAdapter implements IStockTicker_UICom
                             this.registerUser(m_username, m_password);
                         }
                         else {
-                            this.showDialog(m_buildStr.toString());
+                            this.showDialog(m_message.toString());
                             m_regCard.setFocusInField(m_isInvalidInput);
                         }
                     }
                     else if(m_logInSelect) {
                         if((m_username = m_loginCard.getUsername()).isEmpty() || m_loginCard.getUsername().startsWith(SPACE)) {
-                            m_buildStr.append("Username field is blank\n");
+                            m_message.append("Username field is blank\n");
                             m_username = "";
                             m_isInvalidInput[Fields.USER.getValue()] = true;
                             isEmpty = true;
                         }
 
                         if((m_password = m_loginCard.getPassword()).isEmpty() || m_loginCard.getPassword().startsWith(SPACE)) {
-                            m_buildStr.append("Password field is blank\n");
+                            m_message.append("Password field is blank\n");
                             m_password = "";
                             m_isInvalidInput[Fields.PASSWD.getValue()] = true;
                             isEmpty = true;
@@ -600,15 +613,15 @@ public class ViewStockTicker extends WindowAdapter implements IStockTicker_UICom
                                 this.logInUser(m_username, m_password);
                             }
                             else {
-                                m_buildStr = new StringBuilder("Warning: Not a recognized user, check username or register");
+                                m_message = new StringBuilder("Warning: Not a recognized user, check username or register");
                                 m_username = "";
                                 m_password = "";
                                 m_loginCard.clearTextFields();
-                                this.showDialog(m_buildStr.toString());
+                                this.showDialog(m_message.toString());
                             }
                         }
                         else {
-                            this.showDialog(m_buildStr.toString());
+                            this.showDialog(m_message.toString());
                             m_loginCard.setFocusInField(m_isInvalidInput);
                         }
                     }
@@ -628,8 +641,8 @@ public class ViewStockTicker extends WindowAdapter implements IStockTicker_UICom
                         System.out.println("Stock quote list refreshed");
                     }
                     else {
-                        m_buildStr = new StringBuilder("Warning: No stocks listed in table to refresh");
-                        this.showDialog(m_buildStr.toString());
+                        m_message = new StringBuilder("Warning: No stocks listed in table to refresh");
+                        this.showDialog(m_message.toString());
                     }
 
                     m_tickerCard.setQuoteFieldFocus();
@@ -684,8 +697,8 @@ public class ViewStockTicker extends WindowAdapter implements IStockTicker_UICom
                         m_stockQuoteList.clear();
                     }
                     else {
-                        m_buildStr = new StringBuilder("Warning: Unable to log user out, please try again");
-                        this.showDialog(m_buildStr.toString());
+                        m_message = new StringBuilder("Warning: Unable to log user out, please try again");
+                        this.showDialog(m_message.toString());
                     }
 
                     this.resetLeftButton(UI.USER_REG.getName());
@@ -710,7 +723,7 @@ public class ViewStockTicker extends WindowAdapter implements IStockTicker_UICom
          * @param password      - password entered into password field of Login screen
          */
         private void logInUser(String username, String password) {
-            m_buildStr = new StringBuilder("Warning: ");
+            m_message = new StringBuilder("Warning: ");
 
             if(!m_userAuth.isLoggedIn(username)) {
                 if(m_userAuth.logIn(username, password)) {
@@ -718,10 +731,10 @@ public class ViewStockTicker extends WindowAdapter implements IStockTicker_UICom
                     m_isLoggedIn = true;   
                 }
                 else {
-                    m_buildStr.append("User login failed, please check password\n");
+                    m_message.append("User login failed, please check password\n");
                     m_username = "";
                     m_password = "";
-                    this.showDialog(m_buildStr.toString());
+                    this.showDialog(m_message.toString());
                     m_isInvalidInput[Fields.PASSWD.getValue()] = true;
 
                     if(m_logInSelect) {
@@ -743,7 +756,7 @@ public class ViewStockTicker extends WindowAdapter implements IStockTicker_UICom
                 this.resetRightButton(UI.LOGOUT.getName());
                 this.showTrackedStocks();
                 this.enableSymbolJList(true);
-                
+
                 cardLayout.show(m_cardPanel, UI.TICKER.getName());
                 m_tickerCard.setQuoteFieldFocus();
             }       
@@ -759,7 +772,7 @@ public class ViewStockTicker extends WindowAdapter implements IStockTicker_UICom
          * @param password      - password entered into password field of registration screen
          */
         private void registerUser(String username, String password) {
-            m_buildStr = new StringBuilder("Warning: ");
+            m_message = new StringBuilder("Warning: ");
 
             if(!m_userAuth.isRegistered(username)) {
                 m_userInfo = new UserInfo(m_firstname, m_lastname);
@@ -768,8 +781,8 @@ public class ViewStockTicker extends WindowAdapter implements IStockTicker_UICom
                     this.logInUser(username, password);
                 }
                 else {
-                    m_buildStr.append("Unable to check verify credentials, please try again\n");
-                    this.showDialog(m_buildStr.toString());
+                    m_message.append("Unable to check verify credentials, please try again\n");
+                    this.showDialog(m_message.toString());
                 }   
             }
             else {
@@ -790,8 +803,8 @@ public class ViewStockTicker extends WindowAdapter implements IStockTicker_UICom
                     }
                 }
                 else {
-                    m_buildStr.append("Username is already taken, please choose another\n");
-                    this.showDialog(m_buildStr.toString());
+                    m_message.append("Username is already taken, please choose another\n");
+                    this.showDialog(m_message.toString());
                     m_isInvalidInput[Fields.USER.getValue()] = true;
                     m_regCard.setFocusInField(m_isInvalidInput);
                 }  
@@ -898,8 +911,8 @@ public class ViewStockTicker extends WindowAdapter implements IStockTicker_UICom
                 }
             }
             else {
-                m_buildStr = new StringBuilder("Warning: At least one quote symbol must be entered");
-                this.showDialog(m_buildStr.toString());
+                m_message = new StringBuilder("Warning: At least one quote symbol must be entered");
+                this.showDialog(m_message.toString());
             }
 
             m_symbolList.clear();
