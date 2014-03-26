@@ -62,10 +62,6 @@ public class ViewStockTicker extends WindowAdapter implements IStockTicker_UICom
     private static final String ENTER_PRESSED = "ENTER_RELEASED";
     private static final String SPACE = " ";
 
-    private static final int USER = 0;
-    private static final int PASSWD = 1;
-    private static final int FIRST_NM = 2;
-    private static final int LAST_NM = 3;
     private static final int ROW_OFFSET = 7;
     private static final int ZERO = 0;
 
@@ -160,7 +156,7 @@ public class ViewStockTicker extends WindowAdapter implements IStockTicker_UICom
                     System.err.println("Unable to log user out prior to closing app");
                 }
                 else {
-                    System.out.println("User logged prior to selecting close");
+                    System.out.println("User logged out prior to selecting close");
                 }
 
                 System.out.println("disposing");
@@ -460,7 +456,8 @@ public class ViewStockTicker extends WindowAdapter implements IStockTicker_UICom
 
 
     /**
-     * Inner class that provides the functionality of the UI and its main components.
+     * Inner class of ViewStockTicker.  This class provides methods that control
+     * the functionality of the UI and all of components.
      */
     public class OperateStockTicker implements ActionListener {
 
@@ -485,11 +482,12 @@ public class ViewStockTicker extends WindowAdapter implements IStockTicker_UICom
 
 
         /**
-         * Override method that receives ActionEvents for the JPanel fields, such as
-         * a button press. Determines which event occurred and takes the appropriate
-         * action.
+         * Action listener for the right and left control buttons on the main JPanel.
+         * The actions of the right and left control buttons provide the switching
+         * between screens and saving/retrieving user information.  Also provides 
+         * validation checking of user input.
          * 
-         * @param evt       - Registered event
+         * @param evt           - Registered event from right/left control buttons
          */
         @Override
         public void actionPerformed(ActionEvent evt) {
@@ -499,6 +497,7 @@ public class ViewStockTicker extends WindowAdapter implements IStockTicker_UICom
 
             switch(selection) {
 
+                // Opens Registration form
                 case USER_REG:
                     this.resetFlags();
                     m_regSelect = true;
@@ -509,6 +508,7 @@ public class ViewStockTicker extends WindowAdapter implements IStockTicker_UICom
                     this.resetRightButton(UI.CLOSE.getName());
                     break;
 
+                // Opens login form
                 case LOGIN:
                     this.resetFlags();
                     m_logInSelect = true;
@@ -519,6 +519,8 @@ public class ViewStockTicker extends WindowAdapter implements IStockTicker_UICom
                     m_rightControlBtn.transferFocus();
                     break;
 
+                // Creates a User and UserInfo, saves/verifies User Info, and logs
+                // the user inot the system.
                 case SUBMIT:
                     m_leftControlBtn.requestFocusInWindow();
                     this.resetValidation();
@@ -592,22 +594,6 @@ public class ViewStockTicker extends WindowAdapter implements IStockTicker_UICom
                             isEmpty = true;
                         }
 
-                        if((m_verifyPasswd = m_loginCard.getVerifiedPasswd()).isEmpty() || m_loginCard.getVerifiedPasswd().startsWith(SPACE)) {
-                            m_buildStr.append("Re-enter password field is blank\n");
-                            m_verifyPasswd = "";
-                            m_isInvalidInput[Fields.VER_PASS.getValue()] = true;
-                            isEmpty = true;
-                        }
-
-                        // Verify both entered password match
-                        if(!isEmpty && !m_verifyPasswd.equalsIgnoreCase(m_password)) {
-                           m_buildStr.append("The entered passwords do not match\n");
-                           m_buildStr.append("Please re-enter the passwords");
-                           m_loginCard.clearPasswordFields();
-                           m_isInvalidInput[Fields.PASSWD.getValue()] = true;
-                           isEmpty = true;
-                        }
-
                         // User is registered; login user
                         if(!isEmpty) {
                             if(m_userAuth.isRegistered(m_username)) {
@@ -649,6 +635,7 @@ public class ViewStockTicker extends WindowAdapter implements IStockTicker_UICom
                     m_tickerCard.setQuoteFieldFocus();
                     break;
 
+                // Calls business logic to track the selected stock quote
                 case TRACK:
                     this.resetFlags();
                     m_tickerCard.getSelectedStock();
@@ -656,6 +643,7 @@ public class ViewStockTicker extends WindowAdapter implements IStockTicker_UICom
                     this.resetLeftButton(UI.UNTRACK.getName());
                     break;
 
+                // Calls business logic to untrack selected stock quote
                 case UNTRACK:
                     this.resetFlags();
                     m_stockService.trackStock(m_username, m_tickerCard.getSelectedStock().getSymbol(), false);
@@ -684,6 +672,7 @@ public class ViewStockTicker extends WindowAdapter implements IStockTicker_UICom
                     this.resetFlags();
                     break;
 
+                // Logs out this user from db and business logic
                 case LOGOUT:
                     if(m_userAuth.logOut(m_username)) {
                         m_isLoggedIn = false;
@@ -713,9 +702,12 @@ public class ViewStockTicker extends WindowAdapter implements IStockTicker_UICom
 
 
         /**
-         *
-         * @param username
-         * @param password
+         * Logs user into the db.  First checks if the user is already logged in, if
+         * not then logs in the user.  Will display a warning message if login fails.
+         * Once logged in, the method launches the main screen.
+         * 
+         * @param username      - username entered into username field of Login screen
+         * @param password      - password entered into password field of Login screen
          */
         private void logInUser(String username, String password) {
             m_buildStr = new StringBuilder("Warning: ");
@@ -730,14 +722,14 @@ public class ViewStockTicker extends WindowAdapter implements IStockTicker_UICom
                     m_username = "";
                     m_password = "";
                     this.showDialog(m_buildStr.toString());
-                    m_isInvalidInput[PASSWD] = true;
+                    m_isInvalidInput[Fields.PASSWD.getValue()] = true;
+
                     if(m_logInSelect) {
                         m_loginCard.setFocusInField(m_isInvalidInput);
                     }
                     else if(m_regSelect) {
                         m_regCard.setFocusInField(m_isInvalidInput);
-                    }
-                    
+                    }                   
                 }
             }
             else {
@@ -759,9 +751,12 @@ public class ViewStockTicker extends WindowAdapter implements IStockTicker_UICom
 
 
         /**
-         *
-         * @param username
-         * @param password
+         * Checks for a valid registered user from db.  If not present, it will 
+         * register the user.  If the user is already register, will log the user
+         * in and load the main screen.
+         * 
+         * @param username      - username entered into username field of registration screen
+         * @param password      - password entered into password field of registration screen
          */
         private void registerUser(String username, String password) {
             m_buildStr = new StringBuilder("Warning: ");
@@ -797,7 +792,7 @@ public class ViewStockTicker extends WindowAdapter implements IStockTicker_UICom
                 else {
                     m_buildStr.append("Username is already taken, please choose another\n");
                     this.showDialog(m_buildStr.toString());
-                    m_isInvalidInput[USER] = true;
+                    m_isInvalidInput[Fields.USER.getValue()] = true;
                     m_regCard.setFocusInField(m_isInvalidInput);
                 }  
             }
@@ -805,10 +800,12 @@ public class ViewStockTicker extends WindowAdapter implements IStockTicker_UICom
 
 
         /**
-         * Verify username is not already in registered to another User
+         * Verifies that this username for this User is not already registered for
+         * another User.  Returns true if the user already exists
          * 
-         * @param username
-         * @return
+         * 
+         * @param username      - username entered into username field of registration screen       
+         * @return              - ture if the user exists in db
          */
         private boolean checkValidUser(String username) {
             UserInfo verifyUsr;
@@ -947,8 +944,10 @@ public class ViewStockTicker extends WindowAdapter implements IStockTicker_UICom
 
 
         /**
-         *
-         * @param message
+         * Pops up a general warning dialog using the argument message as the message
+         * content.
+         * 
+         * @param message           - message to display in body of dialog
          */
         public void showDialog( String message ) {
             JOptionPane.showMessageDialog( m_frame, message, "Stock Ticker Portfolio", JOptionPane.WARNING_MESSAGE);
