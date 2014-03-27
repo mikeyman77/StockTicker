@@ -5,6 +5,9 @@ import java.util.ArrayList;
 import java.util.List;
 import com.stockticker.User;
 import com.stockticker.UserInfo;
+import org.apache.log4j.Logger;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.PropertyConfigurator;
 
 /**
  * Provides services to query and update User and Stock data from the
@@ -16,17 +19,19 @@ import com.stockticker.UserInfo;
 public enum StockTickerPersistence implements PersistenceService {
     INSTANCE;
 
+    static Logger logger;
+
     private TrackedStocksDAO trackedDAO = null;
     private UserDAO userDAO = null;
 
     /**
-     * @todo This is temporary code that allows my exception changes
-     *       to be introduced without breaking the compiler. Once
-     *       the Business Logic Layer implements handling for these
-     *       new exceptions. Remove this private constructor.
+     * @todo This is temporary code that invokes the PersistenceService start method
+     *       on behalf of junit tests and the business logic. This private contructor
+     *       can be removed once the start method is invoked after retrieving the
+     *       PersistenceService interface instance.
      */
     private StockTickerPersistence() {
-        boolean isBusinessLogic = false;
+        boolean isBusinessLogicOrJUnitTest = false;
         String BUSINESS_LOGIC_CLASS = "com.stockticker.logic.UserAuthorization";
         String PERSISTENCE_SERVICE_TEST = "com.stockticker.persistence.PersistenceServiceTest";
         String USER_AUTHORIZATION_TEST = "com.stockticker.logic.UserAuthorizationTest";
@@ -39,11 +44,11 @@ public enum StockTickerPersistence implements PersistenceService {
                     element.getClassName().equals(USER_AUTHORIZATION_TEST) ||
                     element.getClassName().equals(STOCK_TICKER_TEST)) {
 
-                    isBusinessLogic = true;
+                    isBusinessLogicOrJUnitTest = true;
                     break;
                 }
             }
-            if (isBusinessLogic) {
+            if (isBusinessLogicOrJUnitTest) {
                 start();
             }
         }
@@ -58,8 +63,14 @@ public enum StockTickerPersistence implements PersistenceService {
      * @throws PersistenceServiceException
      */
     public void start() throws PersistenceServiceException {
+        //configure log4j
+        logger = LogManager.getLogger(StockTickerPersistence.class.getName());
+        PropertyConfigurator.configure("./config/log4j.properties");
+
         userDAO = new UserDAOImpl();
         trackedDAO = new TrackedStocksDAOImpl();
+
+        logger.info("The Stock Ticker Persistence Service is ready for service.");
     }
 
     /**

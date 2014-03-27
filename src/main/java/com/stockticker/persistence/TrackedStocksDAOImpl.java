@@ -7,6 +7,9 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
+import org.apache.log4j.Logger;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.PropertyConfigurator;
 
 /**
  * Defines the Data Access methods that enables
@@ -18,6 +21,7 @@ import java.util.List;
 public class TrackedStocksDAOImpl implements TrackedStocksDAO {
 
     private final Connection connection;
+    static final Logger logger = LogManager.getLogger(TrackedStocksDAOImpl.class.getName());
 
     /**
      * Constructs the Data Access Object for tracking stocks
@@ -32,6 +36,10 @@ public class TrackedStocksDAOImpl implements TrackedStocksDAO {
             persistenceConnection.start();
         }
         this.connection = persistenceConnection.getConnection();
+
+        //configure logg4j
+        PropertyConfigurator.configure("./config/log4j.properties");
+        logger.info("The stock tracking persistence component is ready for service.");
     }
 
     /**
@@ -52,6 +60,7 @@ public class TrackedStocksDAOImpl implements TrackedStocksDAO {
         catch (SQLException e) {
             int errorCode = PersistenceServiceException.PSE202_SQL_EXCEPTION_OCCURRED;
             String message = PersistenceServiceException.PSE202_SQL_EXCEPTION_OCCURRED_MESSAGE;
+            logger.error(message);
             throw new PersistenceServiceException(message+" ["+errorCode+"]: "+e.getMessage(), e, errorCode);
         }
 
@@ -83,6 +92,7 @@ public class TrackedStocksDAOImpl implements TrackedStocksDAO {
             catch (SQLException e) {
                 int errorCode = PersistenceServiceException.PSE202_SQL_EXCEPTION_OCCURRED;
                 String message = PersistenceServiceException.PSE202_SQL_EXCEPTION_OCCURRED_MESSAGE;
+                logger.error(message);
                 throw new PersistenceServiceException(message+" ["+errorCode+"]: "+e.getMessage(), e, errorCode);
             }
             stockAdded = true;
@@ -114,6 +124,7 @@ public class TrackedStocksDAOImpl implements TrackedStocksDAO {
         catch (SQLException e) {
             int errorCode = PersistenceServiceException.PSE202_SQL_EXCEPTION_OCCURRED;
             String message = PersistenceServiceException.PSE202_SQL_EXCEPTION_OCCURRED_MESSAGE;
+            logger.error(message);
             throw new PersistenceServiceException(message+" ["+errorCode+"]: "+e.getMessage(), e, errorCode);
         }
 
@@ -142,6 +153,7 @@ public class TrackedStocksDAOImpl implements TrackedStocksDAO {
         catch (SQLException e) {
             int errorCode = PersistenceServiceException.PSE202_SQL_EXCEPTION_OCCURRED;
             String message = PersistenceServiceException.PSE202_SQL_EXCEPTION_OCCURRED_MESSAGE;
+            logger.error(message);
             throw new PersistenceServiceException(message+" ["+errorCode+"]: "+e.getMessage(), e, errorCode);
         }
 
@@ -173,6 +185,7 @@ public class TrackedStocksDAOImpl implements TrackedStocksDAO {
         catch (SQLException e) {
             int errorCode = PersistenceServiceException.PSE202_SQL_EXCEPTION_OCCURRED;
             String message = PersistenceServiceException.PSE202_SQL_EXCEPTION_OCCURRED_MESSAGE;
+            logger.error(message);
             throw new PersistenceServiceException(message+" ["+errorCode+"]: "+e.getMessage(), e, errorCode);
         }
 
@@ -201,6 +214,7 @@ public class TrackedStocksDAOImpl implements TrackedStocksDAO {
         catch (SQLException e) {
             int errorCode = PersistenceServiceException.PSE202_SQL_EXCEPTION_OCCURRED;
             String message = PersistenceServiceException.PSE202_SQL_EXCEPTION_OCCURRED_MESSAGE;
+            logger.error(message);
             throw new PersistenceServiceException(message+" ["+errorCode+"]: "+e.getMessage(), e, errorCode);
         }
 

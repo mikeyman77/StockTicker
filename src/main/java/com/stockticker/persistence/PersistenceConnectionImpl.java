@@ -4,10 +4,11 @@ import com.stockticker.PropertiesFileReader;
 
 import java.io.IOException;
 import java.sql.Connection;
-import java.sql.DatabaseMetaData;
 import java.sql.DriverManager;
-import java.sql.ResultSet;
 import java.sql.SQLException;
+import org.apache.log4j.Logger;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.PropertyConfigurator;
 
 
 /**
@@ -54,6 +55,8 @@ public enum PersistenceConnectionImpl implements PersistenceConnection {
     private String  dbUser = "sa";
     private String  dbPswd = "";
 
+    static final Logger logger = LogManager.getLogger(PersistenceConnectionImpl.class.getName());
+
     /**
      * Invokes the start method with a properties file override.
      *
@@ -97,16 +100,19 @@ public enum PersistenceConnectionImpl implements PersistenceConnection {
                 Class.forName(H2_DRIVER);
                 String connectionUrl = buildConnectionUrl(retryConnection);
                 connection = DriverManager.getConnection(connectionUrl, this.dbUser, this.dbPswd);
+                logger.info("Database connection established.");
                 retryConnection = false;
             }
             catch (IOException e) {
                 int errorCode = PersistenceServiceException.PSE100_PROPERTIES_FILE_NOT_FOUND;
                 String message = PersistenceServiceException.PSE100_PROPERTIES_FILE_NOT_FOUND_MESSAGE;
+                logger.error(message);
                 throw new PersistenceServiceException(message+" ["+errorCode+"]: "+e.getMessage(), e, errorCode);
             }
             catch (ClassNotFoundException e) {
                 int errorCode = PersistenceServiceException.PSE200_DATABASE_DRIVER_NOT_FOUND;
                 String message = PersistenceServiceException.PSE200_DATABASE_DRIVER_NOT_FOUND_MESSAGE;
+                logger.error(message);
                 throw new PersistenceServiceException(message+" ["+errorCode+"]: "+e.getMessage(), e, errorCode);
             }
             catch (SQLException e) {
@@ -114,15 +120,20 @@ public enum PersistenceConnectionImpl implements PersistenceConnection {
                 if (!e.getSQLState().equals(PersistenceServiceException.SQLSTATE_DATABASE_NOT_FOUND)) {
                     int errorCode = PersistenceServiceException.PSE201_DATABASE_CONNECTION_FAILED;
                     String message = PersistenceServiceException.PSE201_DATABASE_CONNECTION_FAILED_MESSAGE;
+                    logger.error(message);
                     throw new PersistenceServiceException(message+" ["+errorCode+"]: "+e.getMessage(), e, errorCode);
                 } else { //SQLSTATE="90013"
                     //if this is a database not found condition, retry the connection with sqlscript
                     // to create the database
                     retryConnection = true;
+                    logger.info("Database connection failed. Retrying connection after database initialization.");
                 }
             }
         } while (retryConnection);
 
+        //configure logg4j
+        PropertyConfigurator.configure("./config/log4j.properties");
+        logger.info("The Persistence Connection is ready for service.");
     }
 
     /**
@@ -182,6 +193,7 @@ public enum PersistenceConnectionImpl implements PersistenceConnection {
             if (tempDbPswd != null && !tempDbPswd.isEmpty()) {
                 dbPswd = tempDbPswd;
             }
+            logger.info("Stock Ticker properties loaded successfully.");
         }
     }
 
