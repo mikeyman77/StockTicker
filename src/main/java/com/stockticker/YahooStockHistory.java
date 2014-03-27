@@ -1,6 +1,7 @@
 
 package com.stockticker;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 /**
@@ -8,6 +9,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
  * 
  * @author Michael Grissom
  */
+@JsonIgnoreProperties(ignoreUnknown=true)
 public class YahooStockHistory implements StockHistory {
     
     @JsonProperty("Symbol")     private String stockSymbol;
