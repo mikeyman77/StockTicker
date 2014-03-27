@@ -106,13 +106,13 @@ public enum PersistenceConnectionImpl implements PersistenceConnection {
             catch (IOException e) {
                 int errorCode = PersistenceServiceException.PSE100_PROPERTIES_FILE_NOT_FOUND;
                 String message = PersistenceServiceException.PSE100_PROPERTIES_FILE_NOT_FOUND_MESSAGE;
-                logger.error(message);
+                logger.error(message, e);
                 throw new PersistenceServiceException(message+" ["+errorCode+"]: "+e.getMessage(), e, errorCode);
             }
             catch (ClassNotFoundException e) {
                 int errorCode = PersistenceServiceException.PSE200_DATABASE_DRIVER_NOT_FOUND;
                 String message = PersistenceServiceException.PSE200_DATABASE_DRIVER_NOT_FOUND_MESSAGE;
-                logger.error(message);
+                logger.error(message, e);
                 throw new PersistenceServiceException(message+" ["+errorCode+"]: "+e.getMessage(), e, errorCode);
             }
             catch (SQLException e) {
@@ -120,7 +120,7 @@ public enum PersistenceConnectionImpl implements PersistenceConnection {
                 if (!e.getSQLState().equals(PersistenceServiceException.SQLSTATE_DATABASE_NOT_FOUND)) {
                     int errorCode = PersistenceServiceException.PSE201_DATABASE_CONNECTION_FAILED;
                     String message = PersistenceServiceException.PSE201_DATABASE_CONNECTION_FAILED_MESSAGE;
-                    logger.error(message);
+                    logger.error(message, e);
                     throw new PersistenceServiceException(message+" ["+errorCode+"]: "+e.getMessage(), e, errorCode);
                 } else { //SQLSTATE="90013"
                     //if this is a database not found condition, retry the connection with sqlscript
