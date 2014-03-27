@@ -1,6 +1,8 @@
 package com.stockticker.logic;
 
+import com.stockticker.StockHistory;
 import com.stockticker.StockQuote;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -13,6 +15,8 @@ import java.util.List;
 public interface StockTickerService {
     
     public List<StockQuote> getStockQuotes(List<String> symbols) 
+            throws BusinessLogicException;
+    public List<StockHistory> getStockHistory(String symbol, Date startDate, Date endDate) 
             throws BusinessLogicException;
     public List<String> getTrackedStocks(String username) 
             throws BusinessLogicException;
