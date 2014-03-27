@@ -1,9 +1,11 @@
 package com.stockticker.logic;
 
+import com.stockticker.StockHistory;
 import com.stockticker.StockQuote;
 import com.stockticker.persistence.PersistenceService;
 import com.stockticker.persistence.StockTickerPersistence;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 
@@ -18,6 +20,7 @@ public enum StockTicker implements StockTickerService {
     
     private final PersistenceService persistence = StockTickerPersistence.INSTANCE;
     private final StockQuoteService ysqs = YahooStockQuoteService.INSTANCE;
+    private final StockHistoryService yshs = YahooStockHistoryService.INSTANCE;
     
     /**
      * This method returns a list of stock quotes based on the stock symbols
@@ -41,7 +44,33 @@ public enum StockTicker implements StockTickerService {
         
         return stockQuoteList;
     }
-
+    
+    /**
+     * This method returns a list of stock history based on the stock symbol, 
+     * start date and end date provided. This method provides one method call 
+     * instead of two in order to get the stock history
+     *
+     * @param symbol stock symbol to get history for
+     * @param startDate stock history start date
+     * @param endDate stock history end date
+     * @return a list of StockHistory objects
+     */
+    @Override
+    public List<StockHistory> getStockHistory(String symbol, Date startDate, Date endDate) 
+            throws BusinessLogicException {
+        
+        List<StockHistory> stockHistoryList = new ArrayList<>();
+        
+        try {
+            stockHistoryList = yshs.getStockHistory(yshs.getURL(symbol, startDate, endDate));
+        }
+        catch (BusinessLogicException ex) {
+            throw new BusinessLogicException("Error: Could not get stock quotes, check logs", ex);
+        }
+        
+        return stockHistoryList;
+    }
+    
     /**
      * This method gets the tracked stocks for a specific user.
      *
