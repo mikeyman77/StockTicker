@@ -15,6 +15,7 @@
     <property name="doc.dir" value="doc" description="root of doc directory"/>
     <property name="doc.api.dir" value="doc${file.separator}api"
               description="Java class files compiled by this build script  go here"/>
+    <property name="log.dir" value="log" description="all log4j logging files are here"/>
     <property name="report.dir" value="${build.dir}${file.separator}report"
               description="this directory is for all reports - xml and html"/>
     <property name="report.junit.dir" value="${report.dir}${file.separator}junit"
@@ -39,6 +40,7 @@
     -->
     <path id="project.classpath" description="the project's class path all third party libs are on it. ">
         <pathelement path="${classes.dir}"/>
+        <pathelement path="${config.dir}"/>
         <fileset dir="${lib.dir}">
             <include name="**/*.jar"/>
         </fileset>
@@ -50,6 +52,7 @@
         <delete dir="${classes.dir}"/>
         <delete dir="${temp.db.dir}"/>
         <delete dir="${doc.api.dir}"/>
+        <delete dir="${log.dir}"/>
         <delete file="stockticker.jar"/>
         <delete file="stockticker-all.zip"/>
     </target>
@@ -61,6 +64,7 @@
     <target name="init" description="Build initialization - create output directories" depends="clean">
         <mkdir dir="${classes.dir}"/>
         <mkdir dir="${doc.api.dir}"/>
+        <mkdir dir="${log.dir}"/>
     </target>
 
     <!-- Compiles all source - main and test -->
@@ -96,7 +100,8 @@
                                                 ./lib/jackson-annotations-2.2.3.jar
                                                 ./lib/jackson-core-2.2.3.jar
                                                 ./lib/jackson-databind-2.2.3.jar
-                                                ./lib/jasypt-1.9.2.jar"/>
+                                                ./lib/jasypt-1.9.2.jar
+                                                ./lib/log4j-1.2.9.jar"/>
         </manifest>
         <jar manifest="${basedir}/META-INF/MANIFEST.MF" destfile="stockticker.jar" basedir="${classes.dir}" excludes="">
             <fileset dir="${basedir}">
@@ -119,12 +124,16 @@
                 <include name="jackson-core-2.2.3.jar" />
                 <include name="jackson-databind-2.2.3.jar" />
                 <include name="jasypt-1.9.2.jar" />
+                <include name="log4j-1.2.9.jar" />
             </zipfileset>
         </zip>
     </target>
 
     <target name="run" depends="jar">
         <java jar="stockticker.jar" fork="true" classpath="project.classpath">
+            <!-- to pass multiple jvm arguments, create one jvmarg per argument -->
+            <jvmarg value=""/>
+            <!-- to pass multiple application arguments, create one arg per argument -->
             <arg value=""/>
         </java>
     </target>
