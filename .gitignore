@@ -65,4 +65,5 @@ doc/api/
 ####################
 stockticker.jar
 stockticker-all.zip
+*.log
 *.[mM][fF]

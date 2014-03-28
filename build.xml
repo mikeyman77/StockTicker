@@ -101,7 +101,8 @@
                                                 ./lib/jackson-core-2.2.3.jar
                                                 ./lib/jackson-databind-2.2.3.jar
                                                 ./lib/jasypt-1.9.2.jar
-                                                ./lib/log4j-1.2.9.jar"/>
+                                                ./lib/log4j-1.2.9.jar
+                                                ./lib/jcalendar.jar"/>
         </manifest>
         <jar manifest="${basedir}/META-INF/MANIFEST.MF" destfile="stockticker.jar" basedir="${classes.dir}" excludes="">
             <fileset dir="${basedir}">
@@ -125,6 +126,7 @@
                 <include name="jackson-databind-2.2.3.jar" />
                 <include name="jasypt-1.9.2.jar" />
                 <include name="log4j-1.2.9.jar" />
+                <include name="jcalendar.jar" />
             </zipfileset>
         </zip>
     </target>
