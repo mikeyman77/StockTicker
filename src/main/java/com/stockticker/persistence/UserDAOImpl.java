@@ -35,7 +35,7 @@ public class UserDAOImpl implements UserDAO {
         }
         this.connection = persistenceConnection.getConnection();
 
-        //configure logg4j
+        //configure log4j
         PropertyConfigurator.configure("./config/log4j.properties");
         logger.info("The user persistence component is ready for service.");
     }
@@ -50,8 +50,9 @@ public class UserDAOImpl implements UserDAO {
     public int getUserId(String username) throws PersistenceServiceException {
         int userId = -1;
         try {
-            Statement statement = connection.createStatement();
-            ResultSet result = statement.executeQuery("SELECT userId FROM user WHERE username='"+username+"'");
+            PreparedStatement prepared = connection.prepareStatement("SELECT userId FROM user WHERE username=?");
+            prepared.setString(1, username);
+            ResultSet result = prepared.executeQuery();
             if (result.next())
                 userId = result.getInt(1);
         }
@@ -80,32 +81,27 @@ public class UserDAOImpl implements UserDAO {
         //check if the user already exists
         if (!exists(username)) {
             try {
-                //Create an empty userinfo row and retrieve the auto increment row id
-                int userInfoId = -1;
-                PreparedStatement prepared = connection.prepareStatement("INSERT INTO userinfo (firstName) VALUES (?)",
-                                                                         Statement.RETURN_GENERATED_KEYS);
-                prepared.setString(1, "");
-                prepared.execute();
-                ResultSet result = prepared.getGeneratedKeys();
-                if (result.next() ) {
-                    userInfoId = result.getInt(1);
-                }
 
                 //insert the user row with username, password, and id from userinfo table insert
                 int userId = -1;
-                prepared = connection.prepareStatement("INSERT INTO user (FK_userInfoId, username, password, " +
-                                                         "joinedDate, isLoggedIn) VALUES (?,?,?,?,?)",
+                PreparedStatement prepared = connection.prepareStatement("INSERT INTO user (username, password, " +
+                                                         "joinedDate, isLoggedIn) VALUES (?,?,?,?)",
                                                        Statement.RETURN_GENERATED_KEYS);
-                prepared.setInt(1, userInfoId);
-                prepared.setString(2, username);
-                prepared.setString(3, password);
-                prepared.setTimestamp(4, new Timestamp(System.currentTimeMillis()));
-                prepared.setBoolean(5, false);
+                prepared.setString(1, username);
+                prepared.setString(2, password);
+                prepared.setTimestamp(3, new Timestamp(System.currentTimeMillis()));
+                prepared.setBoolean(4, false);
                 prepared.execute();
-                result = prepared.getGeneratedKeys();
+                ResultSet result = prepared.getGeneratedKeys();
                 if (result.next() ) {
                     userId = result.getInt(1);
                 }
+
+                //Create an empty userinfo row and retrieve the auto increment row id
+                prepared = connection.prepareStatement("INSERT INTO userinfo (FK_userId) VALUES (?)",
+                        Statement.RETURN_GENERATED_KEYS);
+                prepared.setInt(1, userId);
+                prepared.execute();
 
                 //create and return new User object
                 user = new User(username, password);
@@ -133,19 +129,10 @@ public class UserDAOImpl implements UserDAO {
     public boolean exists(String username) throws PersistenceServiceException {
         boolean userExists = false;
 
-        try {
-            Statement statement = connection.createStatement();
-            ResultSet result = statement.executeQuery("SELECT username FROM user WHERE username='"+username+"'");
-            if (result.next()) {
+            int userId = getUserId(username);
+            if (userId > 0) {
                 userExists = true;
             }
-        }
-        catch (SQLException e) {
-            int errorCode = PersistenceServiceException.PSE202_SQL_EXCEPTION_OCCURRED;
-            String message = PersistenceServiceException.PSE202_SQL_EXCEPTION_OCCURRED_MESSAGE;
-            logger.error(message, e);
-            throw new PersistenceServiceException(message+" ["+errorCode+"]: "+e.getMessage(), e, errorCode);
-        }
 
         return userExists;
     }
@@ -174,25 +161,17 @@ public class UserDAOImpl implements UserDAO {
                     int rows = prepared.executeUpdate();
 
                     if (rows > 0) {
-                        //Retrieve the FK_userInfoId from the User table
-                        int userInfoId = -1;
-                        Statement statement = connection.createStatement();
-                        ResultSet result = statement.executeQuery("SELECT FK_userInfoId FROM user WHERE userId='" +
-                                                                  user.getUserID()+"'");
-                        if (result.next()) {
-                            userInfoId = result.getInt(1);
-                        }
 
                         //Update the UserInfo table
                         UserInfo userinfo = user.getUserInfo();
                         if (userinfo != null) {
 
                             prepared = connection.prepareStatement
-                                    ("UPDATE userinfo SET firstName = ?, lastName = ? WHERE userInfoId = ?");
+                                    ("UPDATE userinfo SET firstName = ?, lastName = ? WHERE FK_userId = ?");
 
                             prepared.setString(1, userinfo.getFirstName());
                             prepared.setString(2, userinfo.getLastName());
-                            prepared.setInt(3, userInfoId);
+                            prepared.setInt(3, user.getUserID());
                             prepared.executeUpdate();
                         }
 
@@ -219,28 +198,27 @@ public class UserDAOImpl implements UserDAO {
      */
     public User get(String username) throws PersistenceServiceException {
         User user = null;
-        int userInfoId = -1;
 
         if (exists(username)) {
             try {
+                int userId = getUserId(username);
                 //Retrieve the user row
                 Statement statement = connection.createStatement();
-                ResultSet result = statement.executeQuery("SELECT * FROM user WHERE username='"+username+"'");
+                ResultSet result = statement.executeQuery("SELECT * FROM user WHERE userId="+userId);
                 if (result.next()) {
                     user = new User();
                     user.setUserID(result.getInt(1));
-                    userInfoId = result.getInt(2);
-                    user.setUserName(result.getString(3));
-                    user.setPassword(result.getString(4));
-                    user.setLoggedIn(result.getBoolean(6));
+                    user.setUserName(result.getString(2));
+                    user.setPassword(result.getString(3));
+                    user.setLoggedIn(result.getBoolean(5));
                 }
 
                 //Retrieve the userinfo row
-                result = statement.executeQuery("SELECT * FROM userinfo WHERE userInfoId='"+userInfoId+"'");
+                result = statement.executeQuery("SELECT * FROM userinfo WHERE FK_userId="+userId);
                 if (result.next()) {
                     UserInfo userinfo = new UserInfo();
-                    userinfo.setFirstName(result.getString(2));
-                    userinfo.setLastName(result.getString(3));
+                    userinfo.setFirstName(result.getString(3));
+                    userinfo.setLastName(result.getString(4));
                     assert user != null;
                     user.setUserInfo(userinfo);
                 }
@@ -257,7 +235,9 @@ public class UserDAOImpl implements UserDAO {
     }
 
     /**
-     * Deletes the user row associated with the username
+     * Deletes the user row associated with the username and
+     * rows in both child tables, userinfo and tracked_stocks
+     * with associated userId values.
      *
      * @param username  the name of the user
      * @return  true if delete successful, false otherwise
@@ -268,33 +248,14 @@ public class UserDAOImpl implements UserDAO {
 
         if (exists(username)) {
             try {
-                //Retrieve the FK_userInfoId from the User table
-                int userId = -1;
-                int userInfoId = -1;
-                Statement statement = connection.createStatement();
-                ResultSet result = statement.executeQuery("SELECT userId, FK_userInfoId FROM user WHERE username='" +
-                                                          username+"'");
-                if (result.next()) {
-                    userId = result.getInt(1);
-                    userInfoId = result.getInt(2);
-                }
+                int userId = getUserId(username);
 
                 //Delete the row in the user table with userId
                 PreparedStatement prepared = connection.prepareStatement
                         ("DELETE FROM user WHERE userId = ?");
                 prepared.setInt(1, userId);
-                int rows = prepared.executeUpdate();
-
-                if (rows > 0) {
-                    //Delete the row in the userinfo table with userInfoId
-                    prepared = connection.prepareStatement
-                            ("DELETE FROM userinfo WHERE userInfoId = ?");
-                    prepared.setInt(1, userInfoId);
-                    prepared.executeUpdate();
-                    deleteSuccessful = true;
-                } else {
-                    deleteSuccessful = false;
-                }
+                prepared.executeUpdate();
+                deleteSuccessful = true;
             }
             catch (SQLException e) {
                 int errorCode = PersistenceServiceException.PSE202_SQL_EXCEPTION_OCCURRED;
@@ -318,10 +279,11 @@ public class UserDAOImpl implements UserDAO {
         boolean isLoggedIn = false;
 
         try {
-            if (exists(username)) {
+            int userId = getUserId(username);
+            if (userId > 0) {
                 //Check if user is logged in
                 Statement statement = connection.createStatement();
-                ResultSet result = statement.executeQuery("SELECT isLoggedIn FROM user WHERE username='"+username+"'");
+                ResultSet result = statement.executeQuery("SELECT isLoggedIn FROM user WHERE userId="+userId);
                 if (result.next()) {
                     isLoggedIn = result.getBoolean(1);
                 }
@@ -349,13 +311,14 @@ public class UserDAOImpl implements UserDAO {
         boolean statusSet = false;
 
         try {
-            if (exists(username)) {
+            int userId = getUserId(username);
+            if (userId > 0) {
                 //Update the User login status
                 PreparedStatement prepared = connection.prepareStatement
-                        ("UPDATE user SET isLoggedIn = ? WHERE username = ?");
+                        ("UPDATE user SET isLoggedIn = ? WHERE userId = ?");
 
                 prepared.setBoolean(1, status);
-                prepared.setString(2, username);
+                prepared.setInt(2, userId);
                 int rows = prepared.executeUpdate();
                 statusSet = (rows > 0);
             }
