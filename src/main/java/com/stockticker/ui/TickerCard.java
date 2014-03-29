@@ -1,6 +1,6 @@
 /**
  * GUI for Stock Ticker Portfolio Manager
- * J308 Project
+ * 90.308-061 Agile Software Dev. w/Java Project
  * Paul Wallace
  */
 package com.stockticker.ui;
@@ -45,7 +45,6 @@ import java.awt.Font;
 
 
 /**
- * 
  * J308 Project
  * @author prwallace
  */
@@ -77,7 +76,7 @@ public class TickerCard extends JPanel {
     private final QuoteCard m_quoteCard;
 
     private int m_quoteIndex;
-    private boolean m_isLoggedIn = false;
+    //private boolean m_isLoggedIn = false;
 
 
     /**
@@ -159,7 +158,7 @@ public class TickerCard extends JPanel {
                                 m_quoteCard.displayStockQuote(m_selectedStock, FIRST_ROW, true);
 
                                 if(m_operate.getTrackingStatus(m_selectedStock.getSymbol())) {
-                                    m_operate.resetLeftButton(UI.UNTRACK.getName());   
+                                    m_operate.resetLeftButton(UI.UNTRACK.getName()); 
                                 }
                                 else {
                                     m_operate.resetLeftButton(UI.TRACK.getName());
@@ -167,6 +166,8 @@ public class TickerCard extends JPanel {
                                 
                                 m_operate.resetRightButton(UI.CLOSE.getName());
                                 m_operate.enableSymbolJList(false);
+                                m_operate.setHistoryButton(true);
+                                m_operate.setControlBtnFocus(true);
                                 m_cardLayout = (CardLayout) m_cardPanel.getLayout();
                                 m_cardLayout.show(m_cardPanel, UI.QUOTE.getName());
                                 System.out.println("Display stock qoute table");
@@ -224,6 +225,7 @@ public class TickerCard extends JPanel {
         m_quoteField.getActionMap().put(ENTER_PRESSED, enterAction);
 
 
+        // Layout components onto their JPanels
         m_constraints.gridx = 0;
         m_constraints.gridy = 0;
         m_constraints.weightx = 0.00001;
@@ -293,7 +295,7 @@ public class TickerCard extends JPanel {
     public void setSymbolsTextField(List<String> symbolList, boolean enable) {
         StringBuilder sb = new StringBuilder();
         m_symbolList = symbolList;
-        m_isLoggedIn = enable;
+        //m_isLoggedIn = enable;
 
         for(String symbol : m_symbolList) {
             sb.append(symbol);
@@ -314,7 +316,7 @@ public class TickerCard extends JPanel {
      * @param enable
      */
     public void displayStockQuoteList(List<StockQuote> stocks, boolean enable) {
-        m_isLoggedIn = enable;
+        //m_isLoggedIn = enable;
         m_model.addStocks(stocks);
         //System.out.println("Stock quotes displayed in table");
     }
@@ -326,7 +328,7 @@ public class TickerCard extends JPanel {
      * @param disable   -   
      */
     public void clearStockList(boolean disable) {
-        m_isLoggedIn = disable;
+        //m_isLoggedIn = disable;
         m_selectedStock = null;
         m_quoteField.setText("");
         m_model.deleteAllRows();
