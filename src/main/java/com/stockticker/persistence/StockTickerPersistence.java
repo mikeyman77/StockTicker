@@ -24,8 +24,8 @@ public enum StockTickerPersistence implements PersistenceService {
     private TrackedStocksDAO trackedDAO = null;
     private UserDAO userDAO = null;
 
-    /**
-     * @todo This is temporary code that invokes the PersistenceService start method
+    /*
+     * This is temporary code that invokes the PersistenceService start method
      *       on behalf of junit tests and the business logic. This private contructor
      *       can be removed once the start method is invoked after retrieving the
      *       PersistenceService interface instance.
