@@ -1,47 +1,36 @@
 /**
  * GUI for Stock Ticker Portfolio Manager
- * J308 Project
+ * 90.308-061 Agile Software Dev. w/Java Project
  * Paul Wallace
  */
 package com.stockticker.ui;
 
-import java.awt.BorderLayout;
-import java.awt.CardLayout;
+import com.stockticker.StockHistory;
 import java.awt.Dimension;
 import java.awt.GridBagConstraints;
-import java.awt.GridBagLayout;
 import java.awt.GridLayout;
-import java.awt.Insets;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.KeyEvent;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
 
 import javax.swing.BorderFactory;
-import javax.swing.JButton;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
-import javax.swing.JTextField;
-import javax.swing.ListSelectionModel;
 import javax.swing.border.EtchedBorder;
 import javax.swing.table.AbstractTableModel;
-import javax.swing.AbstractAction;
-import javax.swing.Action;
-import javax.swing.JComponent;
-import javax.swing.KeyStroke;
-import javax.swing.table.DefaultTableCellRenderer;
-import javax.swing.table.TableColumn;
-import javax.swing.SwingConstants;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import com.stockticker.ui.ViewStockTicker.OperateStockTicker;
-import com.stockticker.ui.IStockTicker_UIComponents.UI;
 import com.stockticker.StockQuote;
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.FlowLayout;
 import java.awt.Font;
+import java.awt.GridBagLayout;
+import java.awt.Insets;
+import java.util.Calendar;
+import javax.swing.JLabel;
+import javax.swing.border.TitledBorder;
 
 
 
@@ -55,8 +44,14 @@ public class HistoryCard {
     private static final String[] m_header = { "DATE", "PRICE", "CHG", "CHG%", "LOW", "HIGH", "VOLUME"};
     private static final String ENTER_PRESSED = "ENTER_RELEASED";
 
-    private JPanel m_tablePane;
+    private JPanel m_tablePanel;
+    private JPanel m_startDatePanel;
+    private JPanel m_labelPanel;
     private JPanel m_historyCard;
+
+    private JLabel m_startDateLabel;
+    private JLabel m_endDateLabel;
+
     private final GridBagConstraints m_constraints;
 
     private JTable m_historyTable;
@@ -87,13 +82,18 @@ public class HistoryCard {
      */
     public final void setCard() {
         m_historyModel = new HistoryTableModel(m_header);
+        m_historyCard = new JPanel(new GridLayout(2, 1, 0, 0));
 
-        m_historyCard = new JPanel();
-        m_historyCard.setPreferredSize(new Dimension(550, 200));
-
-        setHistoryTable();
+        this.setClarendars();
+        this.setHistoryTable();
         m_historyCard.setBorder(BorderFactory.createTitledBorder(BorderFactory.createEtchedBorder(EtchedBorder.LOWERED), "History"));
-        m_historyCard.add(m_tablePane);
+        //m_historyCard.add(m_startDatePanel, BorderLayout.CENTER);
+        m_historyCard.add(m_tablePanel, BorderLayout.SOUTH);
+    }
+
+
+    public void setClarendars() {
+        
     }
 
 
@@ -102,25 +102,20 @@ public class HistoryCard {
      * the selected rows.
      */
     public void setHistoryTable() {
-        m_tablePane = new JPanel(new GridLayout(1, 0));
-        m_tablePane.setOpaque(true);
+        m_tablePanel = new JPanel(new FlowLayout());
+        m_tablePanel.setPreferredSize(new Dimension(630, 520));
+        m_tablePanel.setOpaque(true);
+
         m_historyTable = new JTable(m_historyModel);
-        m_historyTable.setPreferredScrollableViewportSize(new Dimension(630, 240));
+        m_historyTable.setPreferredScrollableViewportSize(new Dimension(630, 500));
         m_historyTable.setFillsViewportHeight(true);
         m_historyTable.putClientProperty("terminateEditOnFocusLost", Boolean.TRUE);
+        m_historyTable.getTableHeader().setFont(new Font("SansSerif", Font.PLAIN, 12));
         m_historyTable.setFont(m_historyTable.getFont().deriveFont(Font.PLAIN, 11));
         m_historyTable.setEnabled(false);
 
-        /*TableColumn column = m_historyTable.getColumnModel().getColumn(8);
-        DefaultTableCellRenderer cellRenderer = new DefaultTableCellRenderer();
-        cellRenderer.setHorizontalAlignment(SwingConstants.CENTER);
-        column.setCellRenderer(cellRenderer);
-        cellRenderer.setBackground(m_tablePane.getBackground());
-        cellRenderer.setFont(cellRenderer.getFont().deriveFont(Font.PLAIN, 20));*/
-
         m_scrollPane = new JScrollPane(m_historyTable);
-        m_tablePane.add(m_scrollPane);
-    
+        m_tablePanel.add(m_scrollPane);
     }
 
 
@@ -139,7 +134,7 @@ public class HistoryCard {
      * deleting day in table.
      */
     class HistoryTableModel extends AbstractTableModel {
-        private List<StockQuote> m_stocks;
+        private List<StockHistory> m_stockHistory;
         private final String[] m_header;
 
 
@@ -149,7 +144,7 @@ public class HistoryCard {
          */
         public HistoryTableModel(String[] header) {
             this.m_header = header;
-            this.m_stocks = new ArrayList<>();
+            this.m_stockHistory = new ArrayList<>();
         }
 
 
@@ -167,7 +162,7 @@ public class HistoryCard {
          */
         @Override
         public int getRowCount() {
-            return m_stocks.size();
+            return m_stockHistory.size();
         }
 
 
@@ -188,40 +183,29 @@ public class HistoryCard {
          */
         @Override
         public Object getValueAt(int rowIndex, int columnIndex) {
-            StockQuote sq = (StockQuote)m_stocks.get(rowIndex);
+            StockHistory history = (StockHistory)m_stockHistory.get(rowIndex);
             Object value = null;
 
             switch(columnIndex) {
                 case 0:
-                    value = sq.getSymbol();
+                    value = history.getDate();
                     break;
                 case 1:
-                    value = sq.getTime();
+                    value = history.getAdjClose();
                     break;
                 case 2:
-                    value = sq.getPrice();
+                    value = history.getOpen();
                     break;
                 case 3:
-                    value = sq.getChange();
+                    value = history.getClose();
                     break;
                 case 4:
-                    value = sq.getChangePercent();
+                    value = history.getLow();
                 case 5:
-                    value = sq.getLow();
+                    value = history.getHigh();
                     break;
                 case 6:
-                    value = sq.getHigh();
-                    break;
-                case 7:
-                    value = sq.getVolume();
-                    break;
-                case 8:
-                    if(m_operate.getTrackingStatus(sq.getSymbol())) {
-                        value = "+";
-                    }
-                    else {
-                        value = "-";
-                    }
+                    value = history.getVolume();
                     break;
                 default:
                     System.err.println("Problems displaying Stock Quotes");
@@ -234,8 +218,8 @@ public class HistoryCard {
         /*
          * Adds the list of StockQuote's to the table models List<StockQuote>
          */
-        public void addStocks(List<StockQuote> stock) {
-            m_stocks = stock;
+        public void addStocks(List<StockHistory> history) {
+            m_stockHistory = history;
             fireTableDataChanged();
         }
 
@@ -243,8 +227,8 @@ public class HistoryCard {
         /*
          * Gets/returns the StockQuote at the specified row
          */
-        public StockQuote getStock(int row) {
-            return m_stocks.get(row);
+        public StockHistory getStock(int row) {
+            return m_stockHistory.get(row);
         }
 
 
@@ -253,7 +237,7 @@ public class HistoryCard {
          */
         public void deleteAllRows() {
             for(int i = this.getRowCount() - 1; i >= 0; i--) {
-                m_stocks.remove(i);
+                m_stockHistory.remove(i);
             }
         }
     }

@@ -23,9 +23,9 @@ public interface IStockTicker_UIComponents {
      * 
      */
     public enum UI {
-        CLOSE("Close"), USER_REG("Registration"), TICKER("Ticker"), QUOTE("Quote"), HOME("Home"), 
-        DETAIL("Detail"), LOGIN("Login"), LOGOUT("Logout"), SUBMIT("Submit"), CANCEL("Cancel"),
-        TRACK("Track"), UNTRACK("Untrack"), REFRESH("Refresh"), HISTORY("History"), DEFAULT("Default");
+        CLOSE("Close"), USER_REG("Registration"), QUOTE("Quote"), HOME("Home"), LOGIN("Login"), LOGOUT("Logout"),
+        SUBMIT("Submit"), TRACK("Track"), UNTRACK("Untrack"), REFRESH("Refresh"), HISTORY("History"), TICKER("Ticker"),
+        DEFAULT("Default");
 
         private final String btnName;
 

@@ -1,9 +1,9 @@
 /**
  * GUI for Stock Ticker Portfolio Manager
- * J308 Project
+ * 90.308-061 Agile Software Dev. w/Java Project
+ * ViewStockTicker.java
  * Paul Wallace
  */
-
 package com.stockticker.ui;
 
 import java.awt.BorderLayout;
@@ -51,6 +51,8 @@ import com.stockticker.logic.UserAuthorization;
 
 import java.util.ArrayList;
 import java.util.List;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
 
 
 /**
@@ -101,6 +103,7 @@ public class ViewStockTicker extends WindowAdapter implements IStockTicker_UICom
     public boolean m_closeSelect = false;
     public boolean m_isLoggedIn = false;
     public boolean m_isMultSelect = false;
+    public boolean m_historySelect = false;
     public boolean[] m_isInvalidInput = new boolean[5];
 
     private String m_username = "";
@@ -214,6 +217,23 @@ public class ViewStockTicker extends WindowAdapter implements IStockTicker_UICom
         m_symbolField.setVisible(false);
 
 
+        // Listens for mouse selections in list and set multiple selection flag to true.
+        // When typing in a symbol, the listener sets the flag to false.
+        m_symbolJList.addListSelectionListener(new ListSelectionListener() { 
+            @Override
+            public void valueChanged(ListSelectionEvent evt) {
+               boolean isAdjusting = evt.getValueIsAdjusting();
+               if(!isAdjusting) {
+                   m_isMultSelect = false;
+               }
+               else {
+                   m_isMultSelect = true;
+               }
+            }
+                    
+        });
+
+
         // Mouse listener that listens for single or double clicks within the stock
         // symbols list.  A double click selects the one symbol and a single click
         // selects a group of symbols by using cntrl or shift keys.
@@ -236,11 +256,12 @@ public class ViewStockTicker extends WindowAdapter implements IStockTicker_UICom
                     
                     m_clickCntr = 0;
                 }
-                else {
+                else { // User is making multiple mouse selections in list
                     if(e.getClickCount() == 1) {
                         m_clickCntr++;
                         if(m_clickCntr > 1) {
                             m_multSymbols.clear();
+
                             for(Object obj : m_symbolJList.getSelectedValuesList()) {
                                 m_multSymbols.add(obj.toString());
                             }
@@ -328,21 +349,20 @@ public class ViewStockTicker extends WindowAdapter implements IStockTicker_UICom
                     }
                     m_multSymbols.clear();
                     m_operate.setSymbolList();
-                    m_isMultSelect = false;
                 }
 
                 m_symbolJList.clearSelection();
             }
         };
 
+        // Action and Input maps for the symbols list.  Keypresses are bound to the enter button on release
         m_symbolField.getInputMap(JComponent.WHEN_FOCUSED).put(KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, 0, true), ENTER_PRESSED);
         m_symbolField.getActionMap().put(ENTER_PRESSED, enterAction);
         m_symbolJList.getInputMap(JComponent.WHEN_FOCUSED).put(KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, 0, true), ENTER_PRESSED);
         m_symbolJList.getActionMap().put(ENTER_PRESSED, enterAction);
 
 
-        // Creates the child panel to the left side JPanel and lays out the symbols
-        // JList and the symbols text field.
+        // Create the JPanels for the symbols list and symbols text field.
         JPanel fillerPanel = new JPanel();
         fillerPanel.setPreferredSize(new Dimension(160, 180));
 
@@ -367,14 +387,16 @@ public class ViewStockTicker extends WindowAdapter implements IStockTicker_UICom
         textFieldPanel.add(m_symbolField, m_constraints);
         
 
-        // Creates a JPanel for the UI's right and left control buttons.  Adds Action
-        // listeners, bound to the enter key, for each button. Layouts the right and
-        // left buttons on their JPanal and adds the JPanel to its parrent JPanel.
+        // Create a JPanel for the UI's control buttons.
         JPanel controlBtnPanel = new JPanel(new GridBagLayout());
-        controlBtnPanel.setPreferredSize(new Dimension(200, 40));
+        controlBtnPanel.setPreferredSize(new Dimension(350, 40));
 
+        // Create the control buttons for the UI
+        m_historyBtn = new JButton(UI.HISTORY.getName());
+        m_operate.setHistoryButton(false);
         m_leftControlBtn = new JButton(UI.USER_REG.getName());
         m_rightControlBtn = new JButton(UI.LOGIN.getName());
+
 
         // Listen for enter when left or right control buttons have focus
         Action m_leftButtonAction = new AbstractAction() {
@@ -384,6 +406,7 @@ public class ViewStockTicker extends WindowAdapter implements IStockTicker_UICom
             }
         };
 
+        // Action and Input maps for the left control button
         m_leftControlBtn.getInputMap(JComponent.WHEN_FOCUSED).put(KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, 0, false), ENTER_PRESSED);
         m_leftControlBtn.getActionMap().put(ENTER_PRESSED, m_leftButtonAction);
 
@@ -394,37 +417,50 @@ public class ViewStockTicker extends WindowAdapter implements IStockTicker_UICom
             }
         };
 
+        // Action and Input maps for the right control button
         m_rightControlBtn.getInputMap(JComponent.WHEN_FOCUSED).put(KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, 0, false), ENTER_PRESSED);
         m_rightControlBtn.getActionMap().put(ENTER_PRESSED, rightButtonAction);
 
-        
-        // Layout the right, left control and history button onto their JPanel.
-        // Add the JPanels to their parent panels and parent panels to frame.
-        m_componentPanel = new JPanel();
-        m_componentPanel.setPreferredSize(new Dimension(650, 65));
 
-        // Layout the left control button
+        // Add a panel to layout the UI control buttons
+        m_componentPanel = new JPanel();
+        m_componentPanel.setPreferredSize(new Dimension(400, 65));
+
+        // Layout the history button
         m_constraints.gridx = 0;
         m_constraints.gridy = 0;
         m_constraints.anchor = GridBagConstraints.PAGE_START;
-        m_constraints.insets = new Insets(0, 0, 10, 10);
+        m_constraints.insets = new Insets(0, 0, 2, 10);
+        controlBtnPanel.add(m_historyBtn, m_constraints);
+
+        // Layout the left control button
+        m_constraints.gridx = 1;
+        m_constraints.gridy = 0;
+        m_constraints.insets = new Insets(0, 0, 2, 10);
         controlBtnPanel.add(m_leftControlBtn, m_constraints);
 
         // Layout the right control button
+        m_constraints.gridx = 2;
+        m_constraints.gridy = 0;
+        m_constraints.insets = new Insets(0, 0, 2, 2);
+        controlBtnPanel.add(m_rightControlBtn, m_constraints);
+
+        // Layout the buttons control panel onto its parent panel
         m_constraints.gridx = 1;
         m_constraints.gridy = 0;
         m_constraints.insets = new Insets(0, 0, 0, 0);
-        controlBtnPanel.add(m_rightControlBtn, m_constraints);
+        m_componentPanel.add(controlBtnPanel, m_constraints);
+
 
         // Add action listeners to the control buttons
         m_leftControlBtn.addActionListener(m_operate);
         m_rightControlBtn.addActionListener(m_operate);
+        m_historyBtn.addActionListener(m_operate);
 
         // Add all child JPanels their parent JPanel
         m_leftPanel.add(fillerPanel, BorderLayout.NORTH);
         m_leftPanel.add(listPanel, BorderLayout.CENTER);
         m_leftPanel.add(textFieldPanel, BorderLayout.SOUTH);
-        m_componentPanel.add(controlBtnPanel, BorderLayout.NORTH);
         m_bottomPanel.add(m_componentPanel, BorderLayout.CENTER);
 
         // Add all base JPanels to the JFrame
@@ -480,6 +516,7 @@ public class ViewStockTicker extends WindowAdapter implements IStockTicker_UICom
          * @param name      - Name of left main panel button
          */
         public void resetLeftButton(String name) {
+            m_leftControlBtn.setVisible(true);
             m_leftControlBtn.setText(name);
         }
 
@@ -663,6 +700,14 @@ public class ViewStockTicker extends WindowAdapter implements IStockTicker_UICom
                     this.resetLeftButton(UI.TRACK.getName());
                     break;
 
+                case HISTORY:
+                    this.resetFlags();
+                    //m_leftControlBtn.setVisible(false);
+                    this.setHistoryButton(false);
+                    cardLayout.show(m_cardPanel, UI.HISTORY.getName());
+                    this.resetLeftButton("Submit");
+                    break;
+
                 // Log-out user on CLOSE or LOGOUT selected.
                 // Show Home screen if CANCEL or CLOSE selected.  
                 case  CLOSE:
@@ -679,6 +724,7 @@ public class ViewStockTicker extends WindowAdapter implements IStockTicker_UICom
                         this.resetLeftButton(UI.REFRESH.getName());
                         this.resetRightButton(UI.LOGOUT.getName()); 
                         this.enableSymbolJList(true);
+                        this.setHistoryButton(false);
                         cardLayout.show(m_cardPanel, UI.TICKER.getName());
                         m_tickerCard.setQuoteFieldFocus();
                     }
@@ -735,6 +781,7 @@ public class ViewStockTicker extends WindowAdapter implements IStockTicker_UICom
                     m_username = "";
                     m_password = "";
                     this.showDialog(m_message.toString());
+                    m_regCard.clearPasswordFields();
                     m_isInvalidInput[Fields.PASSWD.getValue()] = true;
 
                     if(m_logInSelect) {
@@ -842,6 +889,7 @@ public class ViewStockTicker extends WindowAdapter implements IStockTicker_UICom
             m_logInSelect = false;
             m_regSelect = false;
             m_closeSelect = false;
+            m_historySelect = false;
         }
 
 
@@ -876,6 +924,31 @@ public class ViewStockTicker extends WindowAdapter implements IStockTicker_UICom
          */
         public boolean getTrackingStatus(String symbol) {
             return m_stockService.isStockTracked(m_username, symbol);
+        }
+
+
+        /**
+         * Sets the focus of either the left or right control buttons, depending on
+         * the state of the argument.
+         * @param leftBtn       - Grabs focus for left(true) or right(false) control buttons
+         */
+        public void setControlBtnFocus(boolean leftBtn) {
+            if(leftBtn) {
+                m_leftControlBtn.grabFocus();
+            }
+            else {
+                m_rightControlBtn.grabFocus();
+            }
+        }
+
+
+        /**
+         * Makes the History button visible or non visible, depending on the argument
+         * state, true or false.
+         * @param state
+         */
+        public void setHistoryButton(boolean state) {
+                m_historyBtn.setVisible(state);
         }
 
 

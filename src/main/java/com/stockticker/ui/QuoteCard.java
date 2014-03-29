@@ -3,7 +3,6 @@
  * J308 Project
  * Paul Wallace
  */
-
 package com.stockticker.ui;
 
 import com.stockticker.StockQuote;
@@ -50,7 +49,7 @@ public final class QuoteCard extends JPanel {
     private QuoteTableModel m_quoteModel;
     private DetailTableModel m_detailModel;
 
-    private boolean m_isLoggedIn = false;
+    //private boolean m_isLoggedIn = false;
 
 
     /**
