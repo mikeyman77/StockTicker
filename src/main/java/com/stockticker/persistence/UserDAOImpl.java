@@ -50,9 +50,8 @@ public class UserDAOImpl implements UserDAO {
     public int getUserId(String username) throws PersistenceServiceException {
         int userId = -1;
         try {
-            PreparedStatement prepared = connection.prepareStatement("SELECT userId FROM user WHERE username=?");
-            prepared.setString(1, username);
-            ResultSet result = prepared.executeQuery();
+            Statement statement = connection.createStatement();
+            ResultSet result = statement.executeQuery("SELECT userId FROM user WHERE username='"+username+"'");
             if (result.next())
                 userId = result.getInt(1);
         }
@@ -129,10 +128,19 @@ public class UserDAOImpl implements UserDAO {
     public boolean exists(String username) throws PersistenceServiceException {
         boolean userExists = false;
 
-            int userId = getUserId(username);
-            if (userId > 0) {
+        try {
+            Statement statement = connection.createStatement();
+            ResultSet result = statement.executeQuery("SELECT username FROM user WHERE username='"+username+"'");
+            if (result.next()) {
                 userExists = true;
             }
+        }
+        catch (SQLException e) {
+            int errorCode = PersistenceServiceException.PSE202_SQL_EXCEPTION_OCCURRED;
+            String message = PersistenceServiceException.PSE202_SQL_EXCEPTION_OCCURRED_MESSAGE;
+            logger.error(message, e);
+            throw new PersistenceServiceException(message+" ["+errorCode+"]: "+e.getMessage(), e, errorCode);
+        }
 
         return userExists;
     }
@@ -279,8 +287,8 @@ public class UserDAOImpl implements UserDAO {
         boolean isLoggedIn = false;
 
         try {
-            int userId = getUserId(username);
-            if (userId > 0) {
+            if (exists(username)) {
+                int userId = getUserId(username);
                 //Check if user is logged in
                 Statement statement = connection.createStatement();
                 ResultSet result = statement.executeQuery("SELECT isLoggedIn FROM user WHERE userId="+userId);
@@ -311,8 +319,8 @@ public class UserDAOImpl implements UserDAO {
         boolean statusSet = false;
 
         try {
-            int userId = getUserId(username);
-            if (userId > 0) {
+            if (exists(username)) {
+                int userId = getUserId(username);
                 //Update the User login status
                 PreparedStatement prepared = connection.prepareStatement
                         ("UPDATE user SET isLoggedIn = ? WHERE userId = ?");
