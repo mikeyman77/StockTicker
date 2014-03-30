@@ -21,12 +21,7 @@ import java.util.List;
 public enum YahooStockQuoteService implements StockQuoteService {
     INSTANCE;
     
-    /**
-     * This method returns a URL based on the list of stock symbols provided.
-     *
-     * @param symbols a list of stock symbols
-     * @return URL
-     */
+    
     @Override
     public URL getURL(List<String> symbols) throws BusinessLogicException {
         
@@ -74,13 +69,6 @@ public enum YahooStockQuoteService implements StockQuoteService {
         return queryUrl;
     }
     
-    /**
-     * This method returns a list of StockQuote based on the JSON input stream
-     * provided.
-     *
-     * @param url URL used to get the stock quote data
-     * @return a list of StockQuote objects
-     */
     @Override
     public List<StockQuote> getStockQuotes(URL url) {
         ObjectMapper mapper = new ObjectMapper();
