@@ -15,7 +15,21 @@ import java.util.List;
  */
 public interface StockQuoteService {
     
+    /**
+     * This method returns a URL based on the list of stock symbols provided.
+     *
+     * @param symbols a list of stock symbols
+     * @return URL
+     */
     public URL getURL(List<String> symbols) throws BusinessLogicException;
+    
+    /**
+     * This method returns a list of StockQuote based on the JSON input stream
+     * provided.
+     *
+     * @param url URL used to get the stock quote data
+     * @return a list of StockQuote objects
+     */
     public List<StockQuote> getStockQuotes(URL url) throws BusinessLogicException;
     
 }

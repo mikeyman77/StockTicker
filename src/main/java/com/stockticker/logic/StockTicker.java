@@ -8,7 +8,6 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-
 /**
  * This class provides the basic functionality of getting stock quotes, tracking,
  * and un-tracking stocks for users.
@@ -22,13 +21,6 @@ public enum StockTicker implements StockTickerService {
     private final StockQuoteService ysqs = YahooStockQuoteService.INSTANCE;
     private final StockHistoryService yshs = YahooStockHistoryService.INSTANCE;
     
-    /**
-     * This method returns a list of stock quotes based on the stock symbols
-     * provided.
-     *
-     * @param symbols a list of stock symbols
-     * @return a list of StockQuote objects
-     */
     @Override
     public List<StockQuote> getStockQuotes(List<String> symbols) 
             throws BusinessLogicException {
@@ -45,16 +37,6 @@ public enum StockTicker implements StockTickerService {
         return stockQuoteList;
     }
     
-    /**
-     * This method returns a list of stock history based on the stock symbol, 
-     * start date and end date provided. This method provides one method call 
-     * instead of two in order to get the stock history
-     *
-     * @param symbol stock symbol to get history for
-     * @param startDate stock history start date
-     * @param endDate stock history end date
-     * @return a list of StockHistory objects
-     */
     @Override
     public List<StockHistory> getStockHistory(String symbol, Date startDate, Date endDate) 
             throws BusinessLogicException {
@@ -71,12 +53,6 @@ public enum StockTicker implements StockTickerService {
         return stockHistoryList;
     }
     
-    /**
-     * This method gets the tracked stocks for a specific user.
-     *
-     * @param username the username of the user
-     * @return a list of tracked stocks
-     */
     @Override
     public List<String> getTrackedStocks(String username) 
             throws BusinessLogicException {
@@ -93,14 +69,6 @@ public enum StockTicker implements StockTickerService {
         return trackedStocksList;
     }
     
-    /**
-     * This method tracks and un-tracks stocks for a specific user.
-     *
-     * @param username the username of the user
-     * @param symbol the stock symbol
-     * @param tracked true to track stock and false to not track the stock
-     * @return true if the operation was successful
-     */
     @Override
     public boolean trackStock(String username, String symbol, boolean tracked) 
             throws BusinessLogicException {
@@ -116,13 +84,6 @@ public enum StockTicker implements StockTickerService {
         return successful;
     }
     
-    /**
-     * This method checks to see if a stock is tracked for a specific user.
-     *
-     * @param username the username of the user
-     * @param symbol the stock symbol
-     * @return true if the stock is tracked
-     */
     @Override
     public boolean isStockTracked(String username, String symbol) 
             throws BusinessLogicException {
