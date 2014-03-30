@@ -24,13 +24,25 @@ import com.stockticker.ui.ViewStockTicker.OperateStockTicker;
 import com.stockticker.StockQuote;
 import java.awt.BorderLayout;
 import java.awt.Color;
-import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
+import java.awt.event.ActionEvent;
+import java.awt.event.KeyEvent;
+import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.Date;
+import javax.swing.AbstractAction;
+import javax.swing.Action;
+import javax.swing.JComponent;
 import javax.swing.JLabel;
+import javax.swing.JSpinner;
+import javax.swing.JTextArea;
+import javax.swing.KeyStroke;
+import javax.swing.SpinnerDateModel;
 import javax.swing.border.TitledBorder;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 
 
 
@@ -41,27 +53,37 @@ import javax.swing.border.TitledBorder;
  */
 public class HistoryCard {
     private static final long serialVersionUID = 1L;
-    private static final String[] m_header = { "DATE", "PRICE", "CHG", "CHG%", "LOW", "HIGH", "VOLUME"};
+    private static final String[] m_header = { "DATE", "OPEN", "CLOSE", "ADJ CLOSE", "LOW", "HIGH", "VOLUME"};
     private static final String ENTER_PRESSED = "ENTER_RELEASED";
 
     private JPanel m_tablePanel;
-    private JPanel m_startDatePanel;
-    private JPanel m_labelPanel;
+    //private JPanel m_topPenel;
     private JPanel m_historyCard;
+    private JPanel m_calendarPanel;
+    private JPanel m_startDatePanel;
+    private JPanel m_endDatePanel;
+    //private JPanel m_namePanel;
 
-    private JLabel m_startDateLabel;
-    private JLabel m_endDateLabel;
-
-    private final GridBagConstraints m_constraints;
+    private JSpinner m_startDateSpinner;
+    private JSpinner m_endDateSpinner;
 
     private JTable m_historyTable;
     private JScrollPane m_scrollPane;
 
     private HistoryTableModel m_historyModel;
-    private List<String> m_historyList;
+    private SpinnerDateModel m_startDateModel;
+    private SpinnerDateModel m_endDateModel;
 
     private final OperateStockTicker m_operate;
-    private StockQuote m_selectedStock;
+    //private StockHistory m_selectedStock;
+
+    private GridBagConstraints m_constraints;
+    private List<String> m_historyList;
+    private String m_title;
+
+    private Calendar m_calendar;
+
+    private SimpleDateFormat m_date;
 
 
     /**
@@ -70,7 +92,7 @@ public class HistoryCard {
      * @param operate   - Instance of OperateStockTicker
      */
     public HistoryCard(OperateStockTicker operate) {
-        m_constraints = new GridBagConstraints();
+        //m_calendar = Calendar.getInstance();
         m_operate = operate;
         setCard();
     }
@@ -82,18 +104,18 @@ public class HistoryCard {
      */
     public final void setCard() {
         m_historyModel = new HistoryTableModel(m_header);
-        m_historyCard = new JPanel(new GridLayout(2, 1, 0, 0));
+        m_historyCard = new JPanel();
 
-        this.setClarendars();
+        m_calendarPanel = new JPanel();
+        m_calendarPanel.setPreferredSize(new java.awt.Dimension(550, 100));
+
+        this.setStartDateCalendar();
+        this.setEndDateCalendar();
+        m_historyCard.add(m_calendarPanel, BorderLayout.NORTH);
+
         this.setHistoryTable();
         m_historyCard.setBorder(BorderFactory.createTitledBorder(BorderFactory.createEtchedBorder(EtchedBorder.LOWERED), "History"));
-        //m_historyCard.add(m_startDatePanel, BorderLayout.CENTER);
         m_historyCard.add(m_tablePanel, BorderLayout.SOUTH);
-    }
-
-
-    public void setClarendars() {
-        
     }
 
 
@@ -102,12 +124,12 @@ public class HistoryCard {
      * the selected rows.
      */
     public void setHistoryTable() {
-        m_tablePanel = new JPanel(new FlowLayout());
-        m_tablePanel.setPreferredSize(new Dimension(630, 520));
+        m_tablePanel = new JPanel(new GridLayout(1, 0, 0, 0));
         m_tablePanel.setOpaque(true);
+        m_tablePanel.setPreferredSize(new Dimension(630, 280));
 
         m_historyTable = new JTable(m_historyModel);
-        m_historyTable.setPreferredScrollableViewportSize(new Dimension(630, 500));
+        m_historyTable.setPreferredScrollableViewportSize(new Dimension(630, 200));
         m_historyTable.setFillsViewportHeight(true);
         m_historyTable.putClientProperty("terminateEditOnFocusLost", Boolean.TRUE);
         m_historyTable.getTableHeader().setFont(new Font("SansSerif", Font.PLAIN, 12));
@@ -120,11 +142,159 @@ public class HistoryCard {
 
 
     /**
+     * Initializes and layout the spinner calendar fields.
+     */
+    private void setStartDateCalendar() {
+        m_startDateModel = new SpinnerDateModel();// may need to initial with a Calendar Instance, see CalendarSpinner
+        m_startDateModel.setCalendarField(Calendar.DAY_OF_YEAR);
+
+        m_startDateSpinner = new JSpinner(m_startDateModel);
+        JSpinner.DateEditor editor = new JSpinner.DateEditor(m_startDateSpinner, "MM dd yyyy");
+        m_startDateSpinner.setEditor(editor);
+        editor.getTextField().setEditable(false);
+
+        m_startDateSpinner.setBorder(BorderFactory.createEtchedBorder());
+        m_startDateSpinner.setInheritsPopupMenu(true);
+        m_startDateSpinner.setToolTipText("Double click on a field to select");
+
+        m_startDatePanel = new JPanel(new GridBagLayout());
+        m_startDatePanel.setPreferredSize(new Dimension(141, 75));
+        m_startDatePanel.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createEtchedBorder(),
+                                        BorderFactory.createTitledBorder(null, "Start Date", TitledBorder.CENTER,
+                                        TitledBorder.TOP, new Font("SansSerif", 0, 10), new Color(0, 0, 0))));
+
+        // Pressed the "Submit" button if enter is depressed while the start date spinner
+        // has the focus.
+        Action startDateAction = new AbstractAction() {
+            @Override
+            public void actionPerformed(ActionEvent actionEvent) {
+                m_operate.getLeftControlBtn().doClick();
+            }
+        };
+
+        m_startDateSpinner.getInputMap(JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT).put(KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, 0, false), ENTER_PRESSED);
+        m_startDateSpinner.getActionMap().put(ENTER_PRESSED, startDateAction);
+
+        // Layout the calendar spinner on its panel
+        m_constraints = new GridBagConstraints();
+        m_constraints.gridx = 0;
+        m_constraints.gridy = 0;
+        m_constraints.ipadx = 13;
+        m_constraints.ipady = 1;
+        m_constraints.anchor = GridBagConstraints.NORTHWEST;
+        m_constraints.insets = new Insets(10, 10, 0, 10);
+        m_startDatePanel.add(m_startDateSpinner, m_constraints);
+        
+        JLabel dateFormat = new JLabel("MM DD YYYY");
+        dateFormat.setFont(new Font("SansSerif", 0, 10));
+        m_constraints = new GridBagConstraints();
+        m_constraints.gridx = 0;
+        m_constraints.gridy = 1;
+        m_constraints.anchor = GridBagConstraints.NORTH;
+        m_constraints.insets = new Insets(0, 0, 15, 10);
+        m_startDatePanel.add(dateFormat, m_constraints);
+
+        m_constraints = new GridBagConstraints();
+        m_constraints.gridx = 0;
+        m_constraints.gridy = 0;
+        m_constraints.anchor = GridBagConstraints.NORTHWEST;
+        m_constraints.insets = new Insets(0, 0, 0, 10);
+        m_calendarPanel.add(m_startDatePanel, m_constraints);
+    }
+
+
+    /**
+     * Initializes and layout the spinner calendar fields.
+     */
+    private void setEndDateCalendar() {
+        m_endDateModel = new SpinnerDateModel();
+        m_endDateModel.setCalendarField(Calendar.DAY_OF_YEAR);
+
+        m_endDateSpinner = new JSpinner(m_endDateModel);
+        JSpinner.DateEditor editor = new JSpinner.DateEditor(m_endDateSpinner, "MM dd yyyy");
+        m_endDateSpinner.setEditor(editor);
+        editor.getTextField().setEditable(false);
+
+        m_endDateSpinner.setBorder(BorderFactory.createEtchedBorder());
+        m_endDateSpinner.setInheritsPopupMenu(true);
+        m_endDateSpinner.setToolTipText("Double click in field to select month, day, or year");
+
+        m_endDatePanel = new JPanel(new GridBagLayout());
+        m_endDatePanel.setPreferredSize(new Dimension(141, 75));
+        m_endDatePanel.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createEtchedBorder(),
+                                        BorderFactory.createTitledBorder(null, "End Date", TitledBorder.CENTER,
+                                        TitledBorder.TOP, new Font("SansSerif", 0, 10), new Color(0, 0, 0))));
+
+        // Pressed the "Submit" button if enter is depressed while the end date spinner
+        // has the focus.
+        Action endDateAction = new AbstractAction() {
+            @Override
+            public void actionPerformed(ActionEvent actionEvent) {
+                m_operate.getLeftControlBtn().doClick();
+            }
+        };
+
+        m_endDateSpinner.getInputMap(JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT).put(KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, 0, false), ENTER_PRESSED);
+        m_endDateSpinner.getActionMap().put(ENTER_PRESSED, endDateAction);
+
+        // Layout the calendar spinner on its panel
+        m_constraints = new GridBagConstraints();
+        m_constraints.gridx = 0;
+        m_constraints.gridy = 0;
+        m_constraints.ipadx = 13;//13
+        m_constraints.ipady = 1;
+        m_constraints.anchor = GridBagConstraints.NORTHWEST;
+        m_constraints.insets = new Insets(10, 10, 0, 10);
+        m_endDatePanel.add(m_endDateSpinner, m_constraints);
+        
+        JLabel dateFormat = new JLabel("MM DD YYYY");
+        dateFormat.setFont(new Font("SansSerif", 0, 10));
+        m_constraints = new GridBagConstraints();
+        m_constraints.gridx = 0;
+        m_constraints.gridy = 1;
+        m_constraints.anchor = GridBagConstraints.NORTH;
+        m_constraints.insets = new Insets(0, 0, 15, 10);
+        m_endDatePanel.add(dateFormat, m_constraints);
+
+        m_constraints = new GridBagConstraints();
+        m_constraints.gridx = 0;
+        m_constraints.gridy = 1;
+        m_calendarPanel.add(m_endDatePanel, m_constraints);
+    }
+
+
+    /**
      * Gets/returns this Card JPanel
      * @return 
      */
     public JPanel getCard() {
         return m_historyCard;
+    }
+
+
+    public void displayHistory(List<StockHistory> history) {
+        m_historyModel.addStocks(history);
+    }
+
+    public Date getStartDate() {
+        return m_startDateModel.getDate();
+    }
+
+
+    public Date getEndDate() {
+        return m_endDateModel.getDate();
+    }
+
+
+    /**
+     * Clears the Tables of their content
+     * @param disable
+     */
+    public void clearHistory() {
+        m_historyModel.deleteAllRows();
+        m_historyModel.fireTableDataChanged();
+        m_startDateSpinner.setValue(new Date());
+        m_endDateSpinner.setValue(new Date());
     }
 
 
@@ -191,13 +361,13 @@ public class HistoryCard {
                     value = history.getDate();
                     break;
                 case 1:
-                    value = history.getAdjClose();
-                    break;
-                case 2:
                     value = history.getOpen();
                     break;
-                case 3:
+                case 2:
                     value = history.getClose();
+                    break;
+                case 3:
+                    value = history.getAdjClose();
                     break;
                 case 4:
                     value = history.getLow();

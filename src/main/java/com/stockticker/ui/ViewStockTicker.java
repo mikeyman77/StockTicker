@@ -6,6 +6,7 @@
  */
 package com.stockticker.ui;
 
+import com.stockticker.StockHistory;
 import java.awt.BorderLayout;
 import java.awt.CardLayout;
 import java.awt.Dimension;
@@ -48,8 +49,11 @@ import com.stockticker.logic.AuthorizationService;
 import com.stockticker.logic.StockTicker;
 import com.stockticker.logic.StockTickerService;
 import com.stockticker.logic.UserAuthorization;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
@@ -113,11 +117,15 @@ public class ViewStockTicker extends WindowAdapter implements IStockTicker_UICom
     private String m_lastname = "";
     private final String m_icon = "./images/stock_ticker.png";
 
+    private Date m_startDate;
+    private Date m_endDate;
+
     private StringBuilder m_message;
 
     private List<String> m_symbolList;
     private List<String> m_multSymbols;
     private List<StockQuote> m_stockQuoteList;
+    private List<StockHistory> m_stockHistoryList;
 
     private final AuthorizationService m_userAuth = UserAuthorization.INSTANCE;
     private final StockTickerService m_stockService =  StockTicker.INSTANCE;
@@ -131,11 +139,13 @@ public class ViewStockTicker extends WindowAdapter implements IStockTicker_UICom
      * Constructor for theViewStockTicker class
      */
     public ViewStockTicker() {
-        this.m_symbolList = new ArrayList<>();
-        this.m_stockQuoteList = new ArrayList<>();
-        this.m_multSymbols = new ArrayList<>();
+        m_symbolList = new ArrayList<>();
+        m_stockQuoteList = new ArrayList<>();
+        m_multSymbols = new ArrayList<>();
+        m_stockHistoryList = new ArrayList<>();
         m_frame = new JFrame();
         m_operate = new OperateStockTicker();
+        m_frame.pack();
     }
 
 
@@ -421,6 +431,20 @@ public class ViewStockTicker extends WindowAdapter implements IStockTicker_UICom
         m_rightControlBtn.getInputMap(JComponent.WHEN_FOCUSED).put(KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, 0, false), ENTER_PRESSED);
         m_rightControlBtn.getActionMap().put(ENTER_PRESSED, rightButtonAction);
 
+        m_historyBtn.getInputMap(JComponent.WHEN_FOCUSED).put(KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, 0, false), ENTER_PRESSED);
+        m_historyBtn.getActionMap().put(ENTER_PRESSED, m_leftButtonAction);
+
+        Action historyButtonAction = new AbstractAction() {
+            @Override
+            public void actionPerformed(ActionEvent actionEvent) {
+                m_historyBtn.doClick();
+                System.out.println("history button clicked");
+            }
+        };
+
+        // Action and Input maps for the right control button
+        m_historyBtn.getInputMap(JComponent.WHEN_FOCUSED).put(KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, 0, false), ENTER_PRESSED);
+        m_historyBtn.getActionMap().put(ENTER_PRESSED, historyButtonAction);
 
         // Add a panel to layout the UI control buttons
         m_componentPanel = new JPanel();
@@ -662,6 +686,14 @@ public class ViewStockTicker extends WindowAdapter implements IStockTicker_UICom
                             m_loginCard.setFocusInField(m_isInvalidInput);
                         }
                     }
+                    else if(m_historySelect) {
+                        m_startDate = m_historyCard.getStartDate();
+                        m_endDate = m_historyCard.getEndDate();
+                        this.showStockHistory();
+                    }
+                    else {
+                        System.err.println("Submit was press, unable to determine source");
+                    }
                     break;
 
                 // Gets stock symbol for each StockQuote listed in stock quote table
@@ -674,7 +706,7 @@ public class ViewStockTicker extends WindowAdapter implements IStockTicker_UICom
                     m_stockQuoteList = m_stockService.getStockQuotes(refreshList);
 
                     if(m_stockQuoteList.size() > ZERO) {
-                        m_tickerCard.displayStockQuoteList(m_stockQuoteList, m_isLoggedIn);
+                        m_tickerCard.displayStockQuoteList(m_stockQuoteList);
                         System.out.println("Stock quote list refreshed");
                     }
                     else {
@@ -688,7 +720,7 @@ public class ViewStockTicker extends WindowAdapter implements IStockTicker_UICom
                 // Calls business logic to track the selected stock quote
                 case TRACK:
                     this.resetFlags();
-                    m_tickerCard.getSelectedStock();
+                    //m_tickerCard.getSelectedStock();
                     m_stockService.trackStock(m_username, m_tickerCard.getSelectedStock().getSymbol(), true);
                     this.resetLeftButton(UI.UNTRACK.getName());
                     break;
@@ -702,10 +734,11 @@ public class ViewStockTicker extends WindowAdapter implements IStockTicker_UICom
 
                 case HISTORY:
                     this.resetFlags();
-                    //m_leftControlBtn.setVisible(false);
+                    m_historySelect = true;
                     this.setHistoryButton(false);
                     cardLayout.show(m_cardPanel, UI.HISTORY.getName());
                     this.resetLeftButton("Submit");
+                    m_leftControlBtn.grabFocus();
                     break;
 
                 // Log-out user on CLOSE or LOGOUT selected.
@@ -725,6 +758,7 @@ public class ViewStockTicker extends WindowAdapter implements IStockTicker_UICom
                         this.resetRightButton(UI.LOGOUT.getName()); 
                         this.enableSymbolJList(true);
                         this.setHistoryButton(false);
+                        m_historyCard.clearHistory();
                         cardLayout.show(m_cardPanel, UI.TICKER.getName());
                         m_tickerCard.setQuoteFieldFocus();
                     }
@@ -737,7 +771,7 @@ public class ViewStockTicker extends WindowAdapter implements IStockTicker_UICom
                         m_isLoggedIn = false;
                         System.out.println("User is logged out");
                         this.enableSymbolJList(false);
-                        m_tickerCard.clearStockList(m_isLoggedIn);
+                        m_tickerCard.clearStockList();
                         m_quoteCard.clearQuote(m_isLoggedIn);
                         m_symbolList.clear();
                         m_stockQuoteList.clear();
@@ -957,7 +991,7 @@ public class ViewStockTicker extends WindowAdapter implements IStockTicker_UICom
          */
         public void setSymbolList() {
             if(m_symbolList.size() > ZERO) {
-                m_tickerCard.setSymbolsTextField(m_symbolList, m_isLoggedIn);
+                m_tickerCard.setSymbolsTextField(m_symbolList);
                 System.out.println("Symbol selected");
             }
             else {
@@ -976,7 +1010,7 @@ public class ViewStockTicker extends WindowAdapter implements IStockTicker_UICom
                 m_stockQuoteList = m_stockService.getStockQuotes(m_symbolList);
 
                 if(m_stockQuoteList.size() > ZERO) {
-                    m_tickerCard.displayStockQuoteList(m_stockQuoteList, m_isLoggedIn);
+                    m_tickerCard.displayStockQuoteList(m_stockQuoteList);
                     System.out.println("Stock quotes added to stock quote list");   
                 }
                 else {
@@ -1001,7 +1035,7 @@ public class ViewStockTicker extends WindowAdapter implements IStockTicker_UICom
             if(trackedStockes.size() > ZERO) {          
                 m_stockQuoteList = m_stockService.getStockQuotes(trackedStockes);
                 if(m_stockQuoteList.size() > ZERO) {
-                    m_tickerCard.displayStockQuoteList(m_stockQuoteList, m_isLoggedIn);
+                    m_tickerCard.displayStockQuoteList(m_stockQuoteList);
                 }
                 else {
                     System.out.println("Unable to get the users tracked stock quotes");
@@ -1010,12 +1044,56 @@ public class ViewStockTicker extends WindowAdapter implements IStockTicker_UICom
             else {
                 System.out.println("User has no tracked stocks");
             }
-        }	
+        }
+
+
+        /**
+         * Displays a lists of stock details of a given stock, over of range of entered
+         * dates.  Verifies the date range is a valid range prior to calling db for
+         * stock details.  If invalid, a warning dialog is popped up.
+         */
+        public void showStockHistory() {
+            m_message = new StringBuilder("Warning: ");
+            Date today = new Date();
+            boolean fault = false;
+
+            try {
+                if(m_startDate.compareTo(today) >= 0) {
+                    m_message.append("The start date is equal to or greater than today's date\nPlease select a day before today and re-submit querry");
+                    fault = true;
+                }
+                else if(m_endDate.compareTo(today) > 0 ) {
+                    m_message.append("The end date is equal to or greater than today's date\nPlease select a day before today and re-submit querry");
+                    fault = true;
+                }
+                else {
+                    m_stockHistoryList = m_stockService.getStockHistory(m_tickerCard.getSelectedStock().getSymbol(), m_startDate, m_endDate);
+
+                    if(m_stockHistoryList.size() != 0) {
+                        m_historyCard.displayHistory(m_stockHistoryList);
+                    }
+                    else {
+                        m_message.append("No data to report for this date range\nPlease select another date range and re-submit");
+                        fault = true;
+                    }
+                }
+            }
+            catch(IllegalArgumentException ex) {
+                m_message = new StringBuilder("Warning: Start date is after the end date\nPlease check date range and re-submit querry");
+                fault = true;
+            }
+            finally {
+                if(fault) {
+                    this.showDialog(m_message.toString());
+                    m_historyCard.clearHistory();
+                }
+            }
+        }
 
 
         /**
          * Enable & setVisible the symbol list JList component in main screen.
-         * This component is disabled by default.
+         * This component is disabled by default and only visible in main screen.
          * 
          * @param enable        - boolean, enables/disables m_symbolJList
          */

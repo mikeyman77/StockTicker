@@ -1,6 +1,6 @@
 /**
  * GUI for Stock Ticker Portfolio Manager
- * J308 Project
+ * 90.308-061 Agile Software Dev. w/Java Project
  * Paul Wallace
  */
 package com.stockticker.ui;
@@ -26,7 +26,7 @@ import java.util.List;
 
 
 /**
-* J308
+* GUI for Stock Ticker Portfolio Manager
 * @author prwallace
 */
 public final class QuoteCard extends JPanel {
@@ -49,12 +49,9 @@ public final class QuoteCard extends JPanel {
     private QuoteTableModel m_quoteModel;
     private DetailTableModel m_detailModel;
 
-    //private boolean m_isLoggedIn = false;
-
 
     /**
-    *
-    *
+    * Constructs the QuoteCard object
     */
     public QuoteCard() {
         m_constraints = new GridBagConstraints();
@@ -112,7 +109,6 @@ public final class QuoteCard extends JPanel {
         m_detailTable.setFont(m_detailTable.getFont().deriveFont(Font.PLAIN, 11));
         m_detailTable.setEnabled(false);
         m_detailScrollPane = new JScrollPane(m_detailTable);
-
         m_constraints.gridx = 0;
         m_constraints.gridy = 0;
         m_constraints.anchor = GridBagConstraints.SOUTH;
@@ -140,14 +136,8 @@ public final class QuoteCard extends JPanel {
      * @param enable    - Indicates whether the user is logged in
      */
     public void displayStockQuote(StockQuote quote,  int index, boolean enable) {
-        //m_isLoggedIn = enable;
-        //if(m_isLoggedIn) {
-            m_quoteModel.addQuoteFields(quote, index);
-            m_detailModel.addQuoteFields(quote, index);
-        //}
-        //else {
-            System.out.println("No Quote list to display, user not logged in");
-        //}
+        m_quoteModel.addQuoteFields(quote, index);
+        m_detailModel.addQuoteFields(quote, index);
     }
 
 
@@ -156,11 +146,9 @@ public final class QuoteCard extends JPanel {
      * @param disable
      */
     public void clearQuote(boolean disable) {
-        //m_isLoggedIn = disable;
         m_quoteModel.deleteRow();
         m_detailModel.deleteRow();
-    }       
-//}
+    }
 
 
     /*
