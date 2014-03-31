@@ -17,6 +17,7 @@ import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.awt.Font;
 
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
@@ -41,7 +42,7 @@ import java.util.List;
 import com.stockticker.ui.ViewStockTicker.OperateStockTicker;
 import com.stockticker.ui.IStockTicker_UIComponents.UI;
 import com.stockticker.StockQuote;
-import java.awt.Font;
+import java.util.Arrays;
 
 
 /**
@@ -61,7 +62,7 @@ public class TickerCard extends JPanel {
     private JPanel m_buttonPanel;
     private JPanel m_cardPanel;
     private CardLayout m_cardLayout;
-    private final GridBagConstraints m_constraints;
+    private GridBagConstraints m_constraints;
 
     private StockTableModel m_model;
     private JTable m_table;
@@ -73,6 +74,7 @@ public class TickerCard extends JPanel {
     private final QuoteCard m_quoteCard;
 
     private List<String> m_symbolList;
+    private String m_splitChars = "[\",]+";
     private int m_quoteIndex;
 
 
@@ -80,12 +82,11 @@ public class TickerCard extends JPanel {
     /**
      * Constructs the TickerCard object.
      *
-     * @param cards         - Base card JPanel for CardLayout
-     * @param quoteCard     - Quote card JPanel
+     * @param cards         - contains the CardLayout
+     * @param quoteCard     - base JPanel for this form
      * @param operate       - Instance of OperateStockTicker
      */
     public TickerCard(JPanel cards, QuoteCard quoteCard, OperateStockTicker operate) {
-        m_constraints = new GridBagConstraints();
         m_operate = operate;
         setCard();
         m_cardPanel = cards;
@@ -167,50 +168,51 @@ public class TickerCard extends JPanel {
                             m_operate.setControlBtnFocus(true);
                             m_cardLayout = (CardLayout) m_cardPanel.getLayout();
                             m_cardLayout.show(m_cardPanel, UI.QUOTE.getName());
-                            System.out.println("Display stock qoute table");
+                            //System.out.println("Display stock qoute table");
                         }
-                        else {
+                        /*else {
                             System.out.println("Unable to get stock from stock quote list");
-                        }
+                        }*/
                     } 
                 }
 
                 setQuoteFieldFocus();
             }
         });
-    }
-                
+    }                
 
 
     /**
      * Adds a JPanel with a JButton and JText Field to the main JPanel and its listeners.
      * The text field lists the selected symbols from the symbols list.  Pressing enter
      * or Quote button will call StockTickerService for a list of stock quotes based on
-     * the symbols in text field.  The stock quote list is then displayed in the JTable. 
+     * the symbols in text field.  The stock quote list is then displayed in the table. 
      */
     public void setButtonPanel() {
         m_buttonPanel = new JPanel(new GridBagLayout());
         m_buttonPanel.setPreferredSize(new Dimension(300, 100));
 
-
-        JButton quote = new JButton("Quote");
-        quote.addActionListener(new ActionListener() {
+ 
+        JButton quoteBtn = new JButton("Quote");
+        quoteBtn.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent evt) {
+                m_operate.showStockQuoteList(getSymbolsTextField());
                 m_quoteField.setText("");
-                m_operate.showStockQuoteList();
                 setQuoteFieldFocus();
             }
         });
 
         m_quoteField = new JTextField(40);
-        m_quoteField.setBorder( BorderFactory.createCompoundBorder(BorderFactory.createRaisedBevelBorder(), BorderFactory.createLoweredBevelBorder()));
+        m_quoteField.setBorder( BorderFactory.createCompoundBorder(BorderFactory.createRaisedBevelBorder(),
+                                                                BorderFactory.createLoweredBevelBorder()));
+        m_quoteField.setText("");
 
         Action enterAction = new AbstractAction() {
             @Override
             public void actionPerformed(ActionEvent actionEvent) {
-                m_quoteField.setText("");
-                m_operate.showStockQuoteList();
+                m_operate.showStockQuoteList(getSymbolsTextField());
+                m_quoteField.setText(""); 
             }
         };
 
@@ -218,14 +220,16 @@ public class TickerCard extends JPanel {
         m_quoteField.getActionMap().put(ENTER_PRESSED, enterAction);
 
 
-        // Layout components onto their JPanels
+        // Layout quote button and quote text field onto their JPanels
+        m_constraints = new GridBagConstraints();
         m_constraints.gridx = 0;
         m_constraints.gridy = 0;
         m_constraints.weightx = 0.00001;
         m_constraints.anchor = GridBagConstraints.WEST;
         m_constraints.fill = GridBagConstraints.NONE;
-        m_buttonPanel.add(quote, m_constraints);
+        m_buttonPanel.add(quoteBtn, m_constraints);
 
+        m_constraints = new GridBagConstraints();
         m_constraints.gridx = 0;
         m_constraints.gridy = 0;
         m_constraints.weightx = 0.0;
@@ -247,11 +251,15 @@ public class TickerCard extends JPanel {
 
 
     /**
-     *
-     * @param symbols
-     * @return
+     * Gets/returns the individual symbols listed in the table as a List<String>.
+     * 
+     * @param symbols       - stock symbol to retrieve from table
+     * @return              - the List<String> of symbols retrieved from table
      */
-    public List<String> getSymbolsInTable(List<String> symbols) {
+    //public List<String> getSymbolsInTable(List<String> symbols) {
+    public List<String> getSymbolsInTable() {
+        List<String> symbols = new ArrayList<>();
+
         if(m_model.getRowCount() > 0) {
             for(int i = 0; i < m_model.getRowCount(); i++) {
                 symbols.add(m_model.getStock(i).getSymbol().toString());
@@ -263,9 +271,34 @@ public class TickerCard extends JPanel {
 
 
     /**
-     * Gets/returns the selected stock from stock quote list
+     * Gets/returns the symbols from the quote text field.  The user can manually 
+     * enter symbols into field, delimited by comma's or add symbols to it from
+     * the symbols list.  Removes white space and comma's delimiters and insures
+     * the entry is no longer than 5 characters in length.
      * 
-     * @return
+     * @return      - returns a List<String> of stock symbols
+     */
+    public List<String> getSymbolsTextField() {
+        List<String> list = new ArrayList<>();
+        List<String> symbols = new ArrayList<>();
+
+        if(!m_quoteField.getText().isEmpty()) {
+            //list = Arrays.asList( m_quoteField.getText().split(","));
+            list = Arrays.asList( m_quoteField.getText().split(m_splitChars));
+            for(String str : list) {
+                String tmp = str.trim().toUpperCase();
+                if(tmp.length() < 6) {
+                    symbols.add(tmp);
+                }
+            }
+        }
+
+        return symbols;
+    }
+
+
+    /**
+     * Gets/returns the selected stock from the table
      */
     public StockQuote getSelectedStock() {
         return m_selectedStock;
@@ -292,21 +325,22 @@ public class TickerCard extends JPanel {
 
         for(String symbol : m_symbolList) {
             sb.append(symbol);
-            sb.append(", ");
+            sb.append(",");
         }
 
-        sb.deleteCharAt(sb.lastIndexOf(", "));
-        m_quoteField.setText(sb.toString());
+        sb.deleteCharAt(sb.lastIndexOf(","));
+        //sb.toString().trim();
+        //sb.deleteCharAt(sb.lastIndexOf(" "));
+        m_quoteField.setText(sb.toString().trim());
         m_quoteField.grabFocus();
     }
 
 
     /**
-     * Adds the argument List<StockQuote> in to the StockTableModel.  The StockTableModel
+     * Adds the argument List<StockQuote> into the StockTableModel.  The StockTableModel
      * inserts the data into the JTable and displays the JTable.
      * list 
-     * @param stocks
-     * @param enable
+     * @param stocks    - list of stock symbols to be added to table
      */
     public void displayStockQuoteList(List<StockQuote> stocks) {
         m_model.addStocks(stocks);
@@ -315,8 +349,6 @@ public class TickerCard extends JPanel {
 
     /**
      *  Empties the table of all stock quotes
-     * 
-     * @param disable   -   
      */
     public void clearStockList() {
         m_selectedStock = null;

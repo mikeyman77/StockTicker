@@ -49,8 +49,8 @@ import com.stockticker.logic.AuthorizationService;
 import com.stockticker.logic.StockTicker;
 import com.stockticker.logic.StockTickerService;
 import com.stockticker.logic.UserAuthorization;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
+//import java.text.ParseException;
+//import java.text.SimpleDateFormat;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -95,7 +95,7 @@ public class ViewStockTicker extends WindowAdapter implements IStockTicker_UICom
     private Image m_titleIcon;
 
     private HomeCard m_homeCard;
-    private DetailCard m_detailCard;
+    //private DetailCard m_detailCard;
     private QuoteCard m_quoteCard;
     private TickerCard m_tickerCard;
     private RegistrationCard m_regCard;
@@ -164,19 +164,11 @@ public class ViewStockTicker extends WindowAdapter implements IStockTicker_UICom
         m_frame.addWindowListener(new WindowAdapter() {
             @Override
             public void windowClosing(WindowEvent windowEvent) {
-                if(m_isLoggedIn && m_userAuth.logOut(m_username)) {
-                    System.out.println("User is logged out");
-                }
-                else if(m_isLoggedIn) {
-                    System.err.println("Unable to log user out prior to closing app");
-                }
-                else {
-                    System.out.println("User logged out prior to selecting close");
+                if(m_isLoggedIn ) {
+                    m_userAuth.logOut(m_username);
                 }
 
-                System.out.println("disposing");
                 m_frame.dispose();
-                System.out.println("Closing");
                 System.exit(0);
             }
         });
@@ -283,10 +275,7 @@ public class ViewStockTicker extends WindowAdapter implements IStockTicker_UICom
                             String selection = m_symbolJList.getSelectedValue().toString();
                             if(selection != null) {
                                 m_symbolField.setText(selection);
-                            }
-                            else {
-                                System.err.println("Unable to select symbol from list");
-                            }
+                            }        
                         }
                     }
                 }
@@ -336,10 +325,7 @@ public class ViewStockTicker extends WindowAdapter implements IStockTicker_UICom
 
                    if(symbol != null) {
                         m_symbolField.setText(symbol);
-                    }
-                    else {
-                        System.out.println("No selection made in list");
-                    }
+                    }          
 
                     // Reposition viewable area of list after selection
                     int row_pos = m_symbolJList.getSelectedIndex();
@@ -691,9 +677,6 @@ public class ViewStockTicker extends WindowAdapter implements IStockTicker_UICom
                         m_endDate = m_historyCard.getEndDate();
                         this.showStockHistory();
                     }
-                    else {
-                        System.err.println("Submit was press, unable to determine source");
-                    }
                     break;
 
                 // Gets stock symbol for each StockQuote listed in stock quote table
@@ -701,13 +684,13 @@ public class ViewStockTicker extends WindowAdapter implements IStockTicker_UICom
                 // re-displays the stock quote list in table.
                 case REFRESH:
                     List<String> refreshList = new ArrayList<>();
-                    m_tickerCard.getSymbolsInTable(refreshList);
+                    refreshList = m_tickerCard.getSymbolsInTable();
                     m_stockQuoteList.clear();
                     m_stockQuoteList = m_stockService.getStockQuotes(refreshList);
 
                     if(m_stockQuoteList.size() > ZERO) {
                         m_tickerCard.displayStockQuoteList(m_stockQuoteList);
-                        System.out.println("Stock quote list refreshed");
+                        //System.out.println("Stock quote list refreshed");
                     }
                     else {
                         m_message = new StringBuilder("Warning: No stocks listed in table to refresh");
@@ -768,8 +751,7 @@ public class ViewStockTicker extends WindowAdapter implements IStockTicker_UICom
                 // Logs out this user from db and business logic
                 case LOGOUT:
                     if(m_userAuth.logOut(m_username)) {
-                        m_isLoggedIn = false;
-                        System.out.println("User is logged out");
+                        m_isLoggedIn = false;       
                         this.enableSymbolJList(false);
                         m_tickerCard.clearStockList();
                         m_quoteCard.clearQuote(m_isLoggedIn);
@@ -808,7 +790,8 @@ public class ViewStockTicker extends WindowAdapter implements IStockTicker_UICom
             if(!m_userAuth.isLoggedIn(username)) {
                 if(m_userAuth.logIn(username, password)) {
                     System.out.println("User successfully logged in\n");
-                    m_isLoggedIn = true;   
+                    m_isLoggedIn = true;
+                    //m_stockQuoteList.clear();
                 }
                 else {
                     m_message.append("User login failed, please check password\n");
@@ -827,11 +810,11 @@ public class ViewStockTicker extends WindowAdapter implements IStockTicker_UICom
                 }
             }
             else {
-                System.out.println("User is already logged in\n");
+                
                 m_isLoggedIn = true;   
             }
 
-            // New user and is logged in;  show stock quote list screen & symbol list
+            // New user and is logged in; show stock quote list screen & symbol list
             if(m_isLoggedIn && m_regSelect || m_isLoggedIn && m_logInSelect) { 
                 this.resetLeftButton(UI.REFRESH.getName());
                 this.resetRightButton(UI.LOGOUT.getName());
@@ -858,7 +841,6 @@ public class ViewStockTicker extends WindowAdapter implements IStockTicker_UICom
             if(!m_userAuth.isRegistered(username)) {
                 m_userInfo = new UserInfo(m_firstname, m_lastname);
                 if(m_userAuth.register(username, password, m_userInfo)) {
-                    System.out.println("New user successfully registered");
                     this.logInUser(username, password);
                 }
                 else {
@@ -872,15 +854,8 @@ public class ViewStockTicker extends WindowAdapter implements IStockTicker_UICom
                         System.out.println("User is already a registered user, attempting to login...");
                         this.logInUser(username, password);
                     }
-                    else {  // Problem occured when logging user out while apt was closing
-                        System.out.println("User is already registered and logged in");
-                        if(m_userAuth.logOut(username)) {
-                            System.out.println("Forced user log out");
-                        }
-                        else {
-                            System.out.println("Forced log out failed");
-                        }
-
+                    else {
+                        m_userAuth.logOut(username);      
                     }
                 }
                 else {
@@ -987,42 +962,51 @@ public class ViewStockTicker extends WindowAdapter implements IStockTicker_UICom
 
 
         /**
-         * Gets the user entered symbols and adds them to a quote text field.
+         * Gets symbols from JList and add display them to the quote text field.
          */
         public void setSymbolList() {
             if(m_symbolList.size() > ZERO) {
                 m_tickerCard.setSymbolsTextField(m_symbolList);
-                System.out.println("Symbol selected");
-            }
-            else {
-                System.out.println("Unable to select symbol");
             }
         }
 
 
         /**
-         * Gets the stock quotes based on the entered stock symbols and displays the
-         * stock quotes in the stock quote table.
+         * Gets stock quotes based on the entered stock symbols and displays the
+         * stock quotes in the stock quote table.  Validates the symbols argument
+         * prior to calling the business logic, to insure the symbols are valid.
+         *
+         * @param symbols       - stock symbols from JList
          */
-        public void showStockQuoteList() {
-            if(m_symbolList.size() > ZERO) {
-                m_tickerCard.getSymbolsInTable(m_symbolList);
-                m_stockQuoteList = m_stockService.getStockQuotes(m_symbolList);
+        public void showStockQuoteList(List<String> symbols) {
+            List<String> tableSymbols = new ArrayList<>();
+            m_message = new StringBuilder("Warning: ");
+
+            if(symbols.size() > ZERO) { 
+                tableSymbols = m_tickerCard.getSymbolsInTable();            // Get tracked stocks from db
+                this.validateSymbols(symbols);                              // Validate input from quote text field
+
+                for(String str : tableSymbols) {                            // Add tracked stocks to current quote list
+                    symbols.add(str);
+                }
+
+                m_stockQuoteList.clear();                                   // Clear list and re-generate a new stock quote list
+                m_stockQuoteList = m_stockService.getStockQuotes(symbols);  // Get list of stock quotes from stock ticker service
 
                 if(m_stockQuoteList.size() > ZERO) {
-                    m_tickerCard.displayStockQuoteList(m_stockQuoteList);
-                    System.out.println("Stock quotes added to stock quote list");   
+                    m_tickerCard.displayStockQuoteList(m_stockQuoteList);   // Display stock quotes in table
                 }
                 else {
-                    System.out.println("Unable to get Stock Quotes; no quotes added to list");
+                    m_message.append("Unable to retreive Stock Quotes from service, please try again");
+                    this.showDialog(m_message.toString());
                 }
             }
             else {
-                m_message = new StringBuilder("Warning: At least one quote symbol must be entered");
+                m_message.append("Quote text field is empty or the symbols added are invalid\nPlese try again");
                 this.showDialog(m_message.toString());
             }
 
-            m_symbolList.clear();
+            m_symbolList.clear();                                           // Clear symbol list, no longer required
         }
 
 
@@ -1037,13 +1021,7 @@ public class ViewStockTicker extends WindowAdapter implements IStockTicker_UICom
                 if(m_stockQuoteList.size() > ZERO) {
                     m_tickerCard.displayStockQuoteList(m_stockQuoteList);
                 }
-                else {
-                    System.out.println("Unable to get the users tracked stock quotes");
-                }
-            }
-            else {
-                System.out.println("User has no tracked stocks");
-            }
+            }  
         }
 
 
@@ -1088,6 +1066,38 @@ public class ViewStockTicker extends WindowAdapter implements IStockTicker_UICom
                     m_historyCard.clearHistory();
                 }
             }
+        }
+
+
+        /**
+         * Validates the user inputted stock symbols match the symbols within the 
+         * symbols JList.  Removes user entered symbols if not found within the 
+         * list.  Returns a clean list of stock symbols to send to business logic.
+         * 
+         * @param symbols       - list of symbols entered by user in quote text field
+         * @return              - returns a clean list of symbols
+         */
+        public List<String> validateSymbols(List<String> symbols) {
+            ListModel listModel = m_symbolJList.getModel();
+            boolean isValid = false;
+
+            for(int i = 0; i < symbols.size(); ) {
+                for(int k = 0; k < listModel.getSize(); k++) {
+                    if(symbols.get(i).equals(listModel.getElementAt(k))) {
+                        isValid = true;
+                        break;
+                    }   
+                }
+
+                if(!isValid) {
+                    symbols.remove(i);
+                }
+                else {
+                    i++;    // Increment index when a match is found.
+                }
+                isValid = false;
+            }
+            return symbols;
         }
 
 
