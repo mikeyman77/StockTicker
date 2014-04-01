@@ -1,13 +1,14 @@
 /**
  * GUI for Stock Ticker Portfolio Manager
- * J308 Project
+ * 90.308-061 Agile Software Dev. w/Java Project
  * Paul Wallace
  */
 
 package com.stockticker.ui;
 
 /**
- * J308
+ * main Screen for Stock Ticker Portfolio Manager
+ * 90.308-061 Agile Software Dev. w/Java Project
  * @author prwallace
  */
 public class StockTicker_Main {

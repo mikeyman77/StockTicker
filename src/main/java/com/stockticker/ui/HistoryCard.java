@@ -5,23 +5,9 @@
  */
 package com.stockticker.ui;
 
-import com.stockticker.StockHistory;
 import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.GridLayout;
-
-import javax.swing.BorderFactory;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.JTable;
-import javax.swing.border.EtchedBorder;
-import javax.swing.table.AbstractTableModel;
-
-import java.util.ArrayList;
-import java.util.List;
-
-import com.stockticker.ui.ViewStockTicker.OperateStockTicker;
-import com.stockticker.StockQuote;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Font;
@@ -29,26 +15,34 @@ import java.awt.GridBagLayout;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
-import java.util.Date;
+
+import javax.swing.BorderFactory;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JTable;
+import javax.swing.border.EtchedBorder;
+import javax.swing.table.AbstractTableModel;
 import javax.swing.AbstractAction;
 import javax.swing.Action;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JSpinner;
-import javax.swing.JTextArea;
 import javax.swing.KeyStroke;
 import javax.swing.SpinnerDateModel;
 import javax.swing.border.TitledBorder;
-import javax.swing.event.ChangeEvent;
-import javax.swing.event.ChangeListener;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Calendar;
+import java.util.Date;
+
+import com.stockticker.ui.ViewStockTicker.OperateStockTicker;
+import com.stockticker.StockHistory;
 
 
 /**
- * 
- * J308 Project
+ * History Screen for Stock Ticker Portfolio Manager
+ * 90.308-061 Agile Software Dev. w/Java Project
  * @author prwallace
  */
 public class HistoryCard {
@@ -57,12 +51,10 @@ public class HistoryCard {
     private static final String ENTER_PRESSED = "ENTER_RELEASED";
 
     private JPanel m_tablePanel;
-    //private JPanel m_topPenel;
     private JPanel m_historyCard;
-    private JPanel m_calendarPanel;
+    private JPanel m_spinnerPanel;
     private JPanel m_startDatePanel;
     private JPanel m_endDatePanel;
-    //private JPanel m_namePanel;
 
     private JSpinner m_startDateSpinner;
     private JSpinner m_endDateSpinner;
@@ -75,15 +67,8 @@ public class HistoryCard {
     private SpinnerDateModel m_endDateModel;
 
     private final OperateStockTicker m_operate;
-    //private StockHistory m_selectedStock;
-
     private GridBagConstraints m_constraints;
-    private List<String> m_historyList;
-    private String m_title;
 
-    private Calendar m_calendar;
-
-    private SimpleDateFormat m_date;
 
 
     /**
@@ -92,26 +77,25 @@ public class HistoryCard {
      * @param operate   - Instance of OperateStockTicker
      */
     public HistoryCard(OperateStockTicker operate) {
-        //m_calendar = Calendar.getInstance();
         m_operate = operate;
         setCard();
     }
 
 
     /**
-     * Adds a Card JPanel as main panel for this ui screen and a child JPanel for
-     * the JTable.
+     * Adds the Card JPanel as main panel for this ui screen.  Adds its child
+     * JPanel's, the JTable, and the JSpinners.
      */
     public final void setCard() {
         m_historyModel = new HistoryTableModel(m_header);
         m_historyCard = new JPanel();
 
-        m_calendarPanel = new JPanel();
-        m_calendarPanel.setPreferredSize(new java.awt.Dimension(550, 100));
+        m_spinnerPanel = new JPanel();
+        m_spinnerPanel.setPreferredSize(new java.awt.Dimension(550, 100));
 
-        this.setStartDateCalendar();
-        this.setEndDateCalendar();
-        m_historyCard.add(m_calendarPanel, BorderLayout.NORTH);
+        this.setStartDateSpinner();
+        this.setEndDateSpinner();
+        m_historyCard.add(m_spinnerPanel, BorderLayout.NORTH);
 
         this.setHistoryTable();
         m_historyCard.setBorder(BorderFactory.createTitledBorder(BorderFactory.createEtchedBorder(EtchedBorder.LOWERED), "History"));
@@ -120,13 +104,14 @@ public class HistoryCard {
 
 
     /**
-     * Adds the stock history table to its JPanel and provides an action listener for
-     * the selected rows.
+     * Adds the stock history table to its JPanel
      */
     public void setHistoryTable() {
         m_tablePanel = new JPanel(new GridLayout(1, 0, 0, 0));
         m_tablePanel.setOpaque(true);
         m_tablePanel.setPreferredSize(new Dimension(630, 280));
+        m_tablePanel.setBorder(BorderFactory.createTitledBorder(null, "History2", TitledBorder.ABOVE_TOP, TitledBorder.CENTER,
+                                    new Font("Sansserif", 0, 12), new Color(0, 0, 0)));
 
         m_historyTable = new JTable(m_historyModel);
         m_historyTable.setPreferredScrollableViewportSize(new Dimension(630, 200));
@@ -142,9 +127,9 @@ public class HistoryCard {
 
 
     /**
-     * Initializes and layout the spinner calendar fields.
+     * Initializes and layout the start date spinner, its panel, and its labels.
      */
-    private void setStartDateCalendar() {
+    private void setStartDateSpinner() {
         m_startDateModel = new SpinnerDateModel();// may need to initial with a Calendar Instance, see CalendarSpinner
         m_startDateModel.setCalendarField(Calendar.DAY_OF_YEAR);
 
@@ -163,8 +148,8 @@ public class HistoryCard {
                                         BorderFactory.createTitledBorder(null, "Start Date", TitledBorder.CENTER,
                                         TitledBorder.TOP, new Font("SansSerif", 0, 10), new Color(0, 0, 0))));
 
-        // Pressed the "Submit" button if enter is depressed while the start date spinner
-        // has the focus.
+        // Listens for the enter button when start date spinner has focus.  Clicks 
+        // the "Submit" button(left control button) in ViewStockTicker screen.
         Action startDateAction = new AbstractAction() {
             @Override
             public void actionPerformed(ActionEvent actionEvent) {
@@ -175,7 +160,7 @@ public class HistoryCard {
         m_startDateSpinner.getInputMap(JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT).put(KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, 0, false), ENTER_PRESSED);
         m_startDateSpinner.getActionMap().put(ENTER_PRESSED, startDateAction);
 
-        // Layout the calendar spinner on its panel
+        // Layout the spinner on its panel
         m_constraints = new GridBagConstraints();
         m_constraints.gridx = 0;
         m_constraints.gridy = 0;
@@ -184,7 +169,8 @@ public class HistoryCard {
         m_constraints.anchor = GridBagConstraints.NORTHWEST;
         m_constraints.insets = new Insets(10, 10, 0, 10);
         m_startDatePanel.add(m_startDateSpinner, m_constraints);
-        
+
+        // Add/layout label on the spinner panel
         JLabel dateFormat = new JLabel("MM DD YYYY");
         dateFormat.setFont(new Font("SansSerif", 0, 10));
         m_constraints = new GridBagConstraints();
@@ -199,14 +185,14 @@ public class HistoryCard {
         m_constraints.gridy = 0;
         m_constraints.anchor = GridBagConstraints.NORTHWEST;
         m_constraints.insets = new Insets(0, 0, 0, 10);
-        m_calendarPanel.add(m_startDatePanel, m_constraints);
+        m_spinnerPanel.add(m_startDatePanel, m_constraints);
     }
 
 
     /**
-     * Initializes and layout the spinner calendar fields.
+     * Initializes and layout the end date spinner, its panel, and its labels.
      */
-    private void setEndDateCalendar() {
+    private void setEndDateSpinner() {
         m_endDateModel = new SpinnerDateModel();
         m_endDateModel.setCalendarField(Calendar.DAY_OF_YEAR);
 
@@ -225,8 +211,8 @@ public class HistoryCard {
                                         BorderFactory.createTitledBorder(null, "End Date", TitledBorder.CENTER,
                                         TitledBorder.TOP, new Font("SansSerif", 0, 10), new Color(0, 0, 0))));
 
-        // Pressed the "Submit" button if enter is depressed while the end date spinner
-        // has the focus.
+        // Listens for the enter button when end date spinner has focus.  Clicks 
+        // the "Submit" button in ViewStockTicker screen.
         Action endDateAction = new AbstractAction() {
             @Override
             public void actionPerformed(ActionEvent actionEvent) {
@@ -237,16 +223,17 @@ public class HistoryCard {
         m_endDateSpinner.getInputMap(JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT).put(KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, 0, false), ENTER_PRESSED);
         m_endDateSpinner.getActionMap().put(ENTER_PRESSED, endDateAction);
 
-        // Layout the calendar spinner on its panel
+        // Layout the spinner on its panel
         m_constraints = new GridBagConstraints();
         m_constraints.gridx = 0;
         m_constraints.gridy = 0;
-        m_constraints.ipadx = 13;//13
+        m_constraints.ipadx = 13;
         m_constraints.ipady = 1;
         m_constraints.anchor = GridBagConstraints.NORTHWEST;
         m_constraints.insets = new Insets(10, 10, 0, 10);
         m_endDatePanel.add(m_endDateSpinner, m_constraints);
-        
+
+        // Add/layout label on the spinner panel
         JLabel dateFormat = new JLabel("MM DD YYYY");
         dateFormat.setFont(new Font("SansSerif", 0, 10));
         m_constraints = new GridBagConstraints();
@@ -259,36 +246,63 @@ public class HistoryCard {
         m_constraints = new GridBagConstraints();
         m_constraints.gridx = 0;
         m_constraints.gridy = 1;
-        m_calendarPanel.add(m_endDatePanel, m_constraints);
+        m_spinnerPanel.add(m_endDatePanel, m_constraints);
     }
 
 
     /**
-     * Gets/returns this Card JPanel
-     * @return 
+     * Gets/returns the Card panel
+     * @return  - the Card panel of this screen
      */
     public JPanel getCard() {
         return m_historyCard;
     }
 
 
+    /**
+     * Displays the StockHistory of the selected stock from the TickerCard screen.
+     * The history is displayed in a date range that is set by the user.
+     * 
+     * @param history   - the StockHistory of a stock during a specific date range
+     */
     public void displayHistory(List<StockHistory> history) {
         m_historyModel.addStocks(history);
     }
 
+
+    /**
+     * Gets/returns the start date of the date range set by the user.
+     * 
+     * @return  - the start date
+     */
     public Date getStartDate() {
         return m_startDateModel.getDate();
     }
 
 
+    /**
+     * Gets/returns the end date of the date range set by user.
+     * 
+     * @return  - the end date
+     */
     public Date getEndDate() {
         return m_endDateModel.getDate();
     }
 
 
     /**
-     * Clears the Tables of their content
-     * @param disable
+     * Adds a title border around the table, the title is set to the argument String.
+     * 
+     * @param title - Title of the table
+     */
+    public void setTableBorder(String title) {
+        m_tablePanel.setBorder(BorderFactory.createTitledBorder(BorderFactory.createEtchedBorder(), title, TitledBorder.ABOVE_TOP, TitledBorder.CENTER,
+                                        new Font("Sansserif", 0, 12), new Color(0, 0, 0)));
+    }
+
+
+    /**
+     * Clears the Table of its content
      */
     public void clearHistory() {
         m_historyModel.deleteAllRows();
@@ -300,8 +314,8 @@ public class HistoryCard {
 
 
     /**
-     * Model for the StockQuote JTable.  Handles adding, inserting, displaying, and
-     * deleting day in table.
+     * Model for the History JTable.  Handles adding, inserting, displaying, and
+     * deleting StockHistory in the table.
      */
     class HistoryTableModel extends AbstractTableModel {
         private List<StockHistory> m_stockHistory;
@@ -309,8 +323,7 @@ public class HistoryCard {
 
 
         /*
-         * Constructor for StockTableModel.  Initializes header String[] and List<StockQuote>
-         * fields.  Displays the JTable with header.
+         * Constructs the HistoryTableModel.
          */
         public HistoryTableModel(String[] header) {
             this.m_header = header;
@@ -319,7 +332,7 @@ public class HistoryCard {
 
 
         /**
-         * Gets/returns each column name from the header String[].
+         * Gets/returns column name located at the argument index.
          */
         @Override
         public String getColumnName(int column) {
@@ -346,10 +359,8 @@ public class HistoryCard {
 
 
         /*
-         * Gets the individual StockQuote fields within the List<StockQuotes> and 
-         * inserts them into their appropriate places in the table.  Adds a plus or
-         * minus sign to the Tracked column; "+" for tracking "-" for not tracking.
-         * 
+         * Gets each StockHistory record from the model's List<StockHistory> and 
+         * insert each field in the record into its appropriate places in the table. 
          */
         @Override
         public Object getValueAt(int rowIndex, int columnIndex) {
@@ -386,7 +397,7 @@ public class HistoryCard {
 
 
         /*
-         * Adds the list of StockQuote's to the table models List<StockQuote>
+         * Adds a StockHistory range to the table models List<StockHitory>
          */
         public void addStocks(List<StockHistory> history) {
             m_stockHistory = history;
@@ -395,7 +406,7 @@ public class HistoryCard {
 
 
         /*
-         * Gets/returns the StockQuote at the specified row
+         * Gets/returns the StockHistory at the specified row
          */
         public StockHistory getStock(int row) {
             return m_stockHistory.get(row);
