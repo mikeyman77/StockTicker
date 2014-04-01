@@ -2,7 +2,6 @@ package com.stockticker.logic;
 
 import com.stockticker.User;
 import com.stockticker.persistence.PersistenceService;
-import com.stockticker.persistence.StockTickerPersistence;
 import org.junit.Test;
 import org.junit.After;
 import org.junit.Before;
@@ -12,20 +11,29 @@ import static junit.framework.Assert.assertFalse;
 
 public class StockTickerTest {
     
-    private final StockTickerService sts = StockTicker.INSTANCE;
-    private final PersistenceService persist = StockTickerPersistence.INSTANCE;
+    private final BusinessLogicService bls;
+    private final StockTickerService sts;
+    private final PersistenceService persistence;
     
     private final User testUser = new User("testuser", "testpassword");
     private final String stockSymbol = "AAPL";
 
+    public StockTickerTest() {
+        bls = BusinessLogicService.INSTANCE;
+        bls.start();
+        
+        persistence = bls.getPersistence();
+        sts = bls.getStockTicker();
+    }
+    
     @Before
     public void setUp() throws Exception {
-        persist.createUser(testUser.getUserName(), testUser.getPassword());
+        persistence.createUser(testUser.getUserName(), testUser.getPassword());
     }
 
     @After
     public void tearDown() throws Exception {
-        persist.deleteUser(testUser.getUserName());
+        persistence.deleteUser(testUser.getUserName());
     }
     
     /**
@@ -41,7 +49,7 @@ public class StockTickerTest {
      */
     @Test
     public void testGetTrackedStocks() {
-        persist.trackStock(testUser.getUserName(), stockSymbol, true);
+        persistence.trackStock(testUser.getUserName(), stockSymbol, true);
         String username = testUser.getUserName();
         boolean result = sts.getTrackedStocks(username).contains(stockSymbol);
         assertTrue(result);

@@ -4,14 +4,22 @@ import com.stockticker.User;
 import com.stockticker.UserInfo;
 import com.stockticker.persistence.PersistenceService;
 import com.stockticker.persistence.PersistenceServiceException;
-import com.stockticker.persistence.StockTickerPersistence;
 import org.jasypt.util.password.BasicPasswordEncryptor;
 
 public enum UserAuthorization implements AuthorizationService {
     INSTANCE;
-
-    private final PersistenceService persistence = StockTickerPersistence.INSTANCE;
-    private final BasicPasswordEncryptor passwordEncryptor = new BasicPasswordEncryptor();
+    
+    private BusinessLogicService bls;
+    private PersistenceService persistence;
+    private BasicPasswordEncryptor passwordEncryptor;
+    
+    // This method is only called by the Business Logic Service
+    void start() {
+        bls = BusinessLogicService.INSTANCE;
+        persistence = bls.getPersistence();
+        
+        passwordEncryptor = new BasicPasswordEncryptor();
+    }
     
     @Override
     public boolean logIn(String username, String password) throws BusinessLogicException {

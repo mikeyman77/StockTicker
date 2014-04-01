@@ -3,7 +3,6 @@ package com.stockticker.logic;
 import com.stockticker.User;
 import com.stockticker.UserInfo;
 import com.stockticker.persistence.PersistenceService;
-import com.stockticker.persistence.StockTickerPersistence;
 import org.junit.Test;
 
 import static junit.framework.Assert.assertTrue;
@@ -13,10 +12,11 @@ import org.junit.After;
 import org.junit.Before;
 
 public class UserAuthorizationTest {
-
-    private final PersistenceService persistence = StockTickerPersistence.INSTANCE;
-    private final AuthorizationService userAuth = UserAuthorization.INSTANCE;
-    private BasicPasswordEncryptor passwordEncryptor = new BasicPasswordEncryptor();
+    
+    private final BusinessLogicService bls;
+    private final PersistenceService persistence;
+    private final AuthorizationService userAuth;
+    private final BasicPasswordEncryptor passwordEncryptor;
 
     private final String wrongPassword = "none";
     private final String newPassword = "newPass";
@@ -25,6 +25,16 @@ public class UserAuthorizationTest {
     private final UserInfo testUserInfo = new UserInfo("Test", "User");
     private final User otherUser = new User("other", "otherpass");
     private final User anotherUser = new User("anotherUser", "anotherPassword");
+
+    public UserAuthorizationTest() {
+        bls = BusinessLogicService.INSTANCE;
+        bls.start();
+        
+        persistence = bls.getPersistence();
+        userAuth = bls.getUserAuth();
+        
+        passwordEncryptor = new BasicPasswordEncryptor();
+    }
     
     @Before
     public void setUp() {
