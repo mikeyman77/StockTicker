@@ -24,39 +24,6 @@ public enum StockTickerPersistence implements PersistenceService {
     private TrackedStocksDAO trackedDAO = null;
     private UserDAO userDAO = null;
 
-    /*
-     * This is temporary code that invokes the PersistenceService start method
-     *       on behalf of junit tests and the business logic. This private contructor
-     *       can be removed once the start method is invoked after retrieving the
-     *       PersistenceService interface instance.
-     */
-    private StockTickerPersistence() {
-        boolean isBusinessLogicOrJUnitTest = false;
-        String BUSINESS_LOGIC_CLASS = "com.stockticker.logic.UserAuthorization";
-        String PERSISTENCE_SERVICE_TEST = "com.stockticker.persistence.PersistenceServiceTest";
-        String USER_AUTHORIZATION_TEST = "com.stockticker.logic.UserAuthorizationTest";
-        String STOCK_TICKER_TEST = "com.stockticker.logic.StockTickerTest";
-        try {
-            List<StackTraceElement> elements = new ArrayList<StackTraceElement>(Arrays.asList(Thread.currentThread().getStackTrace()));
-            for (StackTraceElement element : elements) {
-                if (element.getClassName().equals(BUSINESS_LOGIC_CLASS) ||
-                    element.getClassName().equals(PERSISTENCE_SERVICE_TEST) ||
-                    element.getClassName().equals(USER_AUTHORIZATION_TEST) ||
-                    element.getClassName().equals(STOCK_TICKER_TEST)) {
-
-                    isBusinessLogicOrJUnitTest = true;
-                    break;
-                }
-            }
-            if (isBusinessLogicOrJUnitTest) {
-                start();
-            }
-        }
-        catch (PersistenceServiceException e) {
-            ; //do nothing, supress. see todo above
-        }
-    }
-
     /**
      * Performs necessary initialization.
      *
