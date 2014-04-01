@@ -3,7 +3,6 @@ package com.stockticker.logic;
 import com.stockticker.StockHistory;
 import com.stockticker.StockQuote;
 import com.stockticker.persistence.PersistenceService;
-import com.stockticker.persistence.StockTickerPersistence;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -17,9 +16,19 @@ import java.util.List;
 public enum StockTicker implements StockTickerService {
     INSTANCE;
     
-    private final PersistenceService persistence = StockTickerPersistence.INSTANCE;
-    private final StockQuoteService ysqs = YahooStockQuoteService.INSTANCE;
-    private final StockHistoryService yshs = YahooStockHistoryService.INSTANCE;
+    private BusinessLogicService bls;
+    private PersistenceService persistence;
+    private StockQuoteService ysqs;
+    private StockHistoryService yshs;
+    
+    // This method is only called by the Business Logic Service
+    void start() {
+        bls = BusinessLogicService.INSTANCE;
+        persistence = bls.getPersistence();
+        
+        ysqs = YahooStockQuoteService.INSTANCE;
+        yshs = YahooStockHistoryService.INSTANCE;
+    }
     
     @Override
     public List<StockQuote> getStockQuotes(List<String> symbols) 
