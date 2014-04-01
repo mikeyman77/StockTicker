@@ -48,6 +48,7 @@ import com.stockticker.SymbolMap;
 import com.stockticker.UserInfo;
 import com.stockticker.StockHistory;
 import com.stockticker.logic.AuthorizationService;
+import com.stockticker.logic.BusinessLogicService;
 import com.stockticker.logic.StockTicker;
 import com.stockticker.logic.StockTickerService;
 import com.stockticker.logic.UserAuthorization;
@@ -124,8 +125,9 @@ public class ViewStockTicker extends WindowAdapter implements IStockTicker_UICom
     private List<StockQuote> m_stockQuoteList;
     private List<StockHistory> m_stockHistoryList;
 
-    private final AuthorizationService m_userAuth = UserAuthorization.INSTANCE;
-    private final StockTickerService m_stockService =  StockTicker.INSTANCE;
+    private BusinessLogicService bls;
+    private final AuthorizationService m_userAuth;
+    private final StockTickerService m_stockService;
     private UserInfo m_userInfo;
 
     private final OperateStockTicker m_operate;
@@ -136,6 +138,11 @@ public class ViewStockTicker extends WindowAdapter implements IStockTicker_UICom
      * Constructs the ViewStockTicker object
      */
     public ViewStockTicker() {
+        bls = BusinessLogicService.INSTANCE;
+        bls.start();
+        m_userAuth = bls.getUserAuth();
+        m_stockService = bls.getStockTicker();
+
         m_symbolList = new ArrayList<>();
         m_stockQuoteList = new ArrayList<>();
         m_multSymbols = new ArrayList<>();
