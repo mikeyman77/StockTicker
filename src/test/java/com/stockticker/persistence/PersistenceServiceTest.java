@@ -37,11 +37,19 @@ public class PersistenceServiceTest {
     private User vedder;
 
     /**
+     * Constructs a PersistenceServiceTest instance and instantiates
+     * and starts the PersistenceService.
+     */
+    public PersistenceServiceTest() {
+        persistence = StockTickerPersistence.INSTANCE;
+        persistence.start();
+    }
+
+    /**
      * Sets up each test before they run
      */
     @Before
     public void setUp() {
-        persistence = StockTickerPersistence.INSTANCE;
         persistence.createUser(PEDROIA, PASSWORD);
         ortiz = persistence.createUser(ORTIZ, PASSWORD);
         persistence.createUser(VICTORINO, PASSWORD);
@@ -55,7 +63,7 @@ public class PersistenceServiceTest {
      */
     @After
     public void tearDown() {
-        persistence = StockTickerPersistence.INSTANCE;
+        //persistence = StockTickerPersistence.INSTANCE;
         persistence.deleteUser(PEDROIA);
         persistence.deleteUser(ORTIZ);
         persistence.deleteUser(VICTORINO);
