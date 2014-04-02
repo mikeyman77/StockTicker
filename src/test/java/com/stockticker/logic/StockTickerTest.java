@@ -48,7 +48,7 @@ public class StockTickerTest {
      * Test of getTrackedStocks method with one tracked stock.
      */
     @Test
-    public void testGetTrackedStocks() {
+    public void testGetTrackedStocks() throws Exception {
         persistence.trackStock(testUser.getUserName(), stockSymbol, true);
         String username = testUser.getUserName();
         boolean result = sts.getTrackedStocks(username).contains(stockSymbol);

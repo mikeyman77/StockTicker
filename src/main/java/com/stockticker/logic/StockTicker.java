@@ -3,6 +3,7 @@ package com.stockticker.logic;
 import com.stockticker.StockHistory;
 import com.stockticker.StockQuote;
 import com.stockticker.persistence.PersistenceService;
+import com.stockticker.persistence.PersistenceServiceException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -35,13 +36,8 @@ public enum StockTicker implements StockTickerService {
             throws BusinessLogicException {
         
         List<StockQuote> stockQuoteList = new ArrayList<>();
-        
-        try {
-            stockQuoteList = ysqs.getStockQuotes(ysqs.getURL(symbols));
-        }
-        catch (BusinessLogicException ex) {
-            throw new BusinessLogicException("Error: Could not get stock quotes, check logs", ex);
-        }
+
+        stockQuoteList = ysqs.getStockQuotes(ysqs.getURL(symbols));
         
         return stockQuoteList;
     }
@@ -51,13 +47,8 @@ public enum StockTicker implements StockTickerService {
             throws BusinessLogicException {
         
         List<StockHistory> stockHistoryList = new ArrayList<>();
-        
-        try {
-            stockHistoryList = yshs.getStockHistory(yshs.getURL(symbol, startDate, endDate));
-        }
-        catch (BusinessLogicException ex) {
-            throw new BusinessLogicException("Error: Could not get stock quotes, check logs", ex);
-        }
+
+        stockHistoryList = yshs.getStockHistory(yshs.getURL(symbol, startDate, endDate));
         
         return stockHistoryList;
     }
@@ -71,7 +62,7 @@ public enum StockTicker implements StockTickerService {
         try {
             trackedStocksList = persistence.getTrackedStocks(username);
         }
-        catch (BusinessLogicException ex) {
+        catch (PersistenceServiceException ex) {
             throw new BusinessLogicException("Error: Could not get tracked stocks, check logs", ex);
         }
         
@@ -86,7 +77,7 @@ public enum StockTicker implements StockTickerService {
         try {
             successful = persistence.trackStock(username, symbol, tracked);
         }
-        catch (BusinessLogicException ex) {
+        catch (PersistenceServiceException ex) {
             throw new BusinessLogicException("Error: Could not tracked/untrack stock, check logs", ex);
         }
         
@@ -102,7 +93,7 @@ public enum StockTicker implements StockTickerService {
         try {
             successful = persistence.isStockTracked(username, symbol);
         }
-        catch (BusinessLogicException ex) {
+        catch (PersistenceServiceException ex) {
             throw new BusinessLogicException("Error: Could not get if stock is tracked, check logs", ex);
         }
         
