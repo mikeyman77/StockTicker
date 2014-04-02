@@ -2,6 +2,7 @@
 package com.stockticker.logic;
 
 import com.stockticker.persistence.PersistenceService;
+import com.stockticker.persistence.PersistenceServiceException;
 import com.stockticker.persistence.StockTickerPersistence;
 
 /**
@@ -25,7 +26,7 @@ public enum BusinessLogicService {
     /**
      * Initializes the service
      */
-    public void start() {
+    public void start() throws BusinessLogicException {
         if (!initialized) {
             initPersistence();
             
@@ -33,8 +34,6 @@ public enum BusinessLogicService {
                 initUserAuth();
                 initStockTicker();
             }
-            
-            // TODO: detect  internet connection
             
             if (persistenceInitialized && userAuthIntialized && stockTickerIntialized) {
                 initialized =  true;
@@ -87,9 +86,14 @@ public enum BusinessLogicService {
         return persistence;
     }
     
-    private void initPersistence() {
+    private void initPersistence() throws BusinessLogicException {
         persistence = StockTickerPersistence.INSTANCE;
-        persistence.start();
+        try {
+            persistence.start();
+        }
+        catch (PersistenceServiceException ex) {
+            throw new BusinessLogicException("Persistence service could not start.", ex);
+        }
         persistenceInitialized = true;
     }
     

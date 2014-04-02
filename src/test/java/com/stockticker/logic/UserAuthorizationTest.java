@@ -37,7 +37,7 @@ public class UserAuthorizationTest {
     }
     
     @Before
-    public void setUp() {
+    public void setUp() throws Exception {
         persistence.createUser(testUser.getUserName(), 
                 passwordEncryptor.encryptPassword(testUser.getPassword()));
         persistence.createUser(otherUser.getUserName(), 
@@ -45,7 +45,7 @@ public class UserAuthorizationTest {
     }
     
     @After
-    public void tearDown() {
+    public void tearDown() throws Exception {
         persistence.deleteUser(testUser.getUserName());
         persistence.deleteUser(otherUser.getUserName());
         persistence.deleteUser(anotherUser.getUserName());
@@ -172,7 +172,7 @@ public class UserAuthorizationTest {
     }
     
     @Test
-    public void testUpdateUserInfo() {
+    public void testUpdateUserInfo() throws Exception {
         persistence.setLoginStatus(testUser.getUserName(), true);
         boolean result = userAuth.updateUserInfo(testUser.getUserName(), testUserInfo);
         assertTrue("Update user info test with user logged in", result);
@@ -185,7 +185,7 @@ public class UserAuthorizationTest {
     }
     
     @Test
-    public void testFailedUpdateUserInfoWithOtherUsersLoggedIn() {
+    public void testFailedUpdateUserInfoWithOtherUsersLoggedIn() throws Exception {
         persistence.setLoginStatus(otherUser.getUserName(), true);
         boolean result = userAuth.updateUserInfo(testUser.getUserName(), testUserInfo);
         assertFalse("Update user info test with other users logged in", result);
