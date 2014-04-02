@@ -33,15 +33,15 @@ public enum YahooStockHistoryService implements StockHistoryService {
         String yahooQueryStr;
         
         if (symbol == null || startDate == null ||  endDate == null ) {
-            throw new IllegalArgumentException("Error: You did not specify a symbol, start date or end date!");
+            throw new BusinessLogicException("Error: You did not specify a symbol, start date or end date!");
         }
         
         if (symbol.isEmpty() || !SymbolMap.isValidSymbol(symbol)) {
-            throw new IllegalArgumentException("Error: The symbol you specified is invalid!");
+            throw new BusinessLogicException("Error: The symbol you specified is invalid!");
         }
         
         if (startDate.after(endDate)) {
-            throw new IllegalArgumentException("Error: The start date is after the end date!");
+            throw new BusinessLogicException("Error: The start date is after the end date!");
         }
         
         queryFields = "Symbol,Date,Open,High,Low,Close,Volume,Adj_Close";

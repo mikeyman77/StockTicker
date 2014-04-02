@@ -43,7 +43,7 @@ public class YahooStockHistoryServiceTest {
     /**
      * Test of getURL method with an invalid symbol.
      */
-    @Test (expected=IllegalArgumentException.class)
+    @Test (expected=BusinessLogicException.class)
     public void testGetURLWithInvalidSymbol() throws ParseException {
         DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
         String symbol = "XXXX";
@@ -55,7 +55,7 @@ public class YahooStockHistoryServiceTest {
     /**
      * Test of getURL method with an empty symbol.
      */
-    @Test (expected=IllegalArgumentException.class)
+    @Test (expected=BusinessLogicException.class)
     public void testGetURLWithEmptySymbol() throws ParseException {
         DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
         String symbol = "";
@@ -67,7 +67,7 @@ public class YahooStockHistoryServiceTest {
     /**
      * Test of getURL method with a null symbol.
      */
-    @Test (expected=IllegalArgumentException.class)
+    @Test (expected=BusinessLogicException.class)
     public void testGetURLWithNullSymbol() throws ParseException {
         DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
         Date startDate = dateFormat.parse("2014-03-11");
@@ -78,7 +78,7 @@ public class YahooStockHistoryServiceTest {
     /**
      * Test of getURL method with a null start date.
      */
-    @Test (expected=IllegalArgumentException.class)
+    @Test (expected=BusinessLogicException.class)
     public void testGetURLWithNullStartDate() throws ParseException {
         DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
         String symbol = "GOOG";
@@ -89,7 +89,7 @@ public class YahooStockHistoryServiceTest {
     /**
      * Test of getURL method with a null end date.
      */
-    @Test (expected=IllegalArgumentException.class)
+    @Test (expected=BusinessLogicException.class)
     public void testGetURLWithNullEndDate() throws ParseException {
         DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
         String symbol = "GOOG";
