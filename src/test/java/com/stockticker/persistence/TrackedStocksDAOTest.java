@@ -39,7 +39,7 @@ public class TrackedStocksDAOTest {
      * Sets up the required values in the database before each test
      */
     @Before
-    public void setUp() {
+    public void setUp() throws PersistenceServiceException {
         userDAO.create(CONNALL, PASSWORD);
         userId = userDAO.getUserId(CONNALL);
         stockId = trackedDAO.getStockId(GOOG);
@@ -50,7 +50,7 @@ public class TrackedStocksDAOTest {
      * Tears down the setUp environment
      */
     @After
-    public void tearDown() {
+    public void tearDown() throws PersistenceServiceException {
         userDAO.delete(CONNALL);
         trackedDAO.deleteAll(userId);
     }
@@ -59,7 +59,7 @@ public class TrackedStocksDAOTest {
      * Tests that the getStockId method returns a valid stock Id
      */
     @Test
-    public void testGetStockIdValid() {
+    public void testGetStockIdValid() throws PersistenceServiceException {
         assertTrue("get valid stock id", (trackedDAO.getStockId(GOOG) > 0));
     }
 
@@ -67,7 +67,7 @@ public class TrackedStocksDAOTest {
      * Tests that the getStockId method returns an invalid stock Id
      */
     @Test
-    public void testGetStockIdInvalid() {
+    public void testGetStockIdInvalid() throws PersistenceServiceException {
         assertFalse("get invalid stock id", (trackedDAO.getStockId("") > 0));
     }
 
@@ -96,7 +96,7 @@ public class TrackedStocksDAOTest {
      * stockId
      */
     @Test
-    public void testAddTrue() {
+    public void testAddTrue() throws PersistenceServiceException {
         assertTrue("add tracked stock successful", (trackedDAO.add(userId, trackedDAO.getStockId(MSFT))));
     }
 
@@ -104,7 +104,7 @@ public class TrackedStocksDAOTest {
      * Test the add method for failure
      */
     @Test
-    public void testAddFalse() {
+    public void testAddFalse() throws PersistenceServiceException {
         assertFalse("add tracked stock fails", (trackedDAO.add(userId, -1)));
     }
 
@@ -113,7 +113,7 @@ public class TrackedStocksDAOTest {
      * the tracked stocks table
      */
     @Test
-    public void testExistsTrue() {
+    public void testExistsTrue() throws PersistenceServiceException {
         assertTrue("tracked stock exists successful", (trackedDAO.exists(userId, trackedDAO.getStockId(GOOG))));
     }
 
@@ -122,7 +122,7 @@ public class TrackedStocksDAOTest {
      * the tracked stocks table
      */
     @Test
-    public void testExistsFalse() {
+    public void testExistsFalse() throws PersistenceServiceException {
         assertFalse("tracked stock exists fails", (trackedDAO.exists(userId, -1)));
     }
 
@@ -130,7 +130,7 @@ public class TrackedStocksDAOTest {
      * Tests the get method returns a list of tracked stocks
      */
     @Test
-    public void testGetNotEmpty() {
+    public void testGetNotEmpty() throws PersistenceServiceException {
         assertTrue("get tracked stocks not empty", (!trackedDAO.get(userId).isEmpty()));
     }
 
@@ -138,7 +138,7 @@ public class TrackedStocksDAOTest {
      * Tests the get method returns an empty
      */
     @Test
-    public void testGetEmpty() {
+    public void testGetEmpty() throws PersistenceServiceException {
         trackedDAO.deleteAll(userId);
         assertTrue("get tracked stocks not empty", (trackedDAO.get(userId).isEmpty()));
     }
@@ -147,7 +147,7 @@ public class TrackedStocksDAOTest {
      * Tests the delete method returns true
      */
     @Test
-    public void testDeleteTrue() {
+    public void testDeleteTrue() throws PersistenceServiceException {
         assertTrue("delete tracked stocks true", (trackedDAO.delete(userId, stockId)));
     }
 
@@ -155,7 +155,7 @@ public class TrackedStocksDAOTest {
      * Tests the delete method returns false
      */
     @Test
-    public void testDeleteFalse() {
+    public void testDeleteFalse() throws PersistenceServiceException {
         assertFalse("delete tracked stocks false", (trackedDAO.delete(userId, -1)));
     }
 
@@ -163,7 +163,7 @@ public class TrackedStocksDAOTest {
      * Tests the deleteAll method returns true
      */
     @Test
-    public void testDeleteAllTrue() {
+    public void testDeleteAllTrue() throws PersistenceServiceException {
         assertTrue("delete all tracked stocks true", (trackedDAO.deleteAll(userId)));
     }
 
@@ -171,7 +171,7 @@ public class TrackedStocksDAOTest {
      * Tests the deleteAll method returns false
      */
     @Test
-    public void testDeleteAllFalse() {
+    public void testDeleteAllFalse() throws PersistenceServiceException {
         assertFalse("delete all tracked stocks false", (trackedDAO.deleteAll(-1)));
     }
 
