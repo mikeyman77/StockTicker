@@ -40,7 +40,7 @@ public class PersistenceServiceTest {
      * Constructs a PersistenceServiceTest instance and instantiates
      * and starts the PersistenceService.
      */
-    public PersistenceServiceTest() {
+    public PersistenceServiceTest() throws PersistenceServiceException {
         persistence = StockTickerPersistence.INSTANCE;
         persistence.start();
     }
@@ -49,7 +49,7 @@ public class PersistenceServiceTest {
      * Sets up each test before they run
      */
     @Before
-    public void setUp() {
+    public void setUp() throws PersistenceServiceException {
         persistence.createUser(PEDROIA, PASSWORD);
         ortiz = persistence.createUser(ORTIZ, PASSWORD);
         persistence.createUser(VICTORINO, PASSWORD);
@@ -62,7 +62,7 @@ public class PersistenceServiceTest {
      * Tears down setup
      */
     @After
-    public void tearDown() {
+    public void tearDown() throws PersistenceServiceException {
         //persistence = StockTickerPersistence.INSTANCE;
         persistence.deleteUser(PEDROIA);
         persistence.deleteUser(ORTIZ);
@@ -73,7 +73,7 @@ public class PersistenceServiceTest {
      * Tests the getTrackedStocks method for a value.
      */
     @Test
-    public void testGetTrackedStocks() {
+    public void testGetTrackedStocks() throws PersistenceServiceException {
         List<String> stocks = persistence.getTrackedStocks(ORTIZ);
         assertTrue("tracked stocks", (stocks.size() > 0));
     }
@@ -82,7 +82,7 @@ public class PersistenceServiceTest {
      * Tests the trackStock method returns true
      */
     @Test
-    public void testTrackStockTrue() {
+    public void testTrackStockTrue() throws PersistenceServiceException {
         assertTrue("track stock true", persistence.trackStock(ORTIZ, GOOG, true));
     }
 
@@ -90,14 +90,14 @@ public class PersistenceServiceTest {
      * Tests the trackStock method returns false
      */
     @Test
-    public void testTrackStockFalse() {
+    public void testTrackStockFalse() throws PersistenceServiceException {
         assertFalse("track stock false", persistence.trackStock(ORTIZ, "", false));
     }
     /**
      * Tests the isStockTracked method is true
      */
     @Test
-    public void testIsStockTrackedTrue() {
+    public void testIsStockTrackedTrue() throws PersistenceServiceException {
         assertTrue("is stock tracked true", persistence.isStockTracked(ORTIZ, GOOG));
     }
 
@@ -105,7 +105,7 @@ public class PersistenceServiceTest {
      * Tests the isStockTracked method is false
      */
     @Test
-    public void testIsStockTrackedFalse() {
+    public void testIsStockTrackedFalse() throws PersistenceServiceException {
         assertFalse("is stock tracked false", persistence.isStockTracked(ORTIZ, ORCL));
     }
 
@@ -113,7 +113,7 @@ public class PersistenceServiceTest {
      * Tests the userExists method is true
      */
     @Test
-    public void testUserExistsTrue() {
+    public void testUserExistsTrue() throws PersistenceServiceException {
         assertTrue("user exists", persistence.userExists(ORTIZ));
     }
 
@@ -121,7 +121,7 @@ public class PersistenceServiceTest {
      * Tests the userExists method is false
      */
     @Test
-    public void testUserExistsFalse() {
+    public void testUserExistsFalse() throws PersistenceServiceException {
         assertFalse("user doesn't exist", persistence.userExists(CONNALL));
     }
 
@@ -129,7 +129,7 @@ public class PersistenceServiceTest {
      * Tests the createUser method
      */
     @Test
-    public void testCreateUser() {
+    public void testCreateUser() throws PersistenceServiceException {
         User user = persistence.createUser(SCHILLING, PASSWORD);
         assertNotNull("create user", user);
         persistence.deleteUser(SCHILLING);
@@ -139,25 +139,25 @@ public class PersistenceServiceTest {
      * Tests the createUser method returns null when User exists
      */
     @Test
-    public void testCreateUserReturnsNullIfExist() {
+    public void testCreateUserReturnsNullIfExist() throws PersistenceServiceException {
         User user = persistence.createUser(ORTIZ, PASSWORD);
         assertNull("create user when exists", user);
     }
 
     @Test
-    public void testUpdateUserUpdatesPassword() {
+    public void testUpdateUserUpdatesPassword() throws PersistenceServiceException {
         ortiz.setPassword(PASSWORD+"2014");
         persistence.updateUser(ortiz);
         assertEquals("update user updates password", PASSWORD + "2014", persistence.getUser(ORTIZ).getPassword());
     }
 
     @Test
-    public void testUpdateUserTrue() {
+    public void testUpdateUserTrue() throws PersistenceServiceException {
         assertTrue("update user true", persistence.updateUser(ortiz));
     }
 
     @Test
-    public void testUpdateUserFalse() {
+    public void testUpdateUserFalse() throws PersistenceServiceException {
         vedder = new User(VEDDER, PASSWORD);
         assertFalse("update user false", persistence.updateUser(vedder));
         persistence.deleteUser(VEDDER);
@@ -167,7 +167,7 @@ public class PersistenceServiceTest {
      * Tests the getUser method for non null return
      */
     @Test
-    public void testGetUserNotNull() {
+    public void testGetUserNotNull() throws PersistenceServiceException {
         assertNotNull("load user not null", persistence.getUser(VICTORINO));
     }
 
@@ -175,7 +175,7 @@ public class PersistenceServiceTest {
      * Tests the getUser method for null return
      */
     @Test
-    public void testGetUserNull() {
+    public void testGetUserNull() throws PersistenceServiceException {
         vedder = new User(VEDDER, PASSWORD);
         assertNull("load user null", persistence.getUser(VEDDER));
     }
@@ -184,7 +184,7 @@ public class PersistenceServiceTest {
      * Tests the deleteUser method for return true
      */
     @Test
-    public void testDeleteUserTrue() {
+    public void testDeleteUserTrue() throws PersistenceServiceException {
         assertTrue("delete user true", persistence.deleteUser(ORTIZ));
     }
 
@@ -192,7 +192,7 @@ public class PersistenceServiceTest {
      * Tests the deleteUser method for return false
      */
     @Test
-    public void testDeleteUserFalse() {
+    public void testDeleteUserFalse() throws PersistenceServiceException {
         assertFalse("delete user false", persistence.deleteUser(VEDDER));
     }
 
@@ -200,7 +200,7 @@ public class PersistenceServiceTest {
      * Tests the setLoginStatus method for TRUE
      */
     @Test
-    public void testSetLoginStatusTrue() {
+    public void testSetLoginStatusTrue() throws PersistenceServiceException {
         assertTrue("login status true", persistence.setLoginStatus(ORTIZ, true));
     }
 
@@ -208,7 +208,7 @@ public class PersistenceServiceTest {
      * Tests the setLoginStatus method for FALSE
      */
     @Test
-    public void testSetLoginStatusUserNotFound() {
+    public void testSetLoginStatusUserNotFound() throws PersistenceServiceException {
         assertFalse("login status false", persistence.setLoginStatus(VEDDER, true));
     }
 
@@ -216,7 +216,7 @@ public class PersistenceServiceTest {
      * Tests the isLoggedIn method for TRUE
      */
     @Test
-    public void testIsLoggedInTrue() {
+    public void testIsLoggedInTrue() throws PersistenceServiceException {
         persistence.setLoginStatus(ORTIZ, true);
         assertTrue("is logged in true", persistence.isLoggedIn(ORTIZ));
     }
@@ -225,7 +225,7 @@ public class PersistenceServiceTest {
      * Tests the isLoggedIn method for FALSE
      */
     @Test
-    public void testIsLoggedInFalse() {
+    public void testIsLoggedInFalse() throws PersistenceServiceException {
         persistence.setLoginStatus(ORTIZ, false);
         assertFalse("is logged in false", persistence.isLoggedIn(ORTIZ));
     }
@@ -234,7 +234,7 @@ public class PersistenceServiceTest {
      * Tests the getUserInfo method for non-null UserInfo
      */
     @Test
-    public void testGetUserInfoNotNull() {
+    public void testGetUserInfoNotNull() throws PersistenceServiceException {
         assertNotNull("get userinfo not null", persistence.getUserInfo(ORTIZ));
     }
 
@@ -242,14 +242,14 @@ public class PersistenceServiceTest {
      * Tests the getUserInfo method for null UserInfo
      */
     @Test
-    public void testGetUserInfoNull() {
+    public void testGetUserInfoNull() throws PersistenceServiceException {
         assertNull("get userinfo null", persistence.getUserInfo(MANNING));
     }
     /**
      * Tests the getLoggedInUsers method for empty list
      */
     @Test
-    public void testGetLoggedInUsersReturnsList() {
+    public void testGetLoggedInUsersReturnsList() throws PersistenceServiceException {
         persistence.setLoginStatus(ORTIZ, true);
         persistence.setLoginStatus(PEDROIA, true);
         assertTrue("users logged in", persistence.getLoggedInUsers().size() > 0);
@@ -259,7 +259,7 @@ public class PersistenceServiceTest {
      * Tests the getLoggedInUsers method for empty list
      */
     @Test
-    public void testGetLoggedInUsersReturnsEmptyList() {
+    public void testGetLoggedInUsersReturnsEmptyList() throws PersistenceServiceException {
         List<String> users = persistence.getLoggedInUsers();
         for (String user : users) {
             persistence.setLoginStatus(user, false);
