@@ -48,6 +48,7 @@ import com.stockticker.SymbolMap;
 import com.stockticker.UserInfo;
 import com.stockticker.StockHistory;
 import com.stockticker.logic.AuthorizationService;
+import com.stockticker.logic.BusinessLogicException;
 import com.stockticker.logic.BusinessLogicService;
 import com.stockticker.logic.StockTicker;
 import com.stockticker.logic.StockTickerService;
@@ -702,7 +703,13 @@ public class ViewStockTicker extends WindowAdapter implements IStockTicker_UICom
                     List<String> refreshList = new ArrayList<>();
                     refreshList = m_tickerCard.getSymbolsInTable();
                     m_stockQuoteList.clear();
-                    m_stockQuoteList = m_stockService.getStockQuotes(refreshList);
+
+                    try {
+                        m_stockQuoteList = m_stockService.getStockQuotes(refreshList);
+                    }
+                    catch(BusinessLogicException ex) {
+                        this.showError(ex.getMessage());
+                    }
 
                     if(m_stockQuoteList.size() > ZERO) {
                         m_tickerCard.displayStockQuoteList(m_stockQuoteList);
@@ -950,7 +957,16 @@ public class ViewStockTicker extends WindowAdapter implements IStockTicker_UICom
          * @return          - Returns true if StockQuote is tracked
          */
         public boolean getTrackingStatus(String symbol) {
-            return m_stockService.isStockTracked(m_username, symbol);
+            boolean isTracked = false;
+
+            try {
+                isTracked = m_stockService.isStockTracked(m_username, symbol);//
+            }
+            catch(BusinessLogicException ex) {
+                this.showError(ex.getMessage());
+            }
+
+            return isTracked;
         }
 
 
@@ -1010,8 +1026,14 @@ public class ViewStockTicker extends WindowAdapter implements IStockTicker_UICom
                     symbols.add(str);
                 }
 
-                m_stockQuoteList.clear();                                   // Clear quote list and re-generate a new quote list
-                m_stockQuoteList = m_stockService.getStockQuotes(symbols);  // Get list of stock quotes from stock ticker service
+                m_stockQuoteList.clear();
+
+                try {
+                    m_stockQuoteList = m_stockService.getStockQuotes(symbols);
+                }
+                catch(BusinessLogicException ex) {
+                    this.showError(ex.getMessage());
+                }
 
                 if(m_stockQuoteList.size() > ZERO) {
                     m_tickerCard.displayStockQuoteList(m_stockQuoteList);   // Display stock quotes in table
@@ -1035,9 +1057,23 @@ public class ViewStockTicker extends WindowAdapter implements IStockTicker_UICom
          */
         private void showTrackedStocks() {
             List<String> trackedStockes = new ArrayList<>();
-            trackedStockes = m_stockService.getTrackedStocks(m_username);
-            if(trackedStockes.size() > ZERO) {          
-                m_stockQuoteList = m_stockService.getStockQuotes(trackedStockes);
+
+            try {
+                trackedStockes = m_stockService.getTrackedStocks(m_username);
+            }
+            catch(BusinessLogicException ex) {
+                this.showError(ex.getMessage());
+            }
+
+            if(trackedStockes.size() > ZERO) {
+
+                try {
+                    m_stockQuoteList = m_stockService.getStockQuotes(trackedStockes);
+                }
+                catch(BusinessLogicException ex) {
+                    this.showError(ex.getMessage());
+                }
+
                 if(m_stockQuoteList.size() > ZERO) {
                     m_tickerCard.displayStockQuoteList(m_stockQuoteList);
                 }
@@ -1079,6 +1115,9 @@ public class ViewStockTicker extends WindowAdapter implements IStockTicker_UICom
             catch(IllegalArgumentException ex) {
                 m_message = new StringBuilder("Warning: Start date is after the end date\nPlease check date range and re-submit querry");
                 fault = true;
+            }
+            catch(BusinessLogicException ex) {
+                this.showError(ex.getMessage());
             }
             finally {
                 if(fault) {
@@ -1145,6 +1184,17 @@ public class ViewStockTicker extends WindowAdapter implements IStockTicker_UICom
          */
         public void showDialog( String message ) {
             JOptionPane.showMessageDialog( m_frame, message, "Stock Ticker Portfolio", JOptionPane.WARNING_MESSAGE);
+        }
+
+
+        /**
+         * Pops up a general warning dialog using the argument message as the message
+         * content.
+         * 
+         * @param message   - message to display in body of dialog
+         */
+        public void showError( String message ) {
+            JOptionPane.showMessageDialog( m_frame, message, "Stock Ticker Portfolio", JOptionPane.ERROR_MESSAGE);
         }
     }
 }
