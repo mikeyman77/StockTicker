@@ -6,7 +6,7 @@ package com.stockticker.persistence;
  * @author Stuart Connall
  * @version 1.0 03/11/2014
  */
-public class PersistenceServiceException extends RuntimeException {
+public class PersistenceServiceException extends Exception {
 
     /**
      * SQLState [90013] representing database not found
