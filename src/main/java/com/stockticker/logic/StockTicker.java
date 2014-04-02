@@ -35,22 +35,14 @@ public enum StockTicker implements StockTickerService {
     public List<StockQuote> getStockQuotes(List<String> symbols) 
             throws BusinessLogicException {
         
-        List<StockQuote> stockQuoteList = new ArrayList<>();
-
-        stockQuoteList = ysqs.getStockQuotes(ysqs.getURL(symbols));
-        
-        return stockQuoteList;
+        return ysqs.getStockQuotes(ysqs.getURL(symbols));
     }
     
     @Override
     public List<StockHistory> getStockHistory(String symbol, Date startDate, Date endDate) 
             throws BusinessLogicException {
         
-        List<StockHistory> stockHistoryList = new ArrayList<>();
-
-        stockHistoryList = yshs.getStockHistory(yshs.getURL(symbol, startDate, endDate));
-        
-        return stockHistoryList;
+        return yshs.getStockHistory(yshs.getURL(symbol, startDate, endDate));
     }
     
     @Override
