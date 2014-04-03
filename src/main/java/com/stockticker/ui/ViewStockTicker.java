@@ -50,7 +50,7 @@ import com.stockticker.StockHistory;
 import com.stockticker.logic.AuthorizationService;
 import com.stockticker.logic.BusinessLogicException;
 import com.stockticker.logic.BusinessLogicService;
-import com.stockticker.logic.StockTickerService;;
+import com.stockticker.logic.StockTickerService;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -861,7 +861,6 @@ public class ViewStockTicker extends WindowAdapter implements IStockTicker_UICom
          */
         private void registerUser(String username, String password) {
             m_message = new StringBuilder("Warning: ");
-            boolean isInvalid = false;
 
             if(!m_userAuth.isRegistered(username)) {
                 m_userInfo = new UserInfo(m_firstname, m_lastname);
@@ -872,33 +871,15 @@ public class ViewStockTicker extends WindowAdapter implements IStockTicker_UICom
                     m_message.append("Unable to verify credentials, please try again\n");
                     m_isInvalidInput[Fields.PASSWD.getValue()] = true;
                     m_regCard.clearPasswordFields();
-                    isInvalid = true;
+                    this.showDialog(m_message.toString());
                 }   
             }
             else {
-                if(this.checkValidUser(m_username)) {
-                    if(!m_userAuth.isLoggedIn(username)) {
-                        m_isInvalidInput[Fields.USER.getValue()] = true;
-                        isInvalid = true;
-                        m_regCard.clearTextFields();
-                        m_regCard.setFocusInField(m_isInvalidInput);
-                        m_username = "";
-                        m_message.append("A registered user already exists with the same user informaiton\nPlease login or re-register using a different username");
-                    }
-                    else {
-                        m_userAuth.logOut(username);      
-                    }
-                }
-                else {
-                    isInvalid = true;
-                    m_message.append("Username is already taken, please choose another\n");
-                    m_isInvalidInput[Fields.USER.getValue()] = true;
-                }  
-            }
-
-            if(isInvalid) {
-                this.showDialog(m_message.toString());
+                m_isInvalidInput[Fields.USER.getValue()] = true;
+                m_regCard.clearTextFields();
                 m_regCard.setFocusInField(m_isInvalidInput);
+                m_message.append("A registered user already exists with the same user informaiton\nPlease login or re-register using a different username");
+                this.showDialog(m_message.toString());
             }
         }
 
