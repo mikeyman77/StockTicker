@@ -50,9 +50,7 @@ import com.stockticker.StockHistory;
 import com.stockticker.logic.AuthorizationService;
 import com.stockticker.logic.BusinessLogicException;
 import com.stockticker.logic.BusinessLogicService;
-import com.stockticker.logic.StockTicker;
-import com.stockticker.logic.StockTickerService;
-import com.stockticker.logic.UserAuthorization;
+import com.stockticker.logic.StockTickerService;;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -804,9 +802,9 @@ public class ViewStockTicker extends WindowAdapter implements IStockTicker_UICom
 
 
         /**
-         * Logs user into the db.  First checks if the user is already logged in, if
-         * not then logs in the user.  Will display a warning message if login fails.
-         * Once logged in, the method launches the main screen.
+         * Logs user into business logic and db.  Verify user is not already logged
+         * in.  Display a warning message if login fails.  Once logged in, launch
+         * the main screen.
          * 
          * @param username  - name entered into username field of Login screen
          * @param password  - password entered into password field of Login screen
@@ -854,15 +852,16 @@ public class ViewStockTicker extends WindowAdapter implements IStockTicker_UICom
 
 
         /**
-         * Checks for a valid registered user from db.  If not present, it will 
-         * register the user.  If the user is already register, will log the user
-         * in and load the main screen.
+         * Registers the user and user information with the business logic and db.
+         * Will show a warning message if user is already registered or the user-
+         * name exists with a different registered user.
          * 
          * @param username  - username entered into username field of registration screen
          * @param password  - password entered into password field of registration screen
          */
         private void registerUser(String username, String password) {
             m_message = new StringBuilder("Warning: ");
+            boolean isInvalid = false;
 
             if(!m_userAuth.isRegistered(username)) {
                 m_userInfo = new UserInfo(m_firstname, m_lastname);
@@ -870,26 +869,36 @@ public class ViewStockTicker extends WindowAdapter implements IStockTicker_UICom
                     this.logInUser(username, password);
                 }
                 else {
-                    m_message.append("Unable to check verify credentials, please try again\n");
-                    this.showDialog(m_message.toString());
+                    m_message.append("Unable to verify credentials, please try again\n");
+                    m_isInvalidInput[Fields.PASSWD.getValue()] = true;
+                    m_regCard.clearPasswordFields();
+                    isInvalid = true;
                 }   
             }
             else {
                 if(this.checkValidUser(m_username)) {
                     if(!m_userAuth.isLoggedIn(username)) {
-                        System.out.println("User is already a registered user, attempting to login...");
-                        this.logInUser(username, password);
+                        m_isInvalidInput[Fields.USER.getValue()] = true;
+                        isInvalid = true;
+                        m_regCard.clearTextFields();
+                        m_regCard.setFocusInField(m_isInvalidInput);
+                        m_username = "";
+                        m_message.append("A registered user already exists with the same user informaiton\nPlease login or re-register using a different username");
                     }
                     else {
                         m_userAuth.logOut(username);      
                     }
                 }
                 else {
+                    isInvalid = true;
                     m_message.append("Username is already taken, please choose another\n");
-                    this.showDialog(m_message.toString());
                     m_isInvalidInput[Fields.USER.getValue()] = true;
-                    m_regCard.setFocusInField(m_isInvalidInput);
                 }  
+            }
+
+            if(isInvalid) {
+                this.showDialog(m_message.toString());
+                m_regCard.setFocusInField(m_isInvalidInput);
             }
         }
 
@@ -950,8 +959,8 @@ public class ViewStockTicker extends WindowAdapter implements IStockTicker_UICom
 
 
         /**
-         * Verifies whether the argument String symbol is tracked for this user.
-         * Returns true if tracked. 
+         * Verifies whether this stock symbol is tracked for this user.  Returns
+         * true if this stock is tracked. 
          * 
          * @param symbol    - Symbol from StockQuote to check tracking status
          * @return          - Returns true if StockQuote is tracked
@@ -987,9 +996,9 @@ public class ViewStockTicker extends WindowAdapter implements IStockTicker_UICom
 
         /**
          * Makes the History button visible or non visible, depending on the argument
-         * state, true or false.
+         * state, true(visible) or false(not visible).
          * 
-         * @param state
+         * @param state - boolean used to set this control visible or non visible.
          */
         public void setHistoryButton(boolean state) {
                 m_historyBtn.setVisible(state);
@@ -997,7 +1006,7 @@ public class ViewStockTicker extends WindowAdapter implements IStockTicker_UICom
 
 
         /**
-         * Gets symbols from JList and add display them to the quote text field.
+         * Gets symbols from JList and add sets/displays them in the quote text field.
          */
         public void setSymbolList() {
             if(m_symbolList.size() > ZERO) {
@@ -1019,10 +1028,10 @@ public class ViewStockTicker extends WindowAdapter implements IStockTicker_UICom
             m_message = new StringBuilder("Warning: ");
 
             if(symbols.size() > ZERO) { 
-                tableSymbols = m_tickerCard.getSymbolsInTable();            // Get tracked stocks displayed in table
-                this.validateSymbols(symbols);                              // Validate input from quote text field
+                tableSymbols = m_tickerCard.getSymbolsInTable();
+                this.validateSymbols(symbols);
 
-                for(String str : tableSymbols) {                            // Add tracked stocks to current symbols list
+                for(String str : tableSymbols) {
                     symbols.add(str);
                 }
 
@@ -1036,7 +1045,7 @@ public class ViewStockTicker extends WindowAdapter implements IStockTicker_UICom
                 }
 
                 if(m_stockQuoteList.size() > ZERO) {
-                    m_tickerCard.displayStockQuoteList(m_stockQuoteList);   // Display stock quotes in table
+                    m_tickerCard.displayStockQuoteList(m_stockQuoteList);
                 }
                 else {
                     m_message.append("Unable to retreive Stock Quotes from service, please try again");
@@ -1048,7 +1057,7 @@ public class ViewStockTicker extends WindowAdapter implements IStockTicker_UICom
                 this.showDialog(m_message.toString());
             }
 
-            m_symbolList.clear();                                           // Clear symbol list, no longer required
+            m_symbolList.clear();
         }
 
 
@@ -1152,7 +1161,7 @@ public class ViewStockTicker extends WindowAdapter implements IStockTicker_UICom
                     symbols.remove(i);
                 }
                 else {
-                    i++;    // Increment index when a match is found.
+                    i++;    // Increment index only when a match is found.
                 }
                 isValid = false;
             }
@@ -1188,7 +1197,7 @@ public class ViewStockTicker extends WindowAdapter implements IStockTicker_UICom
 
 
         /**
-         * Pops up a general warning dialog using the argument message as the message
+         * Pops up an error dialog using the argument message as the message
          * content.
          * 
          * @param message   - message to display in body of dialog
