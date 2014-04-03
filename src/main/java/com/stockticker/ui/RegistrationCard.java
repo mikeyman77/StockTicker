@@ -1,12 +1,12 @@
 /**
  * GUI for Stock Ticker Portfolio Manager
- * J308 Project
+ * 90.308-061 Agile Software Dev. w/Java Project
  * Paul Wallace
  */
 
 package com.stockticker.ui;
 
-import com.stockticker.ui.IStockTicker_UIComponents.Fields;
+import com.stockticker.ui.IStockTicker_UIComponents.Field;
 import com.stockticker.ui.ViewStockTicker.OperateStockTicker;
 import java.awt.Dimension;
 import java.awt.GridBagConstraints;
@@ -28,9 +28,9 @@ import javax.swing.KeyStroke;
 import javax.swing.border.EtchedBorder;
 
 /**
- * RegistratioinCard class
+ * Registration screen for Stock Ticker Portfolio Manager
  * Provides fields to allow a user to register with the Stock Ticker Portfolio
- * Manager api
+ * Manager
  * 
  * @author prwallace
  */
@@ -248,19 +248,19 @@ public class RegistrationCard extends JPanel {
      * @param isEmpty         - boolean array that indicates an empty text field when true
      */
     public void setFocusInField(boolean[] isEmpty) {
-        if(isEmpty[Fields.USER.getValue()]) {
+        if(isEmpty[Field.USER.getValue()]) {
             m_usernameField.grabFocus();
         }
-        else if(isEmpty[Fields.PASSWD.getValue()]) {
+        else if(isEmpty[Field.PASSWD.getValue()]) {
             m_passwordField.grabFocus();
         }
-        else if(isEmpty[Fields.VER_PASS.getValue()]) {
+        else if(isEmpty[Field.VER_PASS.getValue()]) {
             m_verifyField.grabFocus();
         }
-        else if(isEmpty[Fields.FIRST_NM.getValue()]) {
+        else if(isEmpty[Field.FIRST_NM.getValue()]) {
             m_firstnameField.grabFocus();
         }
-        else if(isEmpty[Fields.LAST_NM.getValue()]) {
+        else if(isEmpty[Field.LAST_NM.getValue()]) {
              m_lastnameField.grabFocus();
         }
     }

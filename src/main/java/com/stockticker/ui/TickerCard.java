@@ -42,11 +42,13 @@ import java.util.List;
 import com.stockticker.ui.ViewStockTicker.OperateStockTicker;
 import com.stockticker.ui.IStockTicker_UIComponents.UI;
 import com.stockticker.StockQuote;
+import com.stockticker.logic.BusinessLogicException;
 import java.util.Arrays;
 
 
 /**
- * GUI for Stock Ticker Portfolio Manager
+ * Ticker screen for Stock Ticker Portfolio Manager
+ * Provides a viewable list of stock quotes, selected from a list of stock symbols
  * @author prwallace
  */
 public class TickerCard extends JPanel {
@@ -155,24 +157,25 @@ public class TickerCard extends JPanel {
                         if(m_selectedStock != null) {                     
                             m_quoteCard.displayStockQuote(m_selectedStock, FIRST_ROW, true);
 
-                            if(m_operate.getTrackingStatus(m_selectedStock.getSymbol())) {
-                                m_operate.resetLeftButton(UI.UNTRACK.getName()); 
+                            try {
+                                if(m_operate.getTrackingStatus(m_selectedStock.getSymbol())) {
+                                    m_operate.resetLeftButton(UI.UNTRACK.getName()); 
+                                }
+                                else {
+                                    m_operate.resetLeftButton(UI.TRACK.getName());
+                                }
                             }
-                            else {
-                                m_operate.resetLeftButton(UI.TRACK.getName());
+                            catch(BusinessLogicException ex) {
+                                m_operate.showError(ex.getMessage());
                             }
 
-                            m_operate.resetRightButton(UI.CLOSE.getName());
+                            m_operate.resetRightButton(UI.CLOSE.getName(), true);
                             m_operate.enableSymbolJList(false);
-                            m_operate.setHistoryButton(true);
+                            m_operate.enableHistoryButton(true);
                             m_operate.setControlBtnFocus(true);
                             m_cardLayout = (CardLayout) m_cardPanel.getLayout();
                             m_cardLayout.show(m_cardPanel, UI.QUOTE.getName());
-                            //System.out.println("Display stock qoute table");
                         }
-                        /*else {
-                            System.out.println("Unable to get stock from stock quote list");
-                        }*/
                     } 
                 }
 
@@ -243,7 +246,7 @@ public class TickerCard extends JPanel {
     /**
      * Gets/returns this Card JPanel
      * 
-     * @return      - Ticker card panel
+     * @return  - Ticker card panel
      */
     public JPanel getCard() {
         return m_tickerCard;
@@ -253,10 +256,9 @@ public class TickerCard extends JPanel {
     /**
      * Gets/returns the individual symbols listed in the table as a List<String>.
      * 
-     * @param symbols       - stock symbol to retrieve from table
-     * @return              - the List<String> of symbols retrieved from table
+     * @param symbols   - stock symbol to retrieve from table
+     * @return  - the List<String> of symbols retrieved from table
      */
-    //public List<String> getSymbolsInTable(List<String> symbols) {
     public List<String> getSymbolsInTable() {
         List<String> symbols = new ArrayList<>();
 
@@ -276,20 +278,17 @@ public class TickerCard extends JPanel {
      * the symbols list.  Removes white space and comma's delimiters and insures
      * the entry is no longer than 5 characters in length.
      * 
-     * @return      - returns a List<String> of stock symbols
+     * @return  - returns a List<String> of stock symbols
      */
     public List<String> getSymbolsTextField() {
         List<String> list = new ArrayList<>();
         List<String> symbols = new ArrayList<>();
 
         if(!m_quoteField.getText().isEmpty()) {
-            //list = Arrays.asList( m_quoteField.getText().split(","));
             list = Arrays.asList( m_quoteField.getText().split(m_splitChars));
             for(String str : list) {
                 String tmp = str.trim().toUpperCase();
-                if(tmp.length() < 6) {
                     symbols.add(tmp);
-                }
             }
         }
 
@@ -329,8 +328,6 @@ public class TickerCard extends JPanel {
         }
 
         sb.deleteCharAt(sb.lastIndexOf(","));
-        //sb.toString().trim();
-        //sb.deleteCharAt(sb.lastIndexOf(" "));
         m_quoteField.setText(sb.toString().trim());
         m_quoteField.grabFocus();
     }

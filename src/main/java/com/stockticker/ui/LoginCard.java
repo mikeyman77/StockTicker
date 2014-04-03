@@ -1,12 +1,12 @@
 /**
  * GUI for Stock Ticker Portfolio Manager
- * J308 Project
+ * 90.308-061 Agile Software Dev. w/Java Project
  * Paul Wallace
  */
 
 package com.stockticker.ui;
 
-import com.stockticker.ui.IStockTicker_UIComponents.Fields;
+import com.stockticker.ui.IStockTicker_UIComponents.Field;
 import com.stockticker.ui.ViewStockTicker.OperateStockTicker;
 import java.util.Arrays;
 
@@ -30,9 +30,8 @@ import javax.swing.border.EtchedBorder;
 
 
 /**
- * LoginCard class
+ * Login screen for Stock Ticker Portfolio Manager
  * Provides fields to allow a user to log into the Stock Ticker Portfolio Manager
- * api
  * 
  * @author prwallace
  */
@@ -164,10 +163,10 @@ public class LoginCard extends JPanel {
      * @param isEmpty         - boolean array that indicates an empty text field when true
      */
     public void setFocusInField(boolean[] isEmpty) {
-        if(isEmpty[Fields.USER.getValue()]) {
+        if(isEmpty[Field.USER.getValue()]) {
             m_usernameField.grabFocus();
         }
-        else if(isEmpty[Fields.PASSWD.getValue()]) {
+        else if(isEmpty[Field.PASSWD.getValue()]) {
             m_passwordField.grabFocus();
         }
     }
