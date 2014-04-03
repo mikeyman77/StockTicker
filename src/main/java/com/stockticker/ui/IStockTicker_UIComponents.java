@@ -1,6 +1,6 @@
 /**
  * GUI for Stock Ticker Portfolio Manager
- * J308 Project
+ * 90.308-061 Agile Software Dev. w/Java Project
  * Paul Wallace
  * 
  */
@@ -25,14 +25,13 @@ public interface IStockTicker_UIComponents {
     public enum UI {
         CLOSE("Close"), USER_REG("Registration"), QUOTE("Quote"), HOME("Home"), LOGIN("Login"), LOGOUT("Logout"),
         SUBMIT("Submit"), TRACK("Track"), UNTRACK("Untrack"), REFRESH("Refresh"), HISTORY("History"), TICKER("Ticker"),
-        DEFAULT("Default");
+        PROFILE("Profile"), DEFAULT("Default");
 
         private final String btnName;
 
         /**
-         * Constructor call, creates an instance equivalent to the string
-         * argument
-         * 
+         * Constructor for enum UI
+         * @param name  - the String value of this UI 
          */
         private UI(String name) {
             this.btnName = name;
@@ -40,19 +39,17 @@ public interface IStockTicker_UIComponents {
 
         /**
          * Returns the value of this UI type as a String
-         * 
-         * @return 
+         * @return  - the string value for this UI type
          */
         public String getName() {
             return btnName;
         }
 
         /**
-         * Returns the type of UI type verses its String value (i.e. CLOSE vs
+         * Returns the UI type verses its String value (i.e. CLOSE vs
          * "Close")
-         * 
-         * @param name
-         * @return 
+         * @param name  - String that is equal to one of the UI fields.
+         * @return - returns the UI type that is equal to the argument String
          */
         public static UI getType(String name) {
             UI temp = DEFAULT;
@@ -69,15 +66,26 @@ public interface IStockTicker_UIComponents {
     }
 
 
-    public enum Fields {
+    /**
+     * Enumeration constants representing fields in the Login and Registration forms.
+     */
+    public enum Field {
         USER(0), PASSWD(1), VER_PASS(3), FIRST_NM(2), LAST_NM(4);
         
         private int value;
 
-        private Fields(int value) {
+        /**
+         * Constructor for enum Field
+         * @param value - the value of the enum Field
+         */
+        private Field(int value) {
             this.value = value;
         }
 
+        /**
+         * Gets/returns the value of this Field
+         * @return  - the integer value of this Field
+         */
         public int getValue() {
             return value;
         }
