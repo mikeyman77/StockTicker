@@ -12,10 +12,12 @@ import org.apache.log4j.LogManager;
 import org.apache.log4j.PropertyConfigurator;
 
 /**
- * Defines the Data Access methods that enables
- * users to track stocks of interest.
+ * Defines the data access methods for User related data. This class retrieves
+ * an instance of the PersistenceConnection object and will initiate the start
+ * sequence if a connection is not currently available.
  *
  * @author Stuart Connall
+ * @see TrackedStocksDAO, PersistenceConnection
  * @version 1.0 02/27/2014
  */
 public class TrackedStocksDAOImpl implements TrackedStocksDAO {
@@ -28,7 +30,9 @@ public class TrackedStocksDAOImpl implements TrackedStocksDAO {
      * and initiates the PersistenceConnection service and
      * retrieves a database connection.
      *
-     * @throws PersistenceServiceException
+     * @throws PersistenceServiceException is thrown when a failure occurs in the PersistenceConnection
+     * service such as failure to access the properties file or some sort of error during creation or
+     * accessing of the database.
      */
     public TrackedStocksDAOImpl() throws PersistenceServiceException {
         PersistenceConnection persistenceConnection = PersistenceConnectionImpl.INSTANCE;
@@ -47,7 +51,10 @@ public class TrackedStocksDAOImpl implements TrackedStocksDAO {
      *
      * @param symbol the name of the stock
      * @return the stock id, -1 otherwise
-     * @throws PersistenceServiceException
+     * @throws PersistenceServiceException this exception typically occurs when there is
+     *           something wrong with the SQL statement or a connection is not available.
+     *           The latter should not occur as checks should have already been done by
+     *           the time this method is invoked.
      */
     public int getStockId(String symbol) throws PersistenceServiceException {
         int stockId = -1;
@@ -73,7 +80,10 @@ public class TrackedStocksDAOImpl implements TrackedStocksDAO {
      * @param userId  the id associated with the user row
      * @param stockId the id associated with the stock row
      * @return true if added, false otherwise
-     * @throws PersistenceServiceException
+     * @throws PersistenceServiceException this exception typically occurs when there is
+     *           something wrong with the SQL statement or a connection is not available.
+     *           The latter should not occur as checks should have already been done by
+     *           the time this method is invoked.
      */
     @Override
     public boolean add(int userId, int stockId) throws PersistenceServiceException {
@@ -108,7 +118,10 @@ public class TrackedStocksDAOImpl implements TrackedStocksDAO {
      * @param userId  the id associated with the user row
      * @param stockId the id associated with the stock row
      * @return true if exists, false otherwise
-     * @throws PersistenceServiceException
+     * @throws PersistenceServiceException this exception typically occurs when there is
+     *           something wrong with the SQL statement or a connection is not available.
+     *           The latter should not occur as checks should have already been done by
+     *           the time this method is invoked.
      */
     @Override
     public boolean exists(int userId, int stockId) throws PersistenceServiceException {
@@ -136,7 +149,10 @@ public class TrackedStocksDAOImpl implements TrackedStocksDAO {
      *
      * @param  userId the id associated with the user row
      * @return a list of stocks or an empty list
-     * @throws PersistenceServiceException
+     * @throws PersistenceServiceException this exception typically occurs when there is
+     *           something wrong with the SQL statement or a connection is not available.
+     *           The latter should not occur as checks should have already been done by
+     *           the time this method is invoked.
      */
     @Override
     public List<String> get(int userId) throws PersistenceServiceException {
@@ -167,7 +183,10 @@ public class TrackedStocksDAOImpl implements TrackedStocksDAO {
      * @param userId  the id associated with the user row
      * @param stockId the id associated with the stock row
      * @return true if successful, false otherwise
-     * @throws PersistenceServiceException
+     * @throws PersistenceServiceException this exception typically occurs when there is
+     *           something wrong with the SQL statement or a connection is not available.
+     *           The latter should not occur as checks should have already been done by
+     *           the time this method is invoked.
      */
     @Override
     public boolean delete(int userId, int stockId) throws PersistenceServiceException {
@@ -197,7 +216,10 @@ public class TrackedStocksDAOImpl implements TrackedStocksDAO {
      *
      * @param  userId the id associated with the user
      * @return true if successful, false otherwise
-     * @throws PersistenceServiceException
+     * @throws PersistenceServiceException this exception typically occurs when there is
+     *           something wrong with the SQL statement or a connection is not available.
+     *           The latter should not occur as checks should have already been done by
+     *           the time this method is invoked.
      */
     @Override
     public boolean deleteAll(int userId) throws PersistenceServiceException {

@@ -4,6 +4,7 @@ package com.stockticker.persistence;
  * Exception handler for the Persistence Service.
  *
  * @author Stuart Connall
+ * @see Exception
  * @version 1.0 03/11/2014
  */
 public class PersistenceServiceException extends Exception {
