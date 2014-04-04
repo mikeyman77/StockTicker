@@ -55,7 +55,7 @@ nbproject/
 # H2 Specific #
 ###############
 data/*.db
-data/mem/*.db
+data/temp/*.db
 
 # JavaDoc Specific #
 ####################
