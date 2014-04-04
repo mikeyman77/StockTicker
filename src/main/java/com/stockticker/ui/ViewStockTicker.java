@@ -57,6 +57,9 @@ import com.stockticker.logic.StockTickerService;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import javax.swing.JPasswordField;
+import javax.swing.event.AncestorEvent;
+import javax.swing.event.AncestorListener;
 
 
 /**
@@ -64,7 +67,7 @@ import java.util.List;
  * UI of the Stock Ticker Portfolio Manager
  * @author prwallace
  */
-public class ViewStockTicker extends WindowAdapter implements IStockTicker_UIComponents {
+public class ViewStockTicker extends WindowAdapter implements IComponentsUI {
     private static final String ENTER_PRESSED = "ENTER_RELEASED";
     private static final String SPACE = " ";
 
@@ -110,6 +113,7 @@ public class ViewStockTicker extends WindowAdapter implements IStockTicker_UICom
     public boolean m_isLoggedIn = false;
     public boolean m_isMultSelect = false;
     public boolean m_historySelect = false;
+    public boolean m_profileSelect = false;
     public boolean[] m_isInvalidInput = new boolean[5];
 
     private String m_username = "";
@@ -180,7 +184,6 @@ public class ViewStockTicker extends WindowAdapter implements IStockTicker_UICom
                 System.exit(0);
             }
         });
-        System.out.println("test");
     }
 
 
@@ -500,7 +503,7 @@ public class ViewStockTicker extends WindowAdapter implements IStockTicker_UICom
         m_constraints.gridx = 0;
         m_constraints.gridy = 1;
         m_constraints.anchor = GridBagConstraints.NORTH;
-        m_constraints.insets = new Insets(0, 6, 5, 4);
+        m_constraints.insets = new Insets(0, 6, 12, 4);
         profilePanel.add(m_profileBtn, m_constraints);
 
         m_constraints = new GridBagConstraints();
@@ -634,6 +637,7 @@ public class ViewStockTicker extends WindowAdapter implements IStockTicker_UICom
                     this.resetFlags();
                     m_regSelect = true;
                     m_regCard.clearTextFields();
+                    m_leftControlBtn.grabFocus();
                     cardLayout.show(m_cardPanel, UI.USER_REG.getName());
                     m_rightControlBtn.transferFocus();
                     this.resetLeftButton(UI.SUBMIT.getName());
@@ -696,7 +700,7 @@ public class ViewStockTicker extends WindowAdapter implements IStockTicker_UICom
                         }
 
                         // Verify both entered passwords match
-                        if(!isEmpty && !m_verifyPasswd.equalsIgnoreCase(m_password)) {
+                        if(!isEmpty && !m_verifyPasswd.equals(m_password)) {//equalsIgnoreCase
                            m_message.append("The entered passwords do not match\n");
                            m_message.append("Please re-enter the passwords");
                            m_regCard.clearPasswordFields();
@@ -709,7 +713,7 @@ public class ViewStockTicker extends WindowAdapter implements IStockTicker_UICom
                             this.registerUser(m_username, m_password);
                         }
                         else {
-                            this.showDialog(m_message.toString());
+                            this.showDialog(m_message.toString(), JOptionPane.WARNING_MESSAGE);
                             m_regCard.setFocusInField(m_isInvalidInput);
                         }
                     } // User is in Login screen
@@ -738,11 +742,11 @@ public class ViewStockTicker extends WindowAdapter implements IStockTicker_UICom
                                 m_username = "";
                                 m_password = "";
                                 m_loginCard.clearTextFields();
-                                this.showDialog(m_message.toString());
+                                this.showDialog(m_message.toString(), JOptionPane.WARNING_MESSAGE);
                             }
                         }
                         else {
-                            this.showDialog(m_message.toString());
+                            this.showDialog(m_message.toString(), JOptionPane.WARNING_MESSAGE);
                             m_loginCard.setFocusInField(m_isInvalidInput);
                         }
                     } // User is in Quote screen
@@ -750,6 +754,43 @@ public class ViewStockTicker extends WindowAdapter implements IStockTicker_UICom
                         m_startDate = m_historyCard.getStartDate();
                         m_endDate = m_historyCard.getEndDate();
                         this.showStockHistory();
+                    } // User is in the Profile
+                    else if(m_profileSelect) {
+                        String firstname = "";
+                        String lastname = "";
+
+                        if((firstname = m_regCard.getfirstName()).isEmpty() || m_regCard.getfirstName().startsWith(SPACE)) {
+                            m_message.append("Firstname field is blank\n");      
+                            firstname = "";
+                            m_isInvalidInput[Field.FIRST_NM.getValue()] = true; 
+                            isEmpty = true;
+                        }
+
+                        if((lastname = m_regCard.getLastName()).isEmpty() || m_regCard.getLastName().startsWith(SPACE)) {
+                            m_message.append("Lastname field is blank\n");
+                            lastname = "";
+                            m_isInvalidInput[Field.LAST_NM.getValue()] = true;
+                            isEmpty = true;
+                        }
+
+                        if(!isEmpty) {   
+                            if(!m_userInfo.getFirstName().equals(firstname) || !m_userInfo.getLastName().equals(lastname)) {
+                                m_userInfo.setFirstName(firstname);
+                                m_userInfo.setLastName(lastname);
+                                if(m_userAuth.updateUserInfo(m_username, m_userInfo)) {
+                                    m_firstname = m_userAuth.getUserInfo(m_username).getFirstName();
+                                    m_lastname = m_userAuth.getUserInfo(m_username).getLastName();
+                                    this.showDialog("User Information has been updated\nPlease press Close to continue", JOptionPane.INFORMATION_MESSAGE);
+                                }
+                            }
+                            else {
+                                this.showDialog("Please press Close to exit", JOptionPane.INFORMATION_MESSAGE);
+                            }
+                        }
+                        else {
+                            this.showDialog(m_message.toString(), JOptionPane.WARNING_MESSAGE);
+                            m_regCard.setFocusInField(m_isInvalidInput);
+                        }
                     }
                     break;
 
@@ -773,7 +814,7 @@ public class ViewStockTicker extends WindowAdapter implements IStockTicker_UICom
                     }
                     else {
                         m_message = new StringBuilder("Warning: No stocks listed in table to refresh");
-                        this.showDialog(m_message.toString());
+                        this.showDialog(m_message.toString(), JOptionPane.WARNING_MESSAGE);
                     }
 
                     m_tickerCard.setQuoteFieldFocus();
@@ -809,6 +850,24 @@ public class ViewStockTicker extends WindowAdapter implements IStockTicker_UICom
                     m_leftControlBtn.grabFocus();
                     break;
 
+                case PROFILE:
+                    this.resetFlags();
+                    m_profileSelect = true;
+                    m_regCard.clearTextFields();
+                    this.enableHistoryButton(false);
+                    this.enableButtons(false);
+                    this.enableSymbolJList(false);
+                    m_regCard.enableProfileForm(m_username, m_firstname, m_lastname, false);
+                    this.resetLeftButton(UI.SUBMIT.getName());
+                    this.resetRightButton(UI.CLOSE.getName(), true);
+                    cardLayout.show(m_cardPanel, UI.USER_REG.getName());
+                    break;
+
+                case UPDATE:
+                    this.changePassword();
+                    m_leftControlBtn.grabFocus();
+                    break;
+
                 // Close current screen, open screen 1 layout below this one.  
                 case  CLOSE:
                     m_closeSelect = true;
@@ -820,6 +879,13 @@ public class ViewStockTicker extends WindowAdapter implements IStockTicker_UICom
                         this.enableButtons(false);
                         cardLayout.show(m_cardPanel, UI.HOME.getName());
                         m_leftControlBtn.requestFocusInWindow();
+                    }
+                    else if(m_profileSelect) {
+                        m_regCard.clearTextFields();
+                        m_userAuth.logOut(m_username);
+                        m_logInSelect = true;
+                        m_regCard.enableProfileForm("", "", "", true);
+                        this.logInUser(m_username, m_password);;
                     }
                     else {  // Close selected from Quote Detail screen
                         this.resetLeftButton(UI.REFRESH.getName());
@@ -847,7 +913,7 @@ public class ViewStockTicker extends WindowAdapter implements IStockTicker_UICom
                     }
                     else {
                         m_message = new StringBuilder("Warning: Unable to log user out, please try again");
-                        this.showDialog(m_message.toString());
+                        this.showDialog(m_message.toString(), JOptionPane.WARNING_MESSAGE);
                     }
 
                     this.resetLeftButton(UI.USER_REG.getName());
@@ -876,31 +942,34 @@ public class ViewStockTicker extends WindowAdapter implements IStockTicker_UICom
         private void logInUser(String username, String password) {
             m_message = new StringBuilder("Warning: ");
 
-            if(!m_userAuth.isLoggedIn(username)) {
-                if(m_userAuth.logIn(username, password)) {
-                    m_nameLbl.setText(m_username);
-                    m_isLoggedIn = true;
+                if(!m_userAuth.isLoggedIn(username)) {
+                    if(m_userAuth.logIn(username, password)) {
+                        m_nameLbl.setText(m_username);
+                        m_isLoggedIn = true;
+                        m_userInfo = m_userAuth.getUserInfo(m_username);
+                        m_firstname = m_userInfo.getFirstName();
+                        m_lastname = m_userInfo.getLastName();
+                    }
+                    else {
+                        m_message.append("User login failed, please check password\n");
+                        m_username = "";
+                        m_password = "";
+                        this.showDialog(m_message.toString(), JOptionPane.WARNING_MESSAGE);
+                        m_regCard.clearPasswordFields();
+                        m_isInvalidInput[Field.PASSWD.getValue()] = true;
+
+                        if(m_logInSelect) {
+                            m_loginCard.setFocusInField(m_isInvalidInput);
+                        }
+                        else if(m_regSelect) {
+                            m_regCard.setFocusInField(m_isInvalidInput);
+                        }                   
+                    }
                 }
                 else {
-                    m_message.append("User login failed, please check password\n");
-                    m_username = "";
-                    m_password = "";
-                    this.showDialog(m_message.toString());
-                    m_regCard.clearPasswordFields();
-                    m_isInvalidInput[Field.PASSWD.getValue()] = true;
 
-                    if(m_logInSelect) {
-                        m_loginCard.setFocusInField(m_isInvalidInput);
-                    }
-                    else if(m_regSelect) {
-                        m_regCard.setFocusInField(m_isInvalidInput);
-                    }                   
+                    m_isLoggedIn = true;   
                 }
-            }
-            else {
-                
-                m_isLoggedIn = true;   
-            }
 
             // New user and is logged in; show stock quote list screen & symbol list
             if(m_isLoggedIn && m_regSelect || m_isLoggedIn && m_logInSelect) { 
@@ -936,7 +1005,7 @@ public class ViewStockTicker extends WindowAdapter implements IStockTicker_UICom
                     m_isInvalidInput[Field.PASSWD.getValue()] = true;
                     m_regCard.clearPasswordFields();
                     m_regCard.setFocusInField(m_isInvalidInput);
-                    this.showDialog(m_message.toString());
+                    this.showDialog(m_message.toString(), JOptionPane.WARNING_MESSAGE);
                 }   
             }
             else {
@@ -944,7 +1013,7 @@ public class ViewStockTicker extends WindowAdapter implements IStockTicker_UICom
                 m_regCard.clearTextFields();
                 m_regCard.setFocusInField(m_isInvalidInput);
                 m_message.append("A registered user already exists with the same user informaiton\nPlease login or re-register using a different username");
-                this.showDialog(m_message.toString());
+                this.showDialog(m_message.toString(), JOptionPane.WARNING_MESSAGE);
             }
         }
 
@@ -958,6 +1027,7 @@ public class ViewStockTicker extends WindowAdapter implements IStockTicker_UICom
             m_regSelect = false;
             m_closeSelect = false;
             m_historySelect = false;
+            m_profileSelect = false;
         }
 
 
@@ -1064,12 +1134,12 @@ public class ViewStockTicker extends WindowAdapter implements IStockTicker_UICom
                 }
                 else {
                     m_message.append("Unable to retreive Stock Quotes from service, please try again");
-                    this.showDialog(m_message.toString());
+                    this.showDialog(m_message.toString(), JOptionPane.WARNING_MESSAGE);
                 }
             }
             else {
                 m_message.append("Quote text field is empty or the symbols added are invalid\nPlese try again");
-                this.showDialog(m_message.toString());
+                this.showDialog(m_message.toString(), JOptionPane.WARNING_MESSAGE);
             }
 
             m_symbolList.clear();
@@ -1145,7 +1215,7 @@ public class ViewStockTicker extends WindowAdapter implements IStockTicker_UICom
             }
             finally {
                 if(fault) {
-                    this.showDialog(m_message.toString());
+                    this.showDialog(m_message.toString(), JOptionPane.WARNING_MESSAGE);
                     m_historyCard.clearHistory();
                 }
             }
@@ -1211,14 +1281,15 @@ public class ViewStockTicker extends WindowAdapter implements IStockTicker_UICom
         }
 
 
+        
         /**
-         * Makes the History button visible or non visible, depending on the argument
-         * state, true or false.
+         *  Makes the History button visible or non visible, depending on the argument
+         *  state, true or false.
          * 
-         * @param state
+         * @param visible   - set the visible property; true = visible, false = not visible
          */
-        public void enableHistoryButton(boolean state) {
-                m_historyBtn.setVisible(state);
+        public void enableHistoryButton(boolean visible) {
+                m_historyBtn.setVisible(visible);
         }
 
 
@@ -1228,8 +1299,8 @@ public class ViewStockTicker extends WindowAdapter implements IStockTicker_UICom
          * 
          * @param message   - message to display in body of dialog
          */
-        public void showDialog( String message ) {
-            JOptionPane.showMessageDialog( m_frame, message, "Stock Ticker Portfolio", JOptionPane.WARNING_MESSAGE);
+        public void showDialog(String message, int type ) {
+            JOptionPane.showMessageDialog( m_frame, message, "Stock Ticker Portfolio", type);
         }
 
 
@@ -1241,6 +1312,67 @@ public class ViewStockTicker extends WindowAdapter implements IStockTicker_UICom
          */
         public void showError( String message ) {
             JOptionPane.showMessageDialog( m_frame, message, "Stock Ticker Portfolio", JOptionPane.ERROR_MESSAGE);
+        }
+
+
+        private boolean changePassword() {
+            m_message = new StringBuilder();
+            String password = null;
+            String verified;
+            boolean isUpdated = false;
+
+            JLabel passwordLbl = new JLabel("Password:");
+            JPasswordField passwordField = new JPasswordField(20);
+            passwordField.setEchoChar('*');
+
+            JLabel verifyLbl = new JLabel("Verify:");
+            JPasswordField verifyField = new JPasswordField(20);
+            verifyField.setEchoChar('*');
+            
+            passwordField.addAncestorListener(new AncestorListener() {
+                @Override
+                public void ancestorAdded(AncestorEvent evt) {
+                    evt.getComponent().grabFocus();
+                }
+
+                @Override
+                public void ancestorRemoved(AncestorEvent evt) {}
+
+                @Override
+                public void ancestorMoved(AncestorEvent evt) {}
+            });
+
+
+            Object[] message = {passwordLbl, passwordField, verifyLbl, verifyField};
+            int option = JOptionPane.showConfirmDialog( m_frame, message, "Update user Password", JOptionPane.OK_CANCEL_OPTION);
+
+            if ( option == JOptionPane.OK_OPTION ) {
+                password = String.valueOf(passwordField.getPassword());
+                verified = String.valueOf(verifyField.getPassword());
+
+                if(password.isEmpty() && verified.isEmpty()) {
+                    m_message.append("One or both of password fields are blank\n");
+                    isUpdated = true;
+                }
+                else if(!password.equals(verified)) {
+                   m_message.append("The entered passwords do not match\n");
+                   m_message.append("Please re-enter the passwords");
+                }
+                else if(m_password.equals(password)) {
+                    m_message.append("The entered is the same as previous password\n");
+                    m_message.append("Please re-enter the passwords");
+                }
+                else if(m_userAuth.changePassword(m_username, m_password, password)) {
+                    m_password = password;
+                    m_message.append("Password has been updated");
+                }
+                else {
+                    m_message.append("A problem occured updating password, please try again");
+                }
+            }
+
+            this.showDialog(m_message.toString(), JOptionPane.INFORMATION_MESSAGE);
+            return isUpdated;
         }
     }
 }
