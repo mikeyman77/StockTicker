@@ -2,89 +2,121 @@
 package com.stockticker;
 
 /**
- * This is the interface for the stock symbol history class.
+ * Defines the interface for the stock symbol history class.
  * 
  * @author Michael Grissom
  */
 public interface StockHistory {
     
     /**
-     * Returns the stock symbol.
+     * Retrieves the stock symbol.
+     * 
+     * @return the stock symbol
      */
     public String getSymbol();
     
     /**
-     * Returns the stock date.
+     * Retrieves the stock date.
+     *
+     * @return the stock date
      */
     public String getDate();
     
     /**
-     * Returns the stock open price. 
+     * Retrieves the stock open price. 
+     *
+     * @return the stock open price
      */
     public String getOpen();
     
     /**
-     * Returns the stock high price.
+     * Retrieves the stock high price.
+     *
+     * @return the stock high price
      */
     public String getHigh();
     
     /**
-     * Returns the stock low price.
+     * Retrieves the stock low price.
+     *
+     * @return the stock low price
      */
     public String getLow();
     
     /**
-     * Returns the stock close price.
+     * Retrieves the stock close price.
+     *
+     * @return the stock close price
      */
     public String getClose();
     
     /**
-     * Returns the stock volume.
+     * Retrieves the stock volume.
+     *
+     * @return the stock volume
      */
     public String getVolume();
     
     /**
-     * Returns the stock adjust close price.
+     * Retrieves the stock adjust close price.
+     *
+     * @return the stock adjust close price
      */
     public String getAdjClose();
     
     /**
-     * Set the stock symbol.
+     * Sets the stock symbol.
+     *
+     * @param symbol the stock symbol
      */
     public void setSymbol(String symbol);
     
     /**
-     * Set the stock date.
+     * Sets the stock date.
+     *
+     * @param date the stock date
      */
     public void setDate(String date);
     
     /**
-     * Set the stock open price.
+     * Sets the stock open price.
+     *
+     * @param open the stock open price
      */
     public void setOpen(String open);
     
     /**
-     * Set the stock high price.
+     * Sets the stock high price.
+     *
+     * @param high the stock high price
      */
     public void setHigh(String high);
     
     /**
-     * Set the stock low price.
+     * Sets the stock low price.
+     *
+     * @param low the stock low price
      */
     public void setLow(String low);
     
     /**
-     * Set the stock close price.
+     * Sets the stock close price.
+     *
+     * @param close the stock close price
      */
     public void setClose(String close);
     
     /**
-     * Set the stock volume.
+     * Sets the stock volume.
+     *
+     * @param volume the stock volume
      */
     public void setVolume(String volume);
     
     /**
-     * Set the stock adjust close price.
+     * Sets the stock adjust close price.
+     *
+     * @param adjClose the stock adjust close price
      */
     public void setAdjClose(String adjClose);
     

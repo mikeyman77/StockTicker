@@ -1,38 +1,54 @@
 package com.stockticker;
 
 /**
- * This is a data class for stocks.
+ * Stores stock related data.
  * 
  * @author Michael Grissom
  */
 public class Stock {
 
+    /**
+     * Stock symbol
+     */
     private String symbol;
+
+    /**
+     * Stock full name
+     */
     private String name;
 
     /**
-     * Constructor with symbol
+     * Constructs a stock data object
+     *
+     * @param symbol  the stock symbol
      */
     public Stock(String symbol) {
         this.symbol = symbol;
     }
 
     /**
-     * Constructor with symbol and name.
+     * Constructs a stock data object.
+     *
+     * @param symbol  the stock symbol
+     * @param name    the stock full name
      */
     public Stock(String symbol, String name) {
         this.symbol = symbol;
     }
 
     /**
-     * Returns stock symbol.
+     * Retrieves the stock symbol.
+     *
+     * @return the stock symbol
      */
     public String getSymbol() {
         return this.symbol;
     }
 
     /**
-     * Returns stock name.
+     * Retrieves the stock full name.
+     *
+     * @return the stock full name
      */
     public String getName() {
         return this.name;

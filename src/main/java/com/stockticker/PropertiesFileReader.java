@@ -47,20 +47,4 @@ public class PropertiesFileReader {
         return properties.getProperty(property);
     }
 
-/*
-    public static void main(String [] args) {
-
-        try {
-            PropertiesFileReader properties = new PropertiesFileReader("./config/nosuchfile.properties");
-            for (Enumeration<?> property = properties.getPropertyNames(); property.hasMoreElements();) {
-                String key = (String) property.nextElement();
-                System.out.println(key+"="+properties.getProperty(key));
-            }
-        }
-        catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-*/
-
-} //end of class
+}

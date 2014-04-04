@@ -1,25 +1,44 @@
 package com.stockticker;
 
 /**
- * This is a data class for the user.
+ * Defines the user data.
  * 
  * @author Michael Grissom
  */
 public class User {
 
+    /**
+     * The username
+     */
     private String userName;
+
+    /**
+     * The user's password
+     */
     private String password;
+
+    /**
+     * User's login status
+     */
     private boolean loggedIn;
+
+    /**
+     * The internal user id
+     */
     private int userID;
+
+    /**
+     * A UserInfo instance that defines additional user data
+     */
     private UserInfo userInfo;
 
     /**
-     * Default constructor
+     * Constructs a User object
      */
     public User() { }
 
     /**
-     * Designated constructor with username and password.
+     * Constructs a User object
      * 
      * @param userName username of the user
      * @param password password of the user
@@ -30,70 +49,90 @@ public class User {
     }
 
     /**
-     * Returns the username.
+     * Retrieves the username.
+     *
+     * @return the username
      */
         public String getUserName() {
         return this.userName;
     }
 
     /**
-     * Returns the password.
+     * Retrieves the password.
+     *
+     * @return the password
      */
     public String getPassword() {
         return this.password;
     }
 
     /**
-     * Returns if the user is logged in.
+     * Retrieves user's login status.
+     *
+     * @return user's login status
      */
     public boolean isLoggedIn() {
         return this.loggedIn;
     }
 
     /**
-     * Returns the user id.
+     * Retrieves the user id.
+     *
+     * @return the user id
      */
     public int getUserID() {
         return this.userID;
     }
 
     /**
-     * Returns the user information.
+     * Retrieves the UserInfo instance.
+     *
+     * @return the UserInfo instance
      */
     public UserInfo getUserInfo() {
         return this.userInfo;
     }
     
     /**
-     * Set the username.
+     * Sets the username.
+     *
+     * @param username the username
      */
-        public void setUserName(String username) {
+    public void setUserName(String username) {
         this.userName = username;
     }
 
     /**
-     * Set the password.
+     * Sets the user's password.
+     *
+     * @param password the user's password
      */
     public void setPassword(String password) {
         this.password = password;
     }
     
     /**
-     * Set the logged in status.
+     * Sets the login status.
+     *
+     * @param loggedIn the user's login status
      */
     public void setLoggedIn(boolean loggedIn) {
         this.loggedIn = loggedIn;
     }
 
     /**
-     * Set the user id.
+     * Sets the user id.
+     *
+     * @param id the user id
      */
     public void setUserID(int id) {
         this.userID = id;
     }
 
     /**
-     * Set the user information.
+     * Sets the UserInfo instance.
+     *
+     * @param userInfo the UserInfo data
      */
     public void setUserInfo(UserInfo userInfo) {
         this.userInfo = userInfo;
