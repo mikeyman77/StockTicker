@@ -28,16 +28,23 @@ public class PersistenceConnectionTest {
     }
 
     /**
-     * Tests that the returned java.sql.Connection is not null. This test
-     * uses the Dimple library from Codehaus.org that enables you to override
-     * JDBC interfaces such as Connection, without overriding all (or any)
-     * of the interfaces methods.
+     * Tests that a connection was established for inmemory database.
      */
     @Test
-    public void testConnection() {
-        Connection stub = Implementor.proxy(Connection.class, new Object(){
-        });
-        assertNotNull("db connection", stub);
+    public void testConnectionInMemoryDb() throws PersistenceServiceException {
+        PersistenceConnection persistenceConnection = PersistenceConnectionImpl.INSTANCE;
+        persistenceConnection.start("./config/tempdb_test.properties");
+        assertTrue("connection established inMemory db", persistenceConnection.connectionEstablished());
+    }
+
+    /**
+     * Tests that a connection was established for permanent database.
+     */
+    @Test
+    public void testConnectionInPermanentDb() throws PersistenceServiceException {
+        PersistenceConnection persistenceConnection = PersistenceConnectionImpl.INSTANCE;
+        persistenceConnection.start("./config/permdb_test.properties");
+        assertTrue("connection established permanent db", persistenceConnection.connectionEstablished());
     }
 
     /**
