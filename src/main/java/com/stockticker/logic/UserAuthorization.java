@@ -145,6 +145,7 @@ public enum UserAuthorization implements AuthorizationService {
             throws BusinessLogicException {
         
         User user;
+        String encryptedPassword;
         boolean successful = false;
         
         try {
@@ -152,7 +153,8 @@ public enum UserAuthorization implements AuthorizationService {
 
             if (user != null && user.isLoggedIn()) {
                 if (checkPassword(oldPassword, user.getPassword())) {
-                    user.setPassword(newPassword);
+                    encryptedPassword = passwordEncryptor.encryptPassword(newPassword);
+                    user.setPassword(encryptedPassword);
                     successful = persistence.updateUser(user);
                 }
             }
