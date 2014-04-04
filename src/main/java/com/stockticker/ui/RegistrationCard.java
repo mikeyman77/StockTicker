@@ -6,7 +6,7 @@
 
 package com.stockticker.ui;
 
-import com.stockticker.ui.IStockTicker_UIComponents.Field;
+import com.stockticker.ui.IComponentsUI.Field;
 import com.stockticker.ui.ViewStockTicker.OperateStockTicker;
 import java.awt.Dimension;
 import java.awt.GridBagConstraints;
@@ -19,6 +19,7 @@ import javax.swing.AbstractAction;
 import javax.swing.Action;
 
 import javax.swing.BorderFactory;
+import javax.swing.JButton;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -38,7 +39,7 @@ public class RegistrationCard extends JPanel {
     private static final long serialVersionUID = 1L;
     private static final String ENTER_PRESSED = "ENTER_RELEASED";
 
-    private final GridBagConstraints m_constraints;
+    private GridBagConstraints m_constraints;
     private JPanel m_regCard;
 
     private JTextField m_usernameField;
@@ -48,6 +49,14 @@ public class RegistrationCard extends JPanel {
     private JTextField m_lastnameField;
     private final OperateStockTicker m_operate;
 
+    private JLabel m_userLbl;
+    private JLabel m_passLbl;
+    private JLabel m_verPassLbl;
+    private JLabel m_fistNameLbl;
+    private JLabel m_lastNameLbl;
+    private JLabel m_updateLbl;
+
+    private JButton m_passwordBtn;
 
     
     /**
@@ -56,7 +65,7 @@ public class RegistrationCard extends JPanel {
      * @param operate   - Instance variable of the OperateStockTicker class
      */
     public RegistrationCard(OperateStockTicker operate) {
-        m_constraints = new GridBagConstraints();
+        //m_constraints = new GridBagConstraints();
         m_operate = operate;
         setCard();
     }
@@ -71,11 +80,11 @@ public class RegistrationCard extends JPanel {
         m_regCard = new JPanel(new GridBagLayout());
         m_regCard.setPreferredSize(new Dimension(550, 520));
 
-        JLabel userLbl = new JLabel("User Name:");
-        JLabel passLbl = new JLabel("Password:");
-        JLabel verPassLbl = new JLabel("Re-enter Password:");
-        JLabel fistNameLbl = new JLabel("First name:");
-        JLabel lastNameLbl = new JLabel("Last name:");
+        m_userLbl = new JLabel("User Name:");
+        m_passLbl = new JLabel("Password:");
+        m_verPassLbl = new JLabel("Re-enter Password:");
+        m_fistNameLbl = new JLabel("First name:");
+        m_lastNameLbl = new JLabel("Last name:");
 
         m_usernameField = new JTextField(40);
         m_usernameField.setText("");
@@ -108,72 +117,117 @@ public class RegistrationCard extends JPanel {
         JPanel compPanel = new JPanel(new GridBagLayout());
         compPanel.setPreferredSize(new Dimension(400, 250));
 
+        m_constraints = new GridBagConstraints();
         m_constraints.gridx = 0;
         m_constraints.gridy = 0;
-        m_constraints.weightx = 0.00001;
         m_constraints.anchor = GridBagConstraints.WEST;
         m_constraints.fill = GridBagConstraints.NONE;
         m_constraints.insets = new Insets(10, 45, 10, 0);
-        compPanel.add(userLbl, m_constraints);
+        compPanel.add(m_userLbl, m_constraints);
 
+        m_constraints = new GridBagConstraints();
+        m_constraints.gridx = 0;
         m_constraints.gridy = 0;
-        m_constraints.gridwidth = 2;
         m_constraints.weightx = 1.0;
+        m_constraints.anchor = GridBagConstraints.WEST;
         m_constraints.fill = GridBagConstraints.HORIZONTAL;
         m_constraints.insets = new Insets(0, 120, 0, 30);
         compPanel.add(m_usernameField, m_constraints);
 
+        m_constraints = new GridBagConstraints();
         m_constraints.gridx = 0;
         m_constraints.gridy = 1;
-        m_constraints.insets = new Insets(10, 50, 10, 0);
-        compPanel.add(passLbl, m_constraints);
+        m_constraints.anchor = GridBagConstraints.WEST;
+        m_constraints.fill = GridBagConstraints.NONE;
+        m_constraints.insets = new Insets(10, 50, 10, 50);
+        compPanel.add(m_passLbl, m_constraints);
 
+        m_constraints = new GridBagConstraints();
         m_constraints.gridx = GridBagConstraints.REMAINDER;
         m_constraints.gridy = 1;
         m_constraints.gridwidth = 2;
-        m_constraints.weightx = 1.0;
+        m_constraints.anchor = GridBagConstraints.WEST;
         m_constraints.fill = GridBagConstraints.HORIZONTAL;
         m_constraints.insets = new Insets(0, 120, 0, 30);
         compPanel.add(m_passwordField, m_constraints);
 
+        m_constraints = new GridBagConstraints();
         m_constraints.gridx = 0;
         m_constraints.gridy = 2;
-        m_constraints.insets = new Insets(10, 0, 10, 0);
-        compPanel.add(verPassLbl, m_constraints);
+        m_constraints.anchor = GridBagConstraints.WEST;
+        m_constraints.fill = GridBagConstraints.NONE;
+        m_constraints.insets = new Insets(10, 0, 10, 50);
+        compPanel.add(m_verPassLbl, m_constraints);
 
+        m_constraints = new GridBagConstraints();
         m_constraints.gridx = GridBagConstraints.REMAINDER;
         m_constraints.gridy = 2;
         m_constraints.gridwidth = 2;
         m_constraints.weightx = 1.0;
+        m_constraints.anchor = GridBagConstraints.WEST;
         m_constraints.fill = GridBagConstraints.HORIZONTAL;
         m_constraints.insets = new Insets(0, 120, 0, 30);
         compPanel.add(m_verifyField, m_constraints);
 
+        m_constraints = new GridBagConstraints();
         m_constraints.gridx = 0;
         m_constraints.gridy = 3;
+        m_constraints.anchor = GridBagConstraints.WEST;
+        m_constraints.fill = GridBagConstraints.NONE;
         m_constraints.insets = new Insets(10, 50, 10, 0);
-        compPanel.add(fistNameLbl, m_constraints);
+        compPanel.add(m_fistNameLbl, m_constraints);
 
+        m_constraints = new GridBagConstraints();
         m_constraints.gridx = GridBagConstraints.REMAINDER;
         m_constraints.gridy = 3;
         m_constraints.gridwidth = 2;
         m_constraints.weightx = 1.0;
+        m_constraints.anchor = GridBagConstraints.WEST;
         m_constraints.fill = GridBagConstraints.HORIZONTAL;
         m_constraints.insets = new Insets(0, 120, 0, 30);
         compPanel.add(m_firstnameField, m_constraints);
 
+        m_constraints = new GridBagConstraints();
         m_constraints.gridx = 0;
         m_constraints.gridy = 4;
+        m_constraints.anchor = GridBagConstraints.WEST;
+        m_constraints.fill = GridBagConstraints.NONE;
         m_constraints.insets = new Insets(10, 50, 10, 0);
-        compPanel.add(lastNameLbl, m_constraints);
+        compPanel.add(m_lastNameLbl, m_constraints);
 
+        m_constraints = new GridBagConstraints();
         m_constraints.gridx = GridBagConstraints.REMAINDER;
         m_constraints.gridy = 4;
         m_constraints.gridwidth = 2;
         m_constraints.weightx = 1.0;
+        m_constraints.anchor = GridBagConstraints.WEST;
         m_constraints.fill = GridBagConstraints.HORIZONTAL;
         m_constraints.insets = new Insets(0, 120, 0, 30);
         compPanel.add(m_lastnameField, m_constraints);
+
+
+        m_updateLbl = new JLabel("Change Password:");
+        m_updateLbl.setVisible(false);
+
+        m_passwordBtn = new JButton("Update");
+        m_passwordBtn.setVisible(false);
+
+        m_passwordBtn.addActionListener(m_operate);
+
+        m_constraints = new GridBagConstraints();
+        m_constraints.gridx = 0;
+        m_constraints.gridy = 1;
+        m_constraints.anchor = GridBagConstraints.WEST;
+        m_constraints.fill = GridBagConstraints.NONE;
+        m_constraints.insets = new Insets(10, 5, 10, 0);//50
+        compPanel.add(m_updateLbl, m_constraints);
+
+        m_constraints = new GridBagConstraints();
+        m_constraints.gridx = GridBagConstraints.REMAINDER;
+        m_constraints.gridy = 1;
+        m_constraints.fill = GridBagConstraints.NONE;
+        m_constraints.insets = new Insets(15, 0, 15, 81);//120
+        compPanel.add(m_passwordBtn, m_constraints);
 
         m_regCard.setBorder(BorderFactory.createTitledBorder(BorderFactory.createEtchedBorder(EtchedBorder.LOWERED), "Registration"));
         m_regCard.add(compPanel, new GridBagConstraints());
@@ -183,7 +237,7 @@ public class RegistrationCard extends JPanel {
     /**
      * Gets/returns the card object of this JPanel.
      * 
-     * @return          - The card object for this panel
+     * @return  - The card object for this panel
      */
     public JPanel getCard() {
         return m_regCard;
@@ -267,6 +321,35 @@ public class RegistrationCard extends JPanel {
 
 
     /**
+     * Makes the password and verify text fields and labels visible or non visible,
+     * depending on the argument.
+     * 
+     * @param visible   - set the visible property; true = visible, false = not visible
+     */
+    public void enableProfileForm(String username, String firstname, String lastname, boolean visible) {
+        m_usernameField.setText(username);
+        m_firstnameField.setText(firstname);
+        m_firstnameField.grabFocus();
+        m_lastnameField.setText(lastname);
+
+        m_usernameField.setEditable(visible);
+        m_passwordField.setVisible(visible);
+        m_verifyField.setVisible(visible);
+        m_passLbl.setVisible(visible);
+        m_verPassLbl.setVisible(visible);
+
+        if(visible) {
+            m_updateLbl.setVisible(false);
+            m_passwordBtn.setVisible(false);
+        }
+        else {
+            m_updateLbl.setVisible(true);
+            m_passwordBtn.setVisible(true);
+        }
+    }
+
+
+    /**
      * Clears both the password field and the verify password field.
      */
     public void clearPasswordFields() {
@@ -281,6 +364,7 @@ public class RegistrationCard extends JPanel {
      * Clears all text fields
      */
     public void clearTextFields() {
+        m_usernameField.setEditable(true);
         m_usernameField.setText("");
         m_usernameField.grabFocus();
         Arrays.fill(m_passwordField.getPassword(), '0');

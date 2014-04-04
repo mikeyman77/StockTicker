@@ -40,7 +40,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.stockticker.ui.ViewStockTicker.OperateStockTicker;
-import com.stockticker.ui.IStockTicker_UIComponents.UI;
+import com.stockticker.ui.IComponentsUI.UI;
 import com.stockticker.StockQuote;
 import com.stockticker.logic.BusinessLogicException;
 import java.util.Arrays;

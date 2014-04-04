@@ -6,7 +6,7 @@
 
 package com.stockticker.ui;
 
-import com.stockticker.ui.IStockTicker_UIComponents.Field;
+import com.stockticker.ui.IComponentsUI.Field;
 import com.stockticker.ui.ViewStockTicker.OperateStockTicker;
 import java.util.Arrays;
 

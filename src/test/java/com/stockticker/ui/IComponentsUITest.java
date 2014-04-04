@@ -1,11 +1,11 @@
 package com.stockticker.ui;
 
-import com.stockticker.ui.IStockTicker_UIComponents.UI;
+import com.stockticker.ui.IComponentsUI.UI;
 import static org.junit.Assert.assertEquals;
 import org.junit.Test;
 
 
-public class IStockTicker_UIComponentsTest {
+public class IComponentsUITest {
 
 
     @Test
