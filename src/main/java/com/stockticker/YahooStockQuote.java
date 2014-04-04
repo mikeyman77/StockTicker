@@ -5,13 +5,13 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 /**
- * This class is a data class for Yahoo stock quotes.
+ * Defines the data and JSON properties for the Yahoo stock quote.
  * 
  * @author Michael Grissom
  */
 @JsonIgnoreProperties(ignoreUnknown=true)
 public class YahooStockQuote implements StockQuote {
-    
+
     @JsonProperty("Name")                   private String name;
     @JsonProperty("Symbol")                 private String symbol;
     @JsonProperty("LastTradeDate")          private String date;
@@ -34,7 +34,9 @@ public class YahooStockQuote implements StockQuote {
     @JsonProperty("EarningsShare")          private String eps;
     
     /**
-     * Returns the stock quote name.
+     * Retrieves the stock quote name.
+     *
+     * @return the stock quote name
      */
     @Override
     public String getName() {
@@ -42,7 +44,9 @@ public class YahooStockQuote implements StockQuote {
     }
     
     /**
-     * Returns the stock quote symbol.
+     * Retrieves the stock quote symbol.
+     *
+     * @return the stock quote symbol
      */
     @Override
     public String getSymbol() {
@@ -50,7 +54,9 @@ public class YahooStockQuote implements StockQuote {
     }
     
     /**
-     * Returns the stock quote date.
+     * Retrieves the stock quote date.
+     *
+     * @return the stock quote date
      */
     @Override
     public String getDate() {
@@ -58,7 +64,9 @@ public class YahooStockQuote implements StockQuote {
     }
     
     /**
-     * Returns the stock quote time.
+     * Retrieves the stock quote time.
+     *
+     * @return the stock quote time
      */
     @Override
     public String getTime() {
@@ -66,7 +74,9 @@ public class YahooStockQuote implements StockQuote {
     }
     
     /**
-     * Returns the stock quote price.
+     * Retrieves the stock quote price.
+     *
+     * @return the stock quote price
      */
     @Override
     public String getPrice() {
@@ -74,7 +84,9 @@ public class YahooStockQuote implements StockQuote {
     }
     
     /**
-     * Returns the stock quote change in price.
+     * Retrieves the stock quote change in price.
+     *
+     * @return the stock quote change in price
      */
     @Override
     public String getChange() {
@@ -82,7 +94,9 @@ public class YahooStockQuote implements StockQuote {
     }
     
     /**
-     * Returns the stock quote change in percentage.
+     * Retrieves the stock quote change in percentage.
+     *
+     * @return the stock quote change in percentage
      */
     @Override
     public String getChangePercent() {
@@ -90,7 +104,9 @@ public class YahooStockQuote implements StockQuote {
     }
     
     /**
-     * Returns the stock quote low price.
+     * Retrieves the stock quote low price.
+     *
+     * @return the stock quote low price
      */
     @Override
     public String getLow() {
@@ -98,7 +114,9 @@ public class YahooStockQuote implements StockQuote {
     }
     
     /**
-     * Returns the stock quote high price.
+     * Retrieves the stock quote high price.
+     *
+     * @return the stock quote high price
      */
     @Override
     public String getHigh() {
@@ -106,7 +124,9 @@ public class YahooStockQuote implements StockQuote {
     }
     
     /**
-     * Returns the stock quote volume.
+     * Retrieves the stock quote volume.
+     *
+     * @return the stock quote volume
      */
     @Override
     public String getVolume() {
@@ -114,7 +134,9 @@ public class YahooStockQuote implements StockQuote {
     }
     
     /**
-     * Returns the stock quote previous closing price.
+     * Retrieves the stock quote previous closing price.
+     *
+     * @return the stock quote previous closing price
      */
     @Override
     public String getPrevClose() {
@@ -122,7 +144,9 @@ public class YahooStockQuote implements StockQuote {
     }
     
     /**
-     * Returns the stock quote opening price.
+     * Retrieves the stock quote opening price.
+     *
+     * @return the stock quote opening price
      */
     @Override
     public String getOpen() {
@@ -130,7 +154,9 @@ public class YahooStockQuote implements StockQuote {
     }
     
     /**
-     * Returns the stock quote bid price.
+     * Retrieves the stock quote bid price.
+     *
+     * @return the stock quote bid price
      */
     @Override
     public String getBid() {
@@ -138,7 +164,9 @@ public class YahooStockQuote implements StockQuote {
     }
     
     /**
-     * Returns the stock quote asking price.
+     * Retrieves the stock quote asking price.
+     *
+     * @return the stock quote asking price
      */
     @Override
     public String getAsk() {
@@ -146,7 +174,9 @@ public class YahooStockQuote implements StockQuote {
     }
     
     /**
-     * Returns the stock quote year low price.
+     * Retrieves the stock quote year low price.
+     *
+     * @return the stock quote year low price
      */
     @Override
     public String getYearLow() {
@@ -154,7 +184,9 @@ public class YahooStockQuote implements StockQuote {
     }
     
     /**
-     * Returns the stock quote year high price.
+     * Retrieves the stock quote year high price.
+     *
+     * @return the stock quote year high price
      */
     @Override
     public String getYearHigh() {
@@ -162,7 +194,9 @@ public class YahooStockQuote implements StockQuote {
     }
     
     /**
-     * Returns the stock quote average volume.
+     * Retrieves the stock quote average volume.
+     *
+     * @return the stock quote average volume
      */
     @Override
     public String getAvgVolume() {
@@ -170,7 +204,9 @@ public class YahooStockQuote implements StockQuote {
     }
     
     /**
-     * Returns the stock quote market cap.
+     * Retrieves the stock quote market cap.
+     *
+     * @return the stock quote market cap
      */
     @Override
     public String getMarketCap() {
@@ -178,7 +214,9 @@ public class YahooStockQuote implements StockQuote {
     }
     
     /**
-     * Returns the stock quote P/E.
+     * Retrieves the stock quote P/E.
+     *
+     * @return the stock quote P/E
      */
     @Override
     public String getPE() {
@@ -186,7 +224,9 @@ public class YahooStockQuote implements StockQuote {
     }
     
     /**
-     * Returns the stock quote EPS.
+     * Retrieves the stock quote EPS.
+     *
+     * @return the stock quote EPS
      */
     @Override
     public String getEPS() {
@@ -194,7 +234,9 @@ public class YahooStockQuote implements StockQuote {
     }
     
     /**
-     * Set the stock quote name.
+     * Sets the stock quote name.
+     *
+     * @param name the stock quote name
      */
     @Override
     public void setName(String name) {
@@ -202,7 +244,9 @@ public class YahooStockQuote implements StockQuote {
     }
     
     /**
-     * Set the stock quote symbol.
+     * Sets the stock quote symbol.
+     *
+     * @param symbol the stock quote symbol
      */
     @Override
     public void setSymbol(String symbol) {
@@ -210,7 +254,9 @@ public class YahooStockQuote implements StockQuote {
     }
     
     /**
-     * Set the stock quote date.
+     * Sets the stock quote date.
+     *
+     * @param date the stock quote date
      */
     @Override
     public void setDate(String date) {
@@ -218,7 +264,9 @@ public class YahooStockQuote implements StockQuote {
     }
     
     /**
-     * Set the stock quote time.
+     * Sets the stock quote time.
+     *
+     * @param time the stock quote time
      */
     @Override
     public void setTime(String time) {
@@ -226,7 +274,9 @@ public class YahooStockQuote implements StockQuote {
     }
     
     /**
-     * Set the stock quote price.
+     * Sets the stock quote price.
+     *
+     * @param price the stock quote price
      */
     @Override
     public void setPrice(String price) {
@@ -234,7 +284,9 @@ public class YahooStockQuote implements StockQuote {
     }
     
     /**
-     * Set the stock quote change in price.
+     * Sets the stock quote change in price.
+     *
+     * @param change the stock quote change
      */
     @Override
     public void setChange(String change) {
@@ -242,7 +294,9 @@ public class YahooStockQuote implements StockQuote {
     }
     
     /**
-     * Set the stock quote change in percentage.
+     * Sets the stock quote change in percentage.
+     *
+     * @param changeInPercent the stock quote change in percentage
      */
     @Override
     public void setChangePercent(String changeInPercent) {
@@ -250,7 +304,9 @@ public class YahooStockQuote implements StockQuote {
     }
     
     /**
-     * Set the stock quote low price.
+     * Sets the stock quote low price.
+     *
+     * @param low the stock quote low price
      */
     @Override
     public void setLow(String low) {
@@ -258,7 +314,9 @@ public class YahooStockQuote implements StockQuote {
     }
     
     /**
-     * Set the stock quote high price.
+     * Sets the stock quote high price.
+     *
+     * @param high the stock quote high price
      */
     @Override
     public void setHigh(String high) {
@@ -266,7 +324,9 @@ public class YahooStockQuote implements StockQuote {
     }
     
     /**
-     * Set the stock quote volume.
+     * Sets the stock quote volume.
+     *
+     * @param volume the stock quote volume
      */
     @Override
     public void setVolume(String volume) {
@@ -274,7 +334,9 @@ public class YahooStockQuote implements StockQuote {
     }
     
     /**
-     * Set the stock quote previous closing price.
+     * Sets the stock quote previous closing price.
+     *
+     * @param prevClose the stock quote previous closing price
      */
     @Override
     public void setPrevClose(String prevClose) {
@@ -282,7 +344,9 @@ public class YahooStockQuote implements StockQuote {
     }
     
     /**
-     * Set the stock quote opening price.
+     * Sets the stock quote opening price.
+     *
+     * @param open the stock quote opening price
      */
     @Override
     public void setOpen(String open) {
@@ -290,7 +354,9 @@ public class YahooStockQuote implements StockQuote {
     }
     
     /**
-     * Set the stock quote bid price.
+     * Sets the stock quote bid price.
+     *
+     * @param bid the stock quote bid price
      */
     @Override
     public void setBid(String bid) {
@@ -298,7 +364,9 @@ public class YahooStockQuote implements StockQuote {
     }
     
     /**
-     * Set the stock quote asking price.
+     * Sets the stock quote asking price.
+     *
+     * @param ask the stock quote asking price
      */
     @Override
     public void setAsk(String ask) {
@@ -306,7 +374,9 @@ public class YahooStockQuote implements StockQuote {
     }
     
     /**
-     * Set the stock quote year low price.
+     * Sets the stock quote year low price.
+     *
+     * @param yearLow the stock quote year low price
      */
     @Override
     public void setYearLow(String yearLow) {
@@ -314,7 +384,9 @@ public class YahooStockQuote implements StockQuote {
     }
     
     /**
-     * Set the stock quote year high price.
+     * Sets the stock quote year high price.
+     *
+     * @param yearHigh the stock quote year high price
      */
     @Override
     public void setYearHigh(String yearHigh) {
@@ -322,7 +394,9 @@ public class YahooStockQuote implements StockQuote {
     }
     
     /**
-     * Set the stock quote average volume.
+     * Sets the stock quote average volume.
+     *
+     * @param avgVolume the stock quote average volume
      */
     @Override
     public void setAvgVolume(String avgVolume) {
@@ -330,7 +404,9 @@ public class YahooStockQuote implements StockQuote {
     }
     
     /**
-     * Set the stock quote market cap.
+     * Sets the stock quote market cap.
+     *
+     * @param marketCap the stock quote market cap
      */
     @Override
     public void setMarketCap(String marketCap) {
@@ -338,7 +414,9 @@ public class YahooStockQuote implements StockQuote {
     }
     
     /**
-     * Set the stock quote P/E.
+     * Sets the stock quote P/E.
+     *
+     * @param pe the stock quote P/E
      */
     @Override
     public void setPE(String pe) {
@@ -346,7 +424,9 @@ public class YahooStockQuote implements StockQuote {
     }
     
     /**
-     * Set the stock quote EPS.
+     * Sets the stock quote EPS.
+     *
+     * @param eps the stock quote EPS
      */
     @Override
     public void setEPS(String eps) {

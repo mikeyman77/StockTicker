@@ -5,7 +5,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 /**
- * This class is a data class for Yahoo stock history.
+ * Defines the data and JSON properties for the Yahoo stock history.
  * 
  * @author Michael Grissom
  */
@@ -22,7 +22,9 @@ public class YahooStockHistory implements StockHistory {
     @JsonProperty("Adj_Close")  private String stockAdjClose;
     
     /**
-     * Returns the stock symbol.
+     * Retrieves the stock symbol.
+     *
+     * @return the stock symbol
      */
     @Override
     public String getSymbol() {
@@ -30,7 +32,9 @@ public class YahooStockHistory implements StockHistory {
     }
     
     /**
-     * Returns the stock date.
+     * Retrieves the stock date.
+     *
+     * @return the stock date
      */
     @Override
     public String getDate() {
@@ -38,7 +42,9 @@ public class YahooStockHistory implements StockHistory {
     }
     
     /**
-     * Returns the stock open price.
+     * Retrieves the stock open price.
+     *
+     * @return the stock open price
      */
     @Override
     public String getOpen() {
@@ -46,7 +52,9 @@ public class YahooStockHistory implements StockHistory {
     }
     
     /**
-     * Returns the stock high price.
+     * Retrieves the stock high price.
+     *
+     * @return the stock high price
      */
     @Override
     public String getHigh() {
@@ -54,7 +62,9 @@ public class YahooStockHistory implements StockHistory {
     }
     
     /**
-     * Returns the stock low price.
+     * Retrieves the stock low price.
+     *
+     * @return the stock low price
      */
     @Override
     public String getLow() {
@@ -62,7 +72,9 @@ public class YahooStockHistory implements StockHistory {
     }
     
     /**
-     * Returns the stock close price.
+     * Retrieves the stock close price.
+     *
+     * @return the stock close price
      */
     @Override
     public String getClose() {
@@ -70,7 +82,9 @@ public class YahooStockHistory implements StockHistory {
     }
     
     /**
-     * Returns the stock volume.
+     * Retrieves the stock volume.
+     *
+     * @return the stock volume
      */
     @Override
     public String getVolume() {
@@ -78,7 +92,9 @@ public class YahooStockHistory implements StockHistory {
     }
     
     /**
-     * Returns the stock adjust close.
+     * Retrieves the stock adjust close.
+     *
+     * @return the stock adjust close
      */
     @Override
     public String getAdjClose() {
@@ -86,7 +102,9 @@ public class YahooStockHistory implements StockHistory {
     }
     
     /**
-     * Set the stock symbol.
+     * Sets the stock symbol.
+     *
+     * @param symbol the stock symbol
      */
     @Override
     public void setSymbol(String symbol) {
@@ -94,7 +112,9 @@ public class YahooStockHistory implements StockHistory {
     }
     
     /**
-     * Set the stock date.
+     * Sets the stock date.
+     *
+     * @param date the stock date
      */
     @Override
     public void setDate(String date) {
@@ -102,7 +122,9 @@ public class YahooStockHistory implements StockHistory {
     }
     
     /**
-     * Set the stock open price.
+     * Sets the stock open price.
+     *
+     * @param open the stock open price
      */
     @Override
     public void setOpen(String open) {
@@ -110,7 +132,9 @@ public class YahooStockHistory implements StockHistory {
     }
     
     /**
-     * Set the stock high price.
+     * Sets the stock high price.
+     *
+     * @param high the stock high price
      */
     @Override
     public void setHigh(String high) {
@@ -118,7 +142,9 @@ public class YahooStockHistory implements StockHistory {
     }
     
     /**
-     * Set the stock low price.
+     * Sets the stock low price.
+     *
+     * @param low the stock low price
      */
     @Override
     public void setLow(String low) {
@@ -126,7 +152,9 @@ public class YahooStockHistory implements StockHistory {
     }
     
     /**
-     * Set the stock close price.
+     * Sets the stock close price.
+     *
+     * @param close the stock close price
      */
     @Override
     public void setClose(String close) {
@@ -134,7 +162,9 @@ public class YahooStockHistory implements StockHistory {
     }
     
     /**
-     * Set the stock volume.
+     * Sets the stock volume.
+     *
+     * @param volume the stock volume
      */
     @Override
     public void setVolume(String volume) {
@@ -142,7 +172,9 @@ public class YahooStockHistory implements StockHistory {
     }
     
     /**
-     * Set the stock adjust price.
+     * Sets the stock adjusted close price.
+     *
+     * @param adjClose the stock adjusted close price
      */
     @Override
     public void setAdjClose(String adjClose) {

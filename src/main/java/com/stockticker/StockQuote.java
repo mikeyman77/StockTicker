@@ -1,210 +1,289 @@
 package com.stockticker;
 
 /**
- * This interface provides the basics for a StockQuote
+ * Defines the interface for a StockQuote
  * 
  * @author Michael Grissom
  */
 public interface StockQuote {
     
     /**
-     * Returns the stock quote name.
+     * Retrieves the stock quote name.
+     *
+     * @return the stock quote name
      */
     public String getName();
     
     /**
-     * Returns the stock quote symbol.
+     * Retrieves the stock quote symbol.
+     *
+     * @return the stock quote symbol
      */
     public String getSymbol();
     
     /**
-     * Returns the stock quote date.
+     * Retrieves the stock quote date.
+     *
+     * @return the stock quote date
      */
     public String getDate();
     
     /**
-     * Returns the stock quote time.
+     * Retrieves the stock quote time.
+     *
+     * @return the stock quote time
      */
     public String getTime();
     
     /**
-     * Returns the stock quote price.
+     * Retrieves the stock quote price.
+     *
+     * @return the stock quote price
      */
     public String getPrice();
     
     /**
-     * Returns the stock quote change in price.
+     * Retrieves the stock quote change in price.
+     *
+     * @return the stock quote change in price
      */
     public String getChange();
     
     /**
-     * Returns the stock quote change in percentage.
+     * Retrieves the stock quote change in percentage.
+     *
+     * @return the stock quote change in percentage
      */
     public String getChangePercent();
     
     /**
-     * Returns the stock quote low price.
+     * Retrieves the stock quote low price.
+     *
+     * @return the stock quote low price
      */
     public String getLow();
     
     /**
-     * Returns the stock quote high price.
+     * Retrieves the stock quote high price.
+     *
+     * @return the stock quote high price
      */
     public String getHigh();
     
     /**
-     * Returns the stock quote volume.
+     * Retrieves the stock quote volume.
+     *
+     * @return the stock quote volume
      */
     public String getVolume();
     
-    
     /**
-     * Returns the stock quote previous close price.
+     * Retrieves the stock quote previous close price.
+     *
+     * @return the stock quote previous close price
      */
     public String getPrevClose();
     
     /**
-     * Returns the stock quote opening price.
+     * Retrieves the stock quote opening price.
+     *
+     * @return the stock quote opening price
      */
     public String getOpen();
     
     /**
-     * Returns the stock quote bid price.
+     * Retrieves the stock quote bid price.
+     *
+     * @return the stock quote bid price
      */
     public String getBid();
     
     /**
-     * Returns the stock quote asking price.
+     * Retrieves the stock quote asking price.
+     *
+     * @return the stock quote asking price
      */
     public String getAsk();
     
     /**
-     * Returns the stock quote year low.
+     * Retrieves the stock quote year low.
+     *
+     * @return the stock quote year low
      */
     public String getYearLow();
     
     /**
-     * Returns the stock quote year high.
+     * Retrieves the stock quote year high.
+     *
+     * @return the stock quote year high
      */
     public String getYearHigh();
     
     /**
-     * Returns the stock quote average volume.
+     * Retrieves the stock quote average volume.
+     *
+     * @return the stock quote average volume
      */
     public String getAvgVolume();
     
     /**
-     * Returns the stock quote market cap.
+     * Retrieves the stock quote market cap.
+     *
+     * @return the stock quote market cap
      */
     public String getMarketCap();
     
     /**
-     * Returns the stock quote P/E.
+     * Retrieves the stock quote P/E.
+     *
+     * @return the stock quote P/E
      */
     public String getPE();
     
     /**
-     * Returns the stock quote EPS.
+     * Retrieves the stock quote EPS.
+     *
+     * @return the stock quote EPS
      */
     public String getEPS();
 
     /**
-     * Set the stock quote name.
+     * Sets the stock quote name.
+     *
+     * @param name the stock quote name
      */
     public void setName(String name);
 
     /**
-     * Set the stock quote symbol.
+     * Sets the stock quote symbol.
+     *
+     * @param symbol the stock quote symbol
      */
     public void setSymbol(String symbol);
 
     /**
-     * Set the stock quote date.
+     * Sets the stock quote date.
+     *
+     * @param date the stock quote date
      */
     public void setDate(String date);
 
     /**
-     * Set the stock quote time.
+     * Sets the stock quote time.
+     *
+     * @param time the stock quote time
      */
     public void setTime(String time);
 
     /**
-     * Set the stock quote price.
+     * Sets the stock quote price.
+     *
+     * @param price the stock quote price
      */
     public void setPrice(String price);
 
     /**
-     * Set the stock quote change in price.
+     * Sets the stock quote change in price.
+     *
+     * @param change the stock quote change in price
      */
     public void setChange(String change);
 
     /**
-     * Set the stock quote change in percentage.
+     * Sets the stock quote change in percentage.
+     *
+     * @param changeInPercent the stock quote change in percent
      */
     public void setChangePercent(String changeInPercent);
 
     /**
-     * Set the stock quote low price.
+     * Sets the stock quote low price.
+     *
+     * @param low the stock quote low price
      */
     public void setLow(String low);
 
     /**
-     * Set the stock quote high price.
+     * Sets the stock quote high price.
+     *
+     * @param high the stock quote high price
      */
     public void setHigh(String high);
 
     /**
-     * Set the stock quote volume.
+     * Sets the stock quote volume.
+     *
+     * @param volume the stock quote volume
      */
     public void setVolume(String volume);
 
     /**
-     * Set the stock quote previous close.
+     * Sets the stock quote previous close.
+     *
+     * @param prevClose the stock quote previous close
      */
     public void setPrevClose(String prevClose);
 
     /**
-     * Set the stock quote opening price.
+     * Sets the stock quote opening price.
+     *
+     * @param open the stock quote opening price
      */
     public void setOpen(String open);
 
     /**
-     * Set the stock quote bid price.
+     * Sets the stock quote bid price.
+     *
+     * @param bid the stock quote bid price
      */
     public void setBid(String bid);
 
     /**
-     * Set the stock quote asking price.
+     * Sets the stock quote asking price.
+     *
+     * @param ask the stock quote asking price
      */
     public void setAsk(String ask);
 
     /**
-     * Set the stock quote year low price.
+     * Sets the stock quote year low price.
+     *
+     * @param yearLow the stock quote year low price
      */
     public void setYearLow(String yearLow);
 
     /**
-     * Set the stock quote year high price.
+     * Sets the stock quote year high price.
+     *
+     * @param yearHigh the stock quote year high price
      */
     public void setYearHigh(String yearHigh);
 
     /**
-     * Set the stock quote average volume.
+     * Sets the stock quote average volume.
+     *
+     * @param avgVolume the stock quote average volume
      */
     public void setAvgVolume(String avgVolume);
 
     /**
-     * Set the stock quote market cap.
+     * Sets the stock quote market cap.
+     *
+     * @param marketCap the stock quote market cap
      */
     public void setMarketCap(String marketCap);
 
     /**
-     * Set the stock quote P/E.
+     * Sets the stock quote P/E.
+     *
+     * @param pe the stock quote P/E
      */
     public void setPE(String pe);
 
     /**
-     * Set the stock quote EPS.
+     * Sets the stock quote EPS.
+     *
+     * @param eps the stock quote eps
      */
     public void setEPS(String eps);
     

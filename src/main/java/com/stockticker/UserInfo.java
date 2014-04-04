@@ -1,22 +1,29 @@
 package com.stockticker;
 
 /**
- * This is a data class for user information.
+ * Defines the additional user information.
  * 
  * @author Michael Grissom
  */
 public class UserInfo {
 
+    /**
+     * The user's first name
+     */
     private String firstName;
+
+    /**
+     * The user's last name
+     */
     private String lastName;
     
     /**
-     * Default constructor
+     * Constructs a UserInfo object
      */
     public UserInfo() { }
 
     /**
-     * Designated constructor
+     * Constructs a UserInfo object
      * 
      * @param firstName the first name of the user
      * @param lastName the last name of the user
@@ -27,7 +34,9 @@ public class UserInfo {
     }
     
     /**
-     * Returns the first name of the user.
+     * Retrieves the user's first name.
+     *
+     * @return the user's first name
      */
     
     public String getFirstName() {
@@ -35,7 +44,9 @@ public class UserInfo {
     }
 
     /**
-     * Returns the last name of the user.
+     * Retrieves the user's last name.
+     *
+     * @return the user's last name
      */
     public String getLastName() {
         return lastName;
@@ -43,8 +54,8 @@ public class UserInfo {
 
     /**
      * Sets the user's first name.
-     * 
-     * @param firstName the first name of the user
+     *
+     * @param firstName the user's first name
      */
     
     public void setFirstName(String firstName) {
@@ -54,7 +65,7 @@ public class UserInfo {
     /**
      * Sets the user's last name
      * 
-     * @param lastName the last name of the user
+     * @param lastName the user's last
      */
     public void setLastName(String lastName) {
         this.lastName = lastName;

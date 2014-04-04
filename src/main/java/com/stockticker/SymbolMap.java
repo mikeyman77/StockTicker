@@ -14,7 +14,7 @@ import java.util.Map;
 public class SymbolMap {
 
     /**
-     * Returns a Map of all known NASDAQ stock symbols
+     * Returns a Map of all known NASDAQ stock symbols and description
      *
      * @return map of NASDAQ stock symbols
      */
