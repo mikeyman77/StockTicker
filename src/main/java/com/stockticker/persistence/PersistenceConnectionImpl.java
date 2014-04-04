@@ -10,12 +10,11 @@ import org.apache.log4j.Logger;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.PropertyConfigurator;
 
-
 /**
- * This class is responsible for creating and initializing the
- * database and providing connections.
+ * Creates and initializing the H2 database and provides JDBC connections.
  *
- * Created by stu on 2/16/14.
+ * @author Stuart Connall
+ * @version 1.0 02/27/2014
  */
 public enum PersistenceConnectionImpl implements PersistenceConnection {
     INSTANCE;
@@ -234,13 +233,5 @@ public enum PersistenceConnectionImpl implements PersistenceConnection {
 
         return buffer.toString();
     }
-
-/*
-    public static void main(String [] args) {
-
-        PersistenceConnection connection = PersistenceConnectionImpl.INSTANCE;
-        connection.start("./config/junittest.properties");
-    }
-*/
 
 }
