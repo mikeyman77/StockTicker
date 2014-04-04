@@ -51,7 +51,6 @@
     <target name="clean" description="deletes all build artifacts (anything created by this build file)">
         <delete dir="${classes.dir}"/>
         <delete dir="${temp.db.dir}"/>
-        <delete dir="${doc.api.dir}"/>
         <delete dir="${log.dir}"/>
         <delete file="stockticker.jar"/>
         <delete file="stockticker-all.zip"/>
@@ -63,7 +62,6 @@
 
     <target name="init" description="Build initialization - create output directories" depends="clean">
         <mkdir dir="${classes.dir}"/>
-        <mkdir dir="${doc.api.dir}"/>
         <mkdir dir="${log.dir}"/>
     </target>
 
@@ -141,6 +139,8 @@
     </target>
 
     <target name="javadoc" depends="init" description="Generate source JavaDoc">
+        <delete dir="${doc.api.dir}"/>
+        <mkdir dir="${doc.api.dir}"/>
         <javadoc packagenames="com.stockticker.*"
                  classpathref="project.classpath"
                  sourcepath="src/main/java"
