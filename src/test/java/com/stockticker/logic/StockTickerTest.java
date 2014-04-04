@@ -9,6 +9,11 @@ import org.junit.Before;
 import static junit.framework.Assert.assertTrue;
 import static junit.framework.Assert.assertFalse;
 
+/**
+ * This class tests the stock ticker service.
+ * 
+ * @author Michael Grissom
+ */
 public class StockTickerTest {
     
     private final BusinessLogicService bls;
