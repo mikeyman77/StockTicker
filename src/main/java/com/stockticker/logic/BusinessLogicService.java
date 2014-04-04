@@ -12,6 +12,10 @@ import com.stockticker.persistence.StockTickerPersistence;
  * @author Michael Grissom
  */
 public enum BusinessLogicService {
+
+    /**
+     * Instance of business logic service.
+     */
     INSTANCE;
     
     private boolean initialized;
@@ -24,7 +28,7 @@ public enum BusinessLogicService {
     private PersistenceService persistence;
     
     /**
-     * Initializes the service
+     * Initializes the service.
      */
     public void start() throws BusinessLogicException {
         if (!initialized) {

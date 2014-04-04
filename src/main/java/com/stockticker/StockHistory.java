@@ -19,7 +19,7 @@ public interface StockHistory {
     public String getDate();
     
     /**
-     * Returns the stock open price.
+     * Returns the stock open price. 
      */
     public String getOpen();
     

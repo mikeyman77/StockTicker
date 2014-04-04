@@ -6,7 +6,16 @@ import com.stockticker.persistence.PersistenceService;
 import com.stockticker.persistence.PersistenceServiceException;
 import org.jasypt.util.password.BasicPasswordEncryptor;
 
+/**
+ * This class provides user authorization functionality.
+ * 
+ * @author Michael Grissom
+ */
 public enum UserAuthorization implements AuthorizationService {
+
+    /**
+     * Instance of user authorization service.
+     */
     INSTANCE;
     
     private BusinessLogicService bls;
@@ -21,6 +30,14 @@ public enum UserAuthorization implements AuthorizationService {
         passwordEncryptor = new BasicPasswordEncryptor();
     }
     
+    /**
+     * This method logs in a specific user to the system.
+     *
+     * @param username the username of the user
+     * @param password the password of the user
+     * @return true if user was logged in
+     * @throws com.stockticker.logic.BusinessLogicException
+     */
     @Override
     public boolean logIn(String username, String password) throws BusinessLogicException {
         User user;
@@ -43,6 +60,13 @@ public enum UserAuthorization implements AuthorizationService {
         return successful;
     }
     
+    /**
+     * This method logs out a specific user from the system.
+     *
+     * @param username the username of the user
+     * @return true if user was logged out
+     * @throws com.stockticker.logic.BusinessLogicException
+     */
     @Override
     public boolean logOut(String username) throws BusinessLogicException {
         User user;
@@ -62,6 +86,13 @@ public enum UserAuthorization implements AuthorizationService {
         return successful;
     }
     
+    /**
+     * This method returns whether a specific user is logged in to the system
+     *
+     * @param username the username of the user
+     * @return true if user is currently logged in
+     * @throws com.stockticker.logic.BusinessLogicException
+     */
     @Override
     public boolean isLoggedIn(String username) throws BusinessLogicException {
         boolean isLoggedIn = false;
@@ -75,6 +106,15 @@ public enum UserAuthorization implements AuthorizationService {
         return isLoggedIn;
     }
     
+    /**
+     * This method registers a specific user to the system.
+     *
+     * @param username the username of the user
+     * @param password the password of the user
+     * @param userInfo a UserInfo object containing name
+     * @return true if user was registered
+     * @throws com.stockticker.logic.BusinessLogicException
+     */
     @Override
     public boolean register(String username, String password, UserInfo userInfo) 
             throws BusinessLogicException {
@@ -98,6 +138,13 @@ public enum UserAuthorization implements AuthorizationService {
         return successful;
     }
     
+    /**
+     * This method un-registers a user from the system.
+     *
+     * @param username the username of the user
+     * @return true if the user was unregistered
+     * @throws com.stockticker.logic.BusinessLogicException
+     */
     @Override
     public boolean unRegister(String username) throws BusinessLogicException {
         boolean successful = false;
@@ -112,6 +159,13 @@ public enum UserAuthorization implements AuthorizationService {
         return successful;
     }
     
+    /**
+     * This method checks if the user is registered.
+     *
+     * @param username the username of the user
+     * @return true if the user is registered
+     * @throws com.stockticker.logic.BusinessLogicException
+     */
     @Override
     public boolean isRegistered(String username) throws BusinessLogicException {
         boolean successful = false;
@@ -126,6 +180,13 @@ public enum UserAuthorization implements AuthorizationService {
         return successful;
     }
     
+    /**
+     * This method gets the user's information.
+     *
+     * @param username the username of the user
+     * @return UserInfo object related to the username
+     * @throws com.stockticker.logic.BusinessLogicException
+     */
     @Override
     public UserInfo getUserInfo(String username) throws BusinessLogicException {
         UserInfo userInfo;
@@ -140,6 +201,15 @@ public enum UserAuthorization implements AuthorizationService {
         return userInfo;
     }
     
+    /**
+     * This method changes the password for a user.
+     *
+     * @param username the username of the user
+     * @param oldPassword the user's old password
+     * @param newPassword the user's new password
+     * @return true if the password was changed
+     * @throws com.stockticker.logic.BusinessLogicException
+     */
     @Override
     public boolean changePassword(String username, String oldPassword, String newPassword) 
             throws BusinessLogicException {
@@ -166,6 +236,14 @@ public enum UserAuthorization implements AuthorizationService {
         return successful;
     }
     
+    /**
+     * This method updates the user's information.
+     *
+     * @param username the username of the user
+     * @param userInfo a UserInfo object with the user's information
+     * @return true if the user's information was changed
+     * @throws com.stockticker.logic.BusinessLogicException
+     */
     @Override
     public boolean updateUserInfo(String username, UserInfo userInfo) 
             throws BusinessLogicException {

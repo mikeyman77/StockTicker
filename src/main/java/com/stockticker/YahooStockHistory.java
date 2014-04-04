@@ -21,7 +21,6 @@ public class YahooStockHistory implements StockHistory {
     @JsonProperty("Volume")     private String stockVolume;
     @JsonProperty("Adj_Close")  private String stockAdjClose;
     
-    
     /**
      * Returns the stock symbol.
      */
