@@ -10,7 +10,7 @@ import org.apache.log4j.LogManager;
 import org.apache.log4j.PropertyConfigurator;
 
 /**
- * Provides services to query and update User and Stock data from the
+ * Provides services to query and update User and Stock data in the
  * database
  *
  * @author Stuart Connall
@@ -109,7 +109,6 @@ public enum StockTickerPersistence implements PersistenceService {
      */
     @Override
     public boolean userExists(String username) throws PersistenceServiceException {
-
         return userDAO.exists(username);
     }
 
@@ -123,7 +122,6 @@ public enum StockTickerPersistence implements PersistenceService {
      */
     @Override
     public User createUser(String username, String password) throws PersistenceServiceException {
-
         return userDAO.create(username, password);
     }
 
@@ -214,41 +212,4 @@ public enum StockTickerPersistence implements PersistenceService {
         return user == null ? null : user.getUserInfo();
     }
 
-
-    /*
-     * This is for testing purposes only in order to run in the debugger.
-     */
-
-/*
-    public static void main(String [] args) throws PersistenceServiceException {
-        PersistenceService ps = StockTickerPersistence.INSTANCE;
-
-        //User test calls go here
-        User sconnall = ps.createUser("connall", "password");
-        ps.setLoginStatus(sconnall.getUserName(), true);
-
-        //Stock test calls go here
-        User sconnall2 = ps.createUser("connall2", "password");
-        ps.setLoginStatus(sconnall2.getUserName(), true);
-        ps.trackStock(sconnall2.getUserName(), "GOOG", true);
-        ps.trackStock(sconnall2.getUserName(), "AAPL", true);
-        ps.trackStock(sconnall2.getUserName(), "MSFT", true);
-        ps.isStockTracked(sconnall2.getUserName(), "GOOG");
-        ps.trackStock(sconnall2.getUserName(), "MSFT", false);
-        ps.isStockTracked(sconnall2.getUserName(), "MSFT");
-        List<String> tracked = ps.getTrackedStocks(sconnall2.getUserName());
-        System.out.println("The following stocks are currently being tracked :");
-        int i = 0;
-        int numTracked = tracked.size();
-        for (String stock : tracked) {
-            i++;
-            System.out.println(stock);
-            if (i < numTracked-1) {
-                System.out.print(",");
-            }
-        }
-        System.out.println("");
-        System.exit(0);
-    }
-*/
 }

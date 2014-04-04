@@ -4,7 +4,7 @@ import java.util.TreeMap;
 import java.util.Map;
 
 /**
- * This map contains a lookup mechanism for all known NASDAQ stock
+ * Provides a lookup mechanism for all known NASDAQ stock
  * symbols.
  *
  * @author Stuart Connall
