@@ -13,7 +13,27 @@ import org.apache.log4j.PropertyConfigurator;
 /**
  * Creates and initializing the H2 database and provides JDBC connections.
  *
+ * The service offers two types of databases - an in-memory version that
+ * is not saved to disk when the application terminates and a permanent
+ * version that is persisted to disk. To set the database as in-memory or
+ * permanent, set the dbInMemory property to 1 (in-memory) or 2 (permanent).
+ *
+ * Available database properties are:
+ *
+ * dbInMemory - 0 for permanent and 1 for in-memory
+ * dbSchema - to override the default schema, init.sql, and initialize the
+ *            database using your own schema, use this property. Even though
+ *            a schema override is possible, it is not recommended.
+ * dbName - the name of the H2 database
+ * dbLocation - the location of the H2 database files. The default for this project
+ *              is to use 'data' for permanent databases, and 'data/temp' for temporary
+ *              databases suche as those used in testing. The 'data/temp' directory is
+ *              cleaned when the 'ant clean' target is executed.
+ * dbUser     - the database username
+ * dbPswd     - the database password
+ *
  * @author Stuart Connall
+ * @see PersistenceConnection
  * @version 1.0 02/27/2014
  */
 public enum PersistenceConnectionImpl implements PersistenceConnection {
@@ -161,6 +181,8 @@ public enum PersistenceConnectionImpl implements PersistenceConnection {
      *
      * Set default values for any properties that are either not provided
      * or empty.
+     *
+     * @throws IOException when the properties file can not be located
      */
     private void loadProperties() throws IOException {
         if (propertiesFile == null) {

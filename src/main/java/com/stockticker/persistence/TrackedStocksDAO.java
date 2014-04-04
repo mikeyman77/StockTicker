@@ -7,6 +7,7 @@ import java.util.List;
  * enables users to track stocks of interest.
  *
  * @author Stuart Connall
+ * @see TrackedStocksDAOImpl
  * @version 1.0 02/27/2014
  */
 public interface TrackedStocksDAO {
@@ -16,7 +17,10 @@ public interface TrackedStocksDAO {
      *
      * @param symbol the name of the stock
      * @return the stock id, -1 otherwise
-     * @throws PersistenceServiceException
+     * @throws PersistenceServiceException this exception typically occurs when there is
+     *           something wrong with the SQL statement or a connection is not available.
+     *           The latter should not occur as checks should have already been done by
+     *           the time this method is invoked.
      */
     public int     getStockId(String symbol) throws PersistenceServiceException;
 
@@ -26,7 +30,10 @@ public interface TrackedStocksDAO {
      * @param userId  the id associated with the user row
      * @param stockId the id associated with the stock row
      * @return true if added, false otherwise
-     * @throws PersistenceServiceException
+     * @throws PersistenceServiceException this exception typically occurs when there is
+     *           something wrong with the SQL statement or a connection is not available.
+     *           The latter should not occur as checks should have already been done by
+     *           the time this method is invoked.
      */
     public boolean add(int userId, int stockId) throws PersistenceServiceException;
 
@@ -37,7 +44,10 @@ public interface TrackedStocksDAO {
      * @param userId  the id associated with the user row
      * @param stockId the id associated with the stock row
      * @return true if exists, false otherwise
-     * @throws PersistenceServiceException
+     * @throws PersistenceServiceException this exception typically occurs when there is
+     *           something wrong with the SQL statement or a connection is not available.
+     *           The latter should not occur as checks should have already been done by
+     *           the time this method is invoked.
      */
     public boolean exists(int userId, int stockId) throws PersistenceServiceException;
 
@@ -46,7 +56,10 @@ public interface TrackedStocksDAO {
      *
      * @param  userId the id associated with the user row
      * @return a list of stocks or an empty list
-     * @throws PersistenceServiceException
+     * @throws PersistenceServiceException this exception typically occurs when there is
+     *           something wrong with the SQL statement or a connection is not available.
+     *           The latter should not occur as checks should have already been done by
+     *           the time this method is invoked.
      */
     public List<String> get(int userId) throws PersistenceServiceException;
 
@@ -57,7 +70,10 @@ public interface TrackedStocksDAO {
      * @param userId  the id associated with the user row
      * @param stockId the id associated with the stock row
      * @return true if successful, false otherwise
-     * @throws PersistenceServiceException
+     * @throws PersistenceServiceException this exception typically occurs when there is
+     *           something wrong with the SQL statement or a connection is not available.
+     *           The latter should not occur as checks should have already been done by
+     *           the time this method is invoked.
      */
     public boolean delete(int userId, int stockId) throws PersistenceServiceException;
 
@@ -66,7 +82,10 @@ public interface TrackedStocksDAO {
      *
      * @param  userId the id associated with the user
      * @return true if successful, false otherwise
-     * @throws PersistenceServiceException
+     * @throws PersistenceServiceException this exception typically occurs when there is
+     *           something wrong with the SQL statement or a connection is not available.
+     *           The latter should not occur as checks should have already been done by
+     *           the time this method is invoked.
      */
     public boolean deleteAll(int userId) throws PersistenceServiceException;
 }

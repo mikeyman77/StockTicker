@@ -15,9 +15,12 @@ import org.apache.log4j.LogManager;
 import org.apache.log4j.PropertyConfigurator;
 
 /**
- * Data Access methods for User related data
+ * Defines the data access methods for User related data. This class retrieves
+ * an instance of the PersistenceConnection object and will initiate the start
+ * sequence if a connection is not currently available.
  *
  * @author Stuart Connall
+ * @see UserDAO, PersistenceConnection
  * @version 1.0 2/17/14.
  */
 public class UserDAOImpl implements UserDAO {
@@ -26,7 +29,13 @@ public class UserDAOImpl implements UserDAO {
     static final Logger logger = LogManager.getLogger(UserDAOImpl.class.getName());
 
     /**
-     * Constructs the UserDAO implementation
+     * Constructs the UserDAO implementation instance. First it retrieves the PersistenceConnection
+     * instance and invokes its start method if a connection has not yet been established. Additionally,
+     * the log4j logger is setup for usage.
+     *
+     * @throws PersistenceServiceException is thrown when a failure occurs in the PersistenceConnection
+     * service such as failure to access the properties file or some sort of error during creation or
+     * accessing of the database.
      */
     public UserDAOImpl() throws PersistenceServiceException {
         PersistenceConnection persistenceConnection = PersistenceConnectionImpl.INSTANCE;
@@ -45,7 +54,10 @@ public class UserDAOImpl implements UserDAO {
      *
      * @param username the name of the user
      * @return the user id, -1 otherwise
-     * @throws PersistenceServiceException
+     * @throws PersistenceServiceException this exception typically occurs when there is
+     *           something wrong with the SQL statement or a connection is not available.
+     *           The latter should not occur as checks should have already been done by
+     *           the time this method is invoked.
      */
     public int getUserId(String username) throws PersistenceServiceException {
         int userId = -1;
@@ -66,13 +78,15 @@ public class UserDAOImpl implements UserDAO {
     }
 
     /**
-     * Create a row in the user table and stores the username and
-     * password.
+     * Creates a row in the user table and stores the username and password.
      *
      * @param   username the name of the user
      * @param   password the user's password
      * @return  a new User with id, username, and password, null if creation failed
-     * @throws  PersistenceServiceException
+     * @throws PersistenceServiceException this exception typically occurs when there is
+     *           something wrong with the SQL statement or a connection is not available.
+     *           The latter should not occur as checks should have already been done by
+     *           the time this method is invoked.
      */
     public User create(String username, String password) throws PersistenceServiceException {
         User user = null;
@@ -123,7 +137,10 @@ public class UserDAOImpl implements UserDAO {
      *
      * @param username  the name of the user
      * @return  true if exists, false otherwise
-     * @throws  PersistenceServiceException
+     * @throws PersistenceServiceException this exception typically occurs when there is
+     *           something wrong with the SQL statement or a connection is not available.
+     *           The latter should not occur as checks should have already been done by
+     *           the time this method is invoked.
      */
     public boolean exists(String username) throws PersistenceServiceException {
         boolean userExists = false;
@@ -150,7 +167,10 @@ public class UserDAOImpl implements UserDAO {
      *
      * @param user  the User object to persist
      * @return  true if updated, false otherwise
-     * @throws  PersistenceServiceException
+     * @throws PersistenceServiceException this exception typically occurs when there is
+     *           something wrong with the SQL statement or a connection is not available.
+     *           The latter should not occur as checks should have already been done by
+     *           the time this method is invoked.
      */
     public boolean update(User user) throws PersistenceServiceException {
         boolean updateSuccessful = false;
@@ -202,7 +222,10 @@ public class UserDAOImpl implements UserDAO {
      *
      * @param username the name of the user
      * @return  a User object or null if it doesn't exist
-     * @throws PersistenceServiceException
+     * @throws PersistenceServiceException this exception typically occurs when there is
+     *           something wrong with the SQL statement or a connection is not available.
+     *           The latter should not occur as checks should have already been done by
+     *           the time this method is invoked.
      */
     public User get(String username) throws PersistenceServiceException {
         User user = null;
@@ -249,7 +272,10 @@ public class UserDAOImpl implements UserDAO {
      *
      * @param username  the name of the user
      * @return  true if delete successful, false otherwise
-     * @throws  PersistenceServiceException
+     * @throws PersistenceServiceException this exception typically occurs when there is
+     *           something wrong with the SQL statement or a connection is not available.
+     *           The latter should not occur as checks should have already been done by
+     *           the time this method is invoked.
      */
     public boolean delete(String username) throws PersistenceServiceException {
         boolean deleteSuccessful = false;
@@ -281,7 +307,10 @@ public class UserDAOImpl implements UserDAO {
      *
      * @param username  the name of the user
      * @return  true if logged in, false otherwise
-     * @throws  PersistenceServiceException
+     * @throws PersistenceServiceException this exception typically occurs when there is
+     *           something wrong with the SQL statement or a connection is not available.
+     *           The latter should not occur as checks should have already been done by
+     *           the time this method is invoked.
      */
     public boolean isLoggedIn(String username) throws PersistenceServiceException {
         boolean isLoggedIn = false;
@@ -313,7 +342,10 @@ public class UserDAOImpl implements UserDAO {
      * @param username  the name of the user
      * @param status    login status, true or false
      * @return  true if status set, false otherwise
-     * @throws  PersistenceServiceException
+     * @throws PersistenceServiceException this exception typically occurs when there is
+     *           something wrong with the SQL statement or a connection is not available.
+     *           The latter should not occur as checks should have already been done by
+     *           the time this method is invoked.
      */
     public boolean setLoginStatus(String username, boolean status) throws PersistenceServiceException {
         boolean statusSet = false;
@@ -345,7 +377,10 @@ public class UserDAOImpl implements UserDAO {
      * Returns a list of logged in users.
      *
      * @return  list of logged in users
-     * @throws  PersistenceServiceException
+     * @throws PersistenceServiceException this exception typically occurs when there is
+     *           something wrong with the SQL statement or a connection is not available.
+     *           The latter should not occur as checks should have already been done by
+     *           the time this method is invoked.
      */
     public List<String> getLoggedInUsers() throws PersistenceServiceException {
         List<String> users = new ArrayList<>();

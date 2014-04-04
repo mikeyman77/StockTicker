@@ -14,6 +14,7 @@ import org.apache.log4j.PropertyConfigurator;
  * database
  *
  * @author Stuart Connall
+ * @see PersistenceService
  * @version 1.0 3/01/2014
  */
 public enum StockTickerPersistence implements PersistenceService {
