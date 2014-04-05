@@ -11,7 +11,7 @@ package com.stockticker.ui;
  * 90.308-061 Agile Software Dev. w/Java Project
  * @author prwallace
  */
-public class StockTicker_Main {
+public class StockTickerMain {
     
     public static void main( String[] args ) {
         ViewStockTicker gui = new ViewStockTicker();
