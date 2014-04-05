@@ -3,20 +3,17 @@
  * 90.308-061 Agile Software Dev. w/Java Project
  * Paul Wallace
  */
-
 package com.stockticker.ui;
 
 import com.stockticker.ui.IComponentsUI.Field;
 import com.stockticker.ui.ViewStockTicker.OperateStockTicker;
+
 import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
-import java.util.Arrays;
-import javax.swing.AbstractAction;
-import javax.swing.Action;
 
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
@@ -27,6 +24,11 @@ import javax.swing.JPasswordField;
 import javax.swing.JTextField;
 import javax.swing.KeyStroke;
 import javax.swing.border.EtchedBorder;
+import javax.swing.AbstractAction;
+import javax.swing.Action;
+
+import java.util.Arrays;
+
 
 /**
  * Registration screen for Stock Ticker Portfolio Manager
@@ -62,10 +64,9 @@ public class RegistrationCard extends JPanel {
     /**
      * Constructs the RegistrationCard class
      * 
-     * @param operate   - Instance variable of the OperateStockTicker class
+     * @param operate   - Instance of OperateStockTicker
      */
     public RegistrationCard(OperateStockTicker operate) {
-        //m_constraints = new GridBagConstraints();
         m_operate = operate;
         setCard();
     }
@@ -206,6 +207,7 @@ public class RegistrationCard extends JPanel {
         compPanel.add(m_lastnameField, m_constraints);
 
 
+        // Create and layout the panels and components for the Update Profile screen
         m_updateLbl = new JLabel("Change Password:");
         m_updateLbl.setVisible(false);
 
@@ -235,9 +237,9 @@ public class RegistrationCard extends JPanel {
 
 
     /**
-     * Gets/returns the card object of this JPanel.
+     * Gets/returns the Card panel
      * 
-     * @return  - The card object for this panel
+     * @return  - the Card panel of this screen
      */
     public JPanel getCard() {
         return m_regCard;
@@ -245,9 +247,9 @@ public class RegistrationCard extends JPanel {
 
 
     /**
-     * Gets/returns the first name entered into the first name text field.
+     * Gets/returns the test in first name text field.
      *
-     * @return          - Returns the first name from the first name text field
+     * @return  - the text in the first name text field
      */
     public String getfirstName() {
         return m_firstnameField.getText();
@@ -255,9 +257,9 @@ public class RegistrationCard extends JPanel {
 
 
     /**
-     * Gets/returns the last name entered into the last name text field.
+     * Gets/returns the text in the last name text field.
      * 
-     * @return          - Returns the last name from the last name text field
+     * @return  - the text in the last name text field
      */
     public String getLastName() {
         return m_lastnameField.getText();
@@ -265,9 +267,9 @@ public class RegistrationCard extends JPanel {
 
 
     /**
-     * Gets/Returns the username entered into the username text field.
+     * Gets/Returns the text in the username text field.
      * 
-     * @return          - Returns the username from username text field
+     * @return  - the text in the username text field
      */
     public String getUsername() {
         return m_usernameField.getText();
@@ -275,9 +277,9 @@ public class RegistrationCard extends JPanel {
 
 
     /**
-     * Gets/returns the password entered into the password text field.
+     * Gets/returns the text in the password text field.
      * 
-     * @return          - Returns the entered password from password field
+     * @return  - the text in the password field
      */
     public String getPassword() {
         return String.valueOf(m_passwordField.getPassword());
@@ -285,9 +287,9 @@ public class RegistrationCard extends JPanel {
 
 
     /**
-     * Gets/returns the re-entered password into the verify password text field.
+     * Gets/returns the text the verify password text field.
      * 
-     * @return          - Returns the re-entered password from verify password field
+     * @return  - the text in the verify password field
      */
     public String getVerifiedPasswd() {
         return String.valueOf(m_verifyField.getPassword());
@@ -299,7 +301,7 @@ public class RegistrationCard extends JPanel {
      * If multiple fields are empty, the focus will go to the first empty field,
      * starting from top to bottom.
      * 
-     * @param isEmpty         - boolean array that indicates an empty text field when true
+     * @param isEmpty   - boolean array that indicates an empty text field when true
      */
     public void setFocusInField(boolean[] isEmpty) {
         if(isEmpty[Field.USER.getValue()]) {
@@ -321,10 +323,14 @@ public class RegistrationCard extends JPanel {
 
 
     /**
-     * Makes the password and verify text fields and labels visible or non visible,
-     * depending on the argument.
+     * Sets the visible property for the text fields in this form.  Used to clear
+     * a text field and set its focus when switching between forms or invalid
+     * information was entered into the field.
      * 
-     * @param visible   - set the visible property; true = visible, false = not visible
+     * @param username  - sets the visible property for the username field
+     * @param firstname
+     * @param lastname
+     * @param visible 
      */
     public void enableProfileForm(String username, String firstname, String lastname, boolean visible) {
         m_usernameField.setText(username);
@@ -361,7 +367,7 @@ public class RegistrationCard extends JPanel {
 
 
     /**
-     * Clears all text fields
+     * Clears all text fields and grabs focus in the username field.
      */
     public void clearTextFields() {
         m_usernameField.setEditable(true);

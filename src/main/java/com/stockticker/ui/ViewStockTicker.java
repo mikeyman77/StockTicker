@@ -20,7 +20,6 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
-import java.io.IOException;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 
@@ -44,6 +43,9 @@ import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.JLabel;
 import javax.swing.SwingConstants;
+import javax.swing.JPasswordField;
+import javax.swing.event.AncestorEvent;
+import javax.swing.event.AncestorListener;
 
 import com.stockticker.StockQuote;
 import com.stockticker.SymbolMap;
@@ -57,14 +59,12 @@ import com.stockticker.logic.StockTickerService;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import javax.swing.JPasswordField;
-import javax.swing.event.AncestorEvent;
-import javax.swing.event.AncestorListener;
+import java.io.IOException;
 
 
 /**
  * ViewStockTicker screen for Stock Ticker Portfolio Manager
- * UI of the Stock Ticker Portfolio Manager
+ * UI of the Stock Ticker Portfolio Manager api
  * @author prwallace
  */
 public class ViewStockTicker extends WindowAdapter implements IComponentsUI {
@@ -171,8 +171,6 @@ public class ViewStockTicker extends WindowAdapter implements IComponentsUI {
         m_frame.setTitle("Stock Ticker Portfolio Manager");
         JFrame.setDefaultLookAndFeelDecorated(true);
 
-
-        // Close selected on title bar of ui
         m_frame.addWindowListener(new WindowAdapter() {
             @Override
             public void windowClosing(WindowEvent windowEvent) {
@@ -217,17 +215,14 @@ public class ViewStockTicker extends WindowAdapter implements IComponentsUI {
         m_symbolJList = new JList<>(SymbolMap.getSymbols().keySet().toArray());
         m_symbolJList.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
         m_symbolJList.setVisibleRowCount(8);
-        m_symbolJList.setEnabled(false);
         m_symbolJList.setVisible(false);
 
         m_scrollPane = new JScrollPane(m_symbolJList);
         m_scrollPane.setSize(150, 20);
         m_scrollPane.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
-        m_scrollPane.setEnabled(false);
         m_scrollPane.setVisible(false);
 
         m_symbolField = new JTextField(6);
-        m_symbolField.setEditable(false);
         m_symbolField.setVisible(false);
 
 
@@ -260,18 +255,18 @@ public class ViewStockTicker extends WindowAdapter implements IComponentsUI {
                     symbol = m_symbolJList.getSelectedValue().toString();
                     m_isMultSelect = false;
 
-                    // Set in Quote and symbols text field & clear selection
                     if(symbol != null) {
                         m_symbolList.add(symbol);
                         m_operate.setSymbolList(); 
                         m_symbolJList.clearSelection();
                     }
                 }
-                else { // User is making multiple mouse selections in list
+                else { // User is making multiple selections in list
                     m_multSymbols.clear();
 
                     for(Object obj : m_symbolJList.getSelectedValuesList()) {
                         m_multSymbols.add(obj.toString());
+
                     }
 
                     m_symbolField.setText(m_symbolJList.getSelectedValue().toString());
@@ -281,9 +276,8 @@ public class ViewStockTicker extends WindowAdapter implements IComponentsUI {
         });
 
 
-        // Key listener for JList and symbols text field.  User can type when focus
-        // is on JList or in symbols text field.  The list is parsed for a close match
-        // to the user input, which is displayed in symbols text field and JList.
+        // Key listener for JList and symbols text field.  Parses JList for a close
+        // match to the user input.  Close matches are then selected in list.
         m_symbolField.addKeyListener(new KeyAdapter() {
             @Override
             public void keyReleased(KeyEvent evt) {
@@ -318,7 +312,7 @@ public class ViewStockTicker extends WindowAdapter implements IComponentsUI {
             public void actionPerformed(ActionEvent actionEvent) {
                 String symbol = null;
 
-                // Entry was typed in JList or symbols text field
+                // Entry was typed into JList or symbols text field
                 if(!m_isMultSelect) {
                     symbol = m_symbolJList.getSelectedValue().toString();
 
@@ -343,6 +337,7 @@ public class ViewStockTicker extends WindowAdapter implements IComponentsUI {
                 }
 
                 m_symbolJList.clearSelection();
+                m_symbolField.setText("");
             }
         };
 
@@ -529,7 +524,7 @@ public class ViewStockTicker extends WindowAdapter implements IComponentsUI {
         m_rightPanel.add(logoutPanel, m_constraints);
 
 
-        // Add action listeners to the control buttons
+        // Add action listeners for the control buttons
         m_leftControlBtn.addActionListener(m_operate);
         m_rightControlBtn.addActionListener(m_operate);
         m_historyBtn.addActionListener(m_operate);
@@ -595,7 +590,7 @@ public class ViewStockTicker extends WindowAdapter implements IComponentsUI {
         /**
          * Changes the name of the left control button on the main panel.
          *  
-         * @param name  - Name of left main panel button
+         * @param name  - name of left main panel button
          */
         public void resetLeftButton(String name) {
             m_leftControlBtn.setVisible(true);
@@ -607,7 +602,7 @@ public class ViewStockTicker extends WindowAdapter implements IComponentsUI {
          * Changes the name of the right control button on the main panel and sets
          * whether this control is visible or not.
          * 
-         * @param name  - Name of right main panel button
+         * @param name  - name of right main panel button
          * @param visible   - right control button is visible(true) or not visible(false)
          */
         public void resetRightButton(String name, boolean visible) {
@@ -617,12 +612,12 @@ public class ViewStockTicker extends WindowAdapter implements IComponentsUI {
 
 
         /**
-         * Action listener for the right and left control buttons on the main JPanel.
-         * The actions of the right and left control buttons provide the switching
-         * between screens and saving/retrieving user information.  Also provides 
+         * Action listener for the control buttons on the main JPanel.  The actions
+         * from the control buttons provide the switching between screens, login-
+         * logout, registration, and updating user information.  Also provides
          * validation checking of user input.
          * 
-         * @param evt   - Registered event from right/left control buttons
+         * @param evt   - registered event from the control buttons
          */
         @Override
         public void actionPerformed(ActionEvent evt) {
@@ -655,8 +650,8 @@ public class ViewStockTicker extends WindowAdapter implements IComponentsUI {
                     m_rightControlBtn.transferFocus();
                     break;
 
-                // Creates a User and UserInfo, saves/verifies User Info, and logs
-                // the user inot the system.
+                // Saves/verifies User Info, registers, updates, and login-logout
+                // the user into the api.
                 case SUBMIT:
                     m_leftControlBtn.requestFocusInWindow();
                     this.resetValidation();
@@ -850,6 +845,7 @@ public class ViewStockTicker extends WindowAdapter implements IComponentsUI {
                     m_leftControlBtn.grabFocus();
                     break;
 
+                // User is updating their user informaiton
                 case PROFILE:
                     this.resetFlags();
                     m_profileSelect = true;
@@ -863,6 +859,7 @@ public class ViewStockTicker extends WindowAdapter implements IComponentsUI {
                     cardLayout.show(m_cardPanel, UI.USER_REG.getName());
                     break;
 
+                // User is changing their password
                 case UPDATE:
                     this.changePassword();
                     m_leftControlBtn.grabFocus();
@@ -872,14 +869,14 @@ public class ViewStockTicker extends WindowAdapter implements IComponentsUI {
                 case  CLOSE:
                     m_closeSelect = true;
 
-                    // Close selected from Registration or LogIn screens
+                    // Close selected from Registration or LogIn screen
                     if(!m_userAuth.isRegistered(m_username) || !m_isLoggedIn) {
                         this.resetLeftButton(UI.USER_REG.getName());
                         this.resetRightButton(UI.LOGIN.getName(), true);
                         this.enableButtons(false);
                         cardLayout.show(m_cardPanel, UI.HOME.getName());
                         m_leftControlBtn.requestFocusInWindow();
-                    }
+                    }       // Close Profile screen
                     else if(m_profileSelect) {
                         m_regCard.clearTextFields();
                         m_userAuth.logOut(m_username);
@@ -887,7 +884,7 @@ public class ViewStockTicker extends WindowAdapter implements IComponentsUI {
                         m_regCard.enableProfileForm("", "", "", true);
                         this.logInUser(m_username, m_password);;
                     }
-                    else {  // Close selected from Quote Detail screen
+                    else {  // Close Quote screen
                         this.resetLeftButton(UI.REFRESH.getName());
                         this.resetRightButton(UI.LOGOUT.getName(), false); 
                         this.enableSymbolJList(true);
@@ -905,11 +902,12 @@ public class ViewStockTicker extends WindowAdapter implements IComponentsUI {
                         m_isLoggedIn = false;       
                         this.enableSymbolJList(false);
                         m_tickerCard.clearStockList();
-                        m_quoteCard.clearQuote(m_isLoggedIn);
+                        m_quoteCard.clearQuote();
                         m_historyCard.clearHistory();
                         m_symbolList.clear();
                         m_stockQuoteList.clear();
                         m_nameLbl.setText("");
+                        m_symbolField.setText("");
                     }
                     else {
                         m_message = new StringBuilder("Warning: Unable to log user out, please try again");
@@ -936,8 +934,8 @@ public class ViewStockTicker extends WindowAdapter implements IComponentsUI {
          * not then logs in the user.  Will display a warning message if login fails.
          * Once logged in, the method launches the main screen.
          * 
-         * @param username  - name entered into username field of Login screen
-         * @param password  - password entered into password field of Login screen
+         * @param username  - name entered into username field
+         * @param password  - password entered into password field
          */
         private void logInUser(String username, String password) {
             m_message = new StringBuilder("Warning: ");
@@ -971,7 +969,7 @@ public class ViewStockTicker extends WindowAdapter implements IComponentsUI {
                     m_isLoggedIn = true;   
                 }
 
-            // New user and is logged in; show stock quote list screen & symbol list
+            // User is logged in, show Ticker screen and its components
             if(m_isLoggedIn && m_regSelect || m_isLoggedIn && m_logInSelect) { 
                 this.resetLeftButton(UI.REFRESH.getName());
                 this.resetRightButton(UI.LOGOUT.getName(), false);
@@ -1032,8 +1030,8 @@ public class ViewStockTicker extends WindowAdapter implements IComponentsUI {
 
 
         /**
-         * Resets the validation boolean to false.  Array is used to verify user
-         * input for the RegistrationCard and LoginCard text fields.
+         * Resets the validation boolean array to false.  Array indicates the entered
+         * input is valid (false) or invalid(true) for each user input field..
          */
         private void resetValidation() {
             for(int i = 0; i < m_isInvalidInput.length; i++) {
@@ -1044,10 +1042,10 @@ public class ViewStockTicker extends WindowAdapter implements IComponentsUI {
 
         /**
          * Gets/returns the left control button.
-         * This is main control button in UI.  This button changes state depending
-         * on the active screen.  Control by Action Listener in this class.
+         * This is main control button in UI.  This button name state depending
+         * on the active screen.
          * 
-         * @return  - The current state of left control button
+         * @return  - The left control button
          */
         public JButton getLeftControlBtn() {
            return m_leftControlBtn;
@@ -1055,11 +1053,11 @@ public class ViewStockTicker extends WindowAdapter implements IComponentsUI {
 
 
         /**
-         * Verifies whether the argument String symbol is tracked for this user.
-         * Returns true if tracked. 
+         * Verifies with Business Logic whether the StockQuote associated with this
+         * symbol is being tracked.
          * 
-         * @param symbol    - Symbol from StockQuote to check tracking status
-         * @return          - Returns true if StockQuote is tracked
+         * @param symbol    - symbol from StockQuote to check tracking status
+         * @return  - true if StockQuote is tracked
          */
         public boolean getTrackingStatus(String symbol) {
             boolean isTracked = false;
@@ -1077,7 +1075,9 @@ public class ViewStockTicker extends WindowAdapter implements IComponentsUI {
 
         /**
          * Sets the focus of either the left or right control buttons, depending on
-         * the state of the argument.
+         * the state of the argument(true = left control button, false = right
+         * control button).
+         * 
          * @param leftBtn   - Grabs focus for left(true) or right(false) control buttons
          */
         public void setControlBtnFocus(boolean leftBtn) {
@@ -1091,7 +1091,7 @@ public class ViewStockTicker extends WindowAdapter implements IComponentsUI {
 
 
         /**
-         * Gets symbols from JList and add display them to the quote text field.
+         * Gets symbols from JList and add them to the quote text field.
          */
         public void setSymbolList() {
             if(m_symbolList.size() > ZERO) {
@@ -1101,7 +1101,7 @@ public class ViewStockTicker extends WindowAdapter implements IComponentsUI {
 
 
         /**
-         * Gets/Displays the stock quotes in the stock quote table based on the
+         * Gets/Displays the StockQuote's in the stock quote table based on the
          * selected symbols in the Quote text field.  Retrieves the tracked stocks
          * from the table(if any), validates the symbols list, and calls the business
          * logic, then displays the returned stock quotes in the table.  
@@ -1176,9 +1176,9 @@ public class ViewStockTicker extends WindowAdapter implements IComponentsUI {
 
 
         /**
-         * Displays a lists of stock details of a given stock, over of range of entered
-         * dates.  Verifies the date range is a valid range prior to calling db for
-         * stock details.  If invalid, a warning dialog is popped up.
+         * Displays a StockHistory for a given stock over of range of entered
+         * dates.  Verifies the date range is a valid range prior to calling Business
+         * Logic.  If an invalid range, a warning dialog is popped up.
          */
         public void showStockHistory() {
             m_message = new StringBuilder("Warning: ");
@@ -1223,12 +1223,12 @@ public class ViewStockTicker extends WindowAdapter implements IComponentsUI {
 
 
         /**
-         * Validates the user entered stock symbols match the symbols within the 
-         * symbols JList.  Removes user entered symbols if not found within the 
-         * list.  Returns a clean list of stock symbols to send to business logic.
+         * Validates the user entered stock symbols match symbols within the 
+         * symbols JList.  Removes user entered symbols if a match is not found.
+         * Returns a clean list of stock symbols to send to business logic.
          * 
          * @param symbols   - list of symbols entered by user in quote text field
-         * @return          - returns a clean list of symbols
+         * @return          - a clean list of symbols
          */
         public List<String> validateSymbols(List<String> symbols) {
             ListModel listModel = m_symbolJList.getModel();
@@ -1255,24 +1255,23 @@ public class ViewStockTicker extends WindowAdapter implements IComponentsUI {
 
 
         /**
-         * Enable & setVisible the symbol list JList component in main screen.
-         * This component is disabled by default and only visible in main screen.
+         * Sets the visible property of the symbols JList.  This component is
+         * not visible unless user is on main screen.
          * 
-         * @param enable    - boolean, enables/disables m_symbolJList
+         * @param visible    - set visible m_symbolJList
          */
         public void enableSymbolJList(boolean enable) {
-            m_symbolJList.setEnabled(enable);
             m_symbolJList.setVisible(enable);
-            m_scrollPane.setEnabled(enable);
             m_scrollPane.setVisible(enable);
-            m_symbolField.setEditable(enable);
             m_symbolField.setVisible(enable);
+             m_symbolJList.ensureIndexIsVisible(0);
         }
 
 
         /**
          * Sets the visible property for the profile and logout buttons.
-         * @param visible
+         * 
+         * @param visible   - set visible login button, profile button, and username label
          */
         public void enableButtons(boolean visible) {
             m_logoutBtn.setVisible(visible);
@@ -1292,12 +1291,13 @@ public class ViewStockTicker extends WindowAdapter implements IComponentsUI {
                 m_historyBtn.setVisible(visible);
         }
 
-
+        
         /**
-         * Pops up a general warning dialog using the argument message as the message
-         * content.
+         * Pops up a dialog using the string argument as the message content and
+         * the JOptionPane argument as the dialog type.
          * 
-         * @param message   - message to display in body of dialog
+         * @param message   - message to display in dialog
+         * @param type      - type of dialog message
          */
         public void showDialog(String message, int type ) {
             JOptionPane.showMessageDialog( m_frame, message, "Stock Ticker Portfolio", type);
@@ -1305,16 +1305,21 @@ public class ViewStockTicker extends WindowAdapter implements IComponentsUI {
 
 
         /**
-         * Pops up a general warning dialog using the argument message as the message
-         * content.
+         * Pops up an error dialog using the String argument as the message content.
          * 
-         * @param message   - message to display in body of dialog
+         * @param message   - message to display in dialog
          */
         public void showError( String message ) {
             JOptionPane.showMessageDialog( m_frame, message, "Stock Ticker Portfolio", JOptionPane.ERROR_MESSAGE);
         }
 
 
+        /**
+         * Password dialog message to allow user to change their registered password.
+         * Provides to fields, the password field and a verification field.
+         * 
+         * @return  - true if the password was updated
+         */
         private boolean changePassword() {
             m_message = new StringBuilder();
             String password = null;
@@ -1328,7 +1333,8 @@ public class ViewStockTicker extends WindowAdapter implements IComponentsUI {
             JLabel verifyLbl = new JLabel("Verify:");
             JPasswordField verifyField = new JPasswordField(20);
             verifyField.setEchoChar('*');
-            
+
+            // Required to grab focus in password field
             passwordField.addAncestorListener(new AncestorListener() {
                 @Override
                 public void ancestorAdded(AncestorEvent evt) {
@@ -1344,7 +1350,7 @@ public class ViewStockTicker extends WindowAdapter implements IComponentsUI {
 
 
             Object[] message = {passwordLbl, passwordField, verifyLbl, verifyField};
-            int option = JOptionPane.showConfirmDialog( m_frame, message, "Update user Password", JOptionPane.OK_CANCEL_OPTION);
+            int option = JOptionPane.showConfirmDialog( m_frame, message, "Update User Password", JOptionPane.OK_CANCEL_OPTION);
 
             if ( option == JOptionPane.OK_OPTION ) {
                 password = String.valueOf(passwordField.getPassword());
@@ -1369,9 +1375,10 @@ public class ViewStockTicker extends WindowAdapter implements IComponentsUI {
                 else {
                     m_message.append("A problem occured updating password, please try again");
                 }
+
+                this.showDialog(m_message.toString(), JOptionPane.INFORMATION_MESSAGE);
             }
 
-            this.showDialog(m_message.toString(), JOptionPane.INFORMATION_MESSAGE);
             return isUpdated;
         }
     }

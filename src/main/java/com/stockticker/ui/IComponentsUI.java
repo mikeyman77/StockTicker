@@ -20,7 +20,6 @@ public interface IComponentsUI {
     /**
      * Enumeration constants representing the buttons within the UI. Provides a
      * public getName method that returns the String value of this constant.
-     * 
      */
     public enum UI {
         CLOSE("Close"), USER_REG("Registration"), QUOTE("Quote"), HOME("Home"), LOGIN("Login"), LOGOUT("Logout"),
@@ -70,7 +69,7 @@ public interface IComponentsUI {
      * Enumeration constants representing fields in the Login and Registration forms.
      */
     public enum Field {
-        USER(0), PASSWD(1), VER_PASS(3), FIRST_NM(2), LAST_NM(4);
+        USER(0), PASSWD(1), FIRST_NM(2), VER_PASS(3), LAST_NM(4);
         
         private int value;
 

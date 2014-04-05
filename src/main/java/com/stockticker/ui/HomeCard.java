@@ -1,6 +1,6 @@
 /**
  * GUI for Stock Ticker Portfolio Manager
- * J308 Project
+ * 90.308-061 Agile Software Dev. w/Java Project
  * Paul Wallace
  */
 
@@ -12,6 +12,7 @@ import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
 import java.awt.image.BufferedImage;
+
 import java.io.File;
 import java.io.IOException;
 import javax.imageio.ImageIO;
@@ -23,30 +24,29 @@ import javax.swing.JPanel;
 import javax.swing.border.EtchedBorder;
 
 /**
-* J308
-* @author prwallace
-*/
+ * Home screen for Stock Ticker Portfolio Manager
+ * Provides the user an entry point into the Stock Ticker Portfolio Manager
+ * @author prwallace
+ */
 public final class HomeCard extends JPanel {
     private static final long serialVersionUID = 1L;
     private JPanel m_homeCard;
     private BufferedImage m_splashImage;
-    private final GridBagConstraints m_constraints;
+    private GridBagConstraints m_constraints;
 
 
     /**
-     *
-     *
-     * @throws java.io.IOException
+     * Constructor for HomeCard object
+     * @throws IOException  - for IconImages used in  Home screen 
      */
     public HomeCard() throws IOException {
-        m_constraints = new GridBagConstraints();
         setCard();
     }
 
 
     /**
-     *
-     *
+     * Creates the Card JPanel for this UI screen and adds its components to this
+     * panel.
      */
     public void setCard()  {
             m_homeCard = new JPanel(new GridBagLayout());
@@ -57,6 +57,7 @@ public final class HomeCard extends JPanel {
                 m_splashImage = ImageIO.read(new File("./images/nasdakTicker.jpg"));
                 JLabel imageLbl = new JLabel(new ImageIcon(m_splashImage));
 
+                m_constraints = new GridBagConstraints();
                 m_constraints.gridx = 0;
                 m_constraints.gridy = 0;
                 m_constraints.fill = GridBagConstraints.NONE;
@@ -70,6 +71,7 @@ public final class HomeCard extends JPanel {
             JLabel name = new JLabel("Stock Ticker Portfolio Manager");
             name.setFont(new Font("Serif", Font.PLAIN, 40));
 
+            m_constraints = new GridBagConstraints();
             m_constraints.gridx = 0;
             m_constraints.gridy = 1;
             m_constraints.insets = new Insets(0, 0, 100, 0);
@@ -78,10 +80,9 @@ public final class HomeCard extends JPanel {
 
 
     /**
-    *
-    *
+     * Gets/returns this screens Card object
      * @return 
-    */
+     */
     public JPanel getCard() {
         return m_homeCard;
     }

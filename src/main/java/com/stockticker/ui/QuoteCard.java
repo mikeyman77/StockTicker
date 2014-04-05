@@ -26,9 +26,11 @@ import java.util.List;
 
 
 /**
-* GUI for Stock Ticker Portfolio Manager
-* @author prwallace
-*/
+ * Quote screen for Stock Ticker Portfolio Manager
+ * Provides quote details of a selected stock symbol.  The date is displayed within
+ * 2 tables.  Provides a means to enter the History screen and Track/Un-track this stock.
+ * @author prwallace
+ */
 public final class QuoteCard extends JPanel {
     private static final long serialVersionUID = 1L;
     private static final String[] m_quoteHeader = {"SYM", "DATE", "PRICE", "CHG", "CHG%", "VOL", "LOW", "HIGH", "VOL(3m)"};
@@ -44,26 +46,25 @@ public final class QuoteCard extends JPanel {
     private JScrollPane m_scrollPane;
     private JScrollPane m_detailScrollPane;
 
-    private final GridBagConstraints m_constraints;
+    private GridBagConstraints m_constraints;
 
     private QuoteTableModel m_quoteModel;
     private DetailTableModel m_detailModel;
 
 
+   
     /**
-    * Constructs the QuoteCard object
-    */
+     * Constructs the QuoteCard object
+     */
     public QuoteCard() {
-        m_constraints = new GridBagConstraints();
         setCard();
     }
 
-
    
     /**
-     * Creates the Card JPanel for this individual ui screen and the JPanels for 
-     * the JTables.  Adds the tables JPanels to this Card Panel.  Creates the models
-     * models for the JTables.
+     * Creates the Card JPanel for this individual UI screen and the JPanels for 
+     * the JTables.  Calls setQuotesTable to Add the tables JPanels to this Card
+     * Panel.  Instantiates the models for the JTables.
      */
     public void setCard() {
         m_quoteModel = new QuoteTableModel(m_quoteHeader);
@@ -80,7 +81,8 @@ public final class QuoteCard extends JPanel {
 
 
     /**
-     * Lays out the JTables and add them to their JPanel.
+     * Create the panels for the tables, layout the tables on their respective 
+     * panel, and add the tables to their panels.
      */
     public void setQuotesTable() {
         m_quotePanel = new JPanel(new GridBagLayout());
@@ -93,12 +95,14 @@ public final class QuoteCard extends JPanel {
         m_quoteTable.setEnabled(false);
         m_scrollPane = new JScrollPane(m_quoteTable);
 
+        m_constraints = new GridBagConstraints();
         m_constraints.gridx = 0;
         m_constraints.gridy = 0;
         m_constraints.anchor = GridBagConstraints.NORTH;
         m_constraints.fill = GridBagConstraints.NONE;
         m_constraints.insets = new Insets(30, 0, 0, 0);
         m_quotePanel.add(m_scrollPane, m_constraints);
+
 
         m_detailPanel = new JPanel(new GridBagLayout());
         m_detailPanel.setOpaque(true);
@@ -109,6 +113,8 @@ public final class QuoteCard extends JPanel {
         m_detailTable.setFont(m_detailTable.getFont().deriveFont(Font.PLAIN, 11));
         m_detailTable.setEnabled(false);
         m_detailScrollPane = new JScrollPane(m_detailTable);
+
+        m_constraints = new GridBagConstraints();
         m_constraints.gridx = 0;
         m_constraints.gridy = 0;
         m_constraints.anchor = GridBagConstraints.SOUTH;
@@ -117,10 +123,10 @@ public final class QuoteCard extends JPanel {
         m_detailPanel.add(m_detailScrollPane, m_constraints);
     }
 
-    
+
     /**
      * Gets/returns this Card JPanel
-     * @return      - Quote card JPanl
+     * @return  - Quote card JPanl
      */
     public JPanel getCard() {
         return m_quoteCard;
@@ -128,11 +134,11 @@ public final class QuoteCard extends JPanel {
 
 
     /**
-     * Adds the StockQuote to the JTables by calling the JTable models.  The models
-     * then add the StockQuote to the first row, index 0 in their respective table.  
+     * Adds the StockQuote to both the tables by calling their table models.  The
+     * models then add the StockQuote to the first row, index 0 in their respective table.  
      * 
-     * @param quote     - listing of an individual StockQuote
-     * @param index     - Row location to display StockQuote in table
+     * @param quote - listing of an individual StockQuote
+     * @param index - Row location to display StockQuote in table
      * @param enable    - Indicates whether the user is logged in
      */
     public void displayStockQuote(StockQuote quote,  int index, boolean enable) {
@@ -143,29 +149,35 @@ public final class QuoteCard extends JPanel {
 
     /**
      * Clears the Tables of their content
-     * @param disable
      */
-    public void clearQuote(boolean disable) {
+    public void clearQuote() {
         m_quoteModel.deleteRow();
         m_detailModel.deleteRow();
     }
 
 
-    /*
-     * inner class QuoteTableModel extends AbstractTableModel
-     * Model for JTable.  Adds/displays/removes StockQuote entries to the JTable.  
+    /**
+     * Model for the Quote Table.  inner class QuoteTableModel extends Abstract-
+     * TableModel.  Adds/displays/removes StockQuote entries to the table.  
      */
     class QuoteTableModel extends AbstractTableModel {
         private List<StockQuote> m_quotes;
         private final String[] m_header;
 
+        /**
+         * Construct the quote table model
+         * 
+         * @param header    - the header for each column in model
+         */
         public QuoteTableModel(String[] header) {
             this.m_header = header;
             this.m_quotes = new ArrayList<>();
         }
 
-        /*
-         * Gets the number of rows of the models List<StockQuote>
+
+        /**
+         * Gets/returns the total number of rows in table
+         * @return  - the total row count
          */
         @Override
         public int getRowCount() {
@@ -173,18 +185,35 @@ public final class QuoteCard extends JPanel {
         }
 
 
+        /**
+         * Gets the total number of columns in table
+         * @return  - the total column count
+         */
         @Override
         public int getColumnCount() {
             return m_header.length;
         }
 
 
+        /**
+         * Gets/returns the header at the given column
+         * @param column    - column to retrieve header
+         * @return  - the header at this given column position
+         */
         @Override
         public String getColumnName(int column) {
             return m_header[column];
         }
 
 
+        /**
+         * Gets/returns the individual StockQuote fields from the table model
+         * and inserts them into their appropriate places in the table.
+         * 
+         * @param rowIndex  - row index to stock quote field
+         * @param columnIndex   - column index to stock quote field
+         * @return  - the StockQuote field at the specified index
+         */
         @Override
         public Object getValueAt(int rowIndex, int columnIndex) {
             StockQuote sq = m_quotes.get(rowIndex);
@@ -226,6 +255,12 @@ public final class QuoteCard extends JPanel {
         }
 
 
+        /**
+         * Adds the StockQuote object to the table model at the specified index
+         * 
+         * @param quote - StockQuote object to add to the model
+         * @param index - Location in model to add the StockQuote
+         */
         public void addQuoteFields(StockQuote quote, int index) {
             if(m_quotes.size() > 0) {
                 this.deleteRow();
@@ -235,6 +270,11 @@ public final class QuoteCard extends JPanel {
         }
 
 
+        /**
+         * Removes the StockQuote object from the table model
+         * 
+         * @param quote - StockQuote to remove from table
+         */
         public void removeQuote(StockQuote quote) {
             int index = m_quotes.indexOf(quote);
             m_quotes.remove(index);
@@ -242,11 +282,21 @@ public final class QuoteCard extends JPanel {
         }
 
 
+        /**
+         * Gets/returns the StockQuote located at the specified row in the table
+         * model.
+         * 
+         * @param row   - row location of StockQuote within the table model
+         * @return  - the StockQuote at the specified location
+         */
         public Object getStock(int row) {
             return m_quotes.get(row);
         }
 
 
+        /**
+         * Deletes all StockQuotes from the table model and the table.
+         */
         public void deleteRow() {
             for(int i = m_quotes.size() - 1; i >= 0; i--) {
                 m_quotes.remove(i);
@@ -256,40 +306,67 @@ public final class QuoteCard extends JPanel {
 
 
 
-    /*
-     * class DetailTableModel extends AbstractTableModel
-     * Model for JTable.  Adds/displays/removes 2nd portion of StockQuote details
-     * to the JTable.  
-     *
+    /**
+     * Model for the Detail Table.  inner class DetailTableModel extends Abstract-
+     * TableModel.  Adds/displays/removes StockQuote entries to the table.  
      */
     class DetailTableModel extends AbstractTableModel {
         private List<StockQuote> m_quotes;
         private final String[] m_header;
 
-
+        /**
+         * Constructor for the DetailTable model
+         * 
+         * @param header 
+         */
         public DetailTableModel(String[] header) {
             this.m_header = header;
             this.m_quotes = new ArrayList<>();
         }
 
 
+        /**
+         * Gets/returns total row count from model
+         * 
+         * @return  - the total row count from model
+         */
         @Override
         public int getRowCount() {
             return m_quotes.size();
         }
 
+
+        /**
+         * Gets/returns the total column count from model
+         * 
+         * @return  - the total column count from model
+         */
         @Override
         public int getColumnCount() {
             return m_header.length;
         }
 
 
+        /**
+         * Gets/returns the header at the specified column location of model
+         * 
+         * @param column    - the column location from model 
+         * @return  - the header from the model from the specified location
+         */
         @Override
         public String getColumnName(int column) {
             return m_header[column];
         }
 
 
+        /**
+         * Gets/returns the individual StockQuote fields from the table model
+         * and inserts them into their appropriate places in the table.
+         * 
+         * @param rowIndex  - row index to stock quote field
+         * @param columnIndex   - column index to stock quote field
+         * @return  - the StockQuote field at the specified index
+         */
         @Override
         public Object getValueAt(int rowIndex, int columnIndex) {
             StockQuote sq = m_quotes.get(rowIndex);
@@ -331,6 +408,12 @@ public final class QuoteCard extends JPanel {
         }
 
 
+        /**
+         * Adds the StockQuote object to the table model at the specified index
+         * 
+         * @param quote - StockQuote object to add to the model
+         * @param index - Location in model to add the StockQuote
+         */
         public void addQuoteFields(StockQuote quote, int index) {
             if(m_quotes.size() > 0) {
                 this.deleteRow();
@@ -340,6 +423,11 @@ public final class QuoteCard extends JPanel {
         }
 
 
+        /**
+         * Removes the StockQuote object from the table model and the table
+         * 
+         * @param quote - StockQuote to remove from table model and table
+         */
         public void removeQuote(StockQuote quote) {
             int index = m_quotes.indexOf(quote);
             m_quotes.remove(index);
@@ -347,11 +435,20 @@ public final class QuoteCard extends JPanel {
         }
 
 
+        /**
+         * Gets/returns the StockQuote object from the specified row
+         * 
+         * @param row   - row location of the StockQuote
+         * @return  - the StockQuote object
+         */
         public Object getStock(int row) {
             return m_quotes.get(row);
         }
 
 
+        /**
+         * Deletes all StockQuotes from the table model and the table.
+         */
         public void deleteRow() {
             for(int i = m_quotes.size() - 1; i >= 0; i--) {
                 m_quotes.remove(i);
