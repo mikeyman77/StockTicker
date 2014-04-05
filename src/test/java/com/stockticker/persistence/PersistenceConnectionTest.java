@@ -18,7 +18,11 @@ import org.junit.rules.ExpectedException;
  */
 public class PersistenceConnectionTest {
 
-    private static final String INVALID_PROPERTIES_FILE = "./config/junittest.properties";
+    private static final String NOSUCH_PROPERTIES_FILE = "./config/test/nosuch.properties";
+    private static final String FAILDB_PROPERTIES_FILE = "./config/test/faildb_test.properties";
+    private static final String TEMPDB_PROPERTIES_FILE = "./config/test/tempdb_test.properties";
+    private static final String PERMDB_PROPERTIES_FILE = "./config/test/permdb_test.properties";
+    private static final String PRODUCTION_PROERTIES_FILE = "./config/stockticker.properties";
 
     /**
      * Perform environment initialization before each test is run
@@ -33,8 +37,9 @@ public class PersistenceConnectionTest {
     @Test
     public void testConnectionInMemoryDb() throws PersistenceServiceException {
         PersistenceConnection persistenceConnection = PersistenceConnectionImpl.INSTANCE;
-        persistenceConnection.start("./config/tempdb_test.properties");
+        persistenceConnection.start(TEMPDB_PROPERTIES_FILE);
         assertTrue("connection established inMemory db", persistenceConnection.connectionEstablished());
+        persistenceConnection.closeConnection();
     }
 
     /**
@@ -43,8 +48,9 @@ public class PersistenceConnectionTest {
     @Test
     public void testConnectionInPermanentDb() throws PersistenceServiceException {
         PersistenceConnection persistenceConnection = PersistenceConnectionImpl.INSTANCE;
-        persistenceConnection.start("./config/permdb_test.properties");
+        persistenceConnection.start(PERMDB_PROPERTIES_FILE);
         assertTrue("connection established permanent db", persistenceConnection.connectionEstablished());
+        persistenceConnection.closeConnection();
     }
 
     /**
@@ -53,9 +59,9 @@ public class PersistenceConnectionTest {
     @Test
     public void testStart() throws PersistenceServiceException {
         PersistenceConnection persistenceConnection = PersistenceConnectionImpl.INSTANCE;
-        persistenceConnection.start();
+        persistenceConnection.start(PRODUCTION_PROERTIES_FILE);
         assertNotNull("start establish connection", persistenceConnection.getConnection());
-        persistenceConnection = null;
+        persistenceConnection.closeConnection();
     }
 
     /**
@@ -76,8 +82,8 @@ public class PersistenceConnectionTest {
         exception.expectMessage(PersistenceServiceException.PSE100_PROPERTIES_FILE_NOT_FOUND_MESSAGE);
 
         PersistenceConnection persistenceConnection = PersistenceConnectionImpl.INSTANCE;
-        persistenceConnection.start("./config/imaginary.properties");
-        persistenceConnection = null;
+        persistenceConnection.start(NOSUCH_PROPERTIES_FILE);
+        persistenceConnection.closeConnection();
     }
 
     /**
@@ -90,11 +96,11 @@ public class PersistenceConnectionTest {
     public void testStartThrowsPersistenceServiceExceptionDatabaseConnectionFailed() throws PersistenceServiceException {
 
         exception.expect(PersistenceServiceException.class);
-        exception.expectMessage(PersistenceServiceException.DATABASE_CONNECTION_FAILED_MESSAGE);
+        exception.expectMessage(PersistenceServiceException.PSE201_DATABASE_CONNECTION_FAILED_MESSAGE);
 
         PersistenceConnection persistenceConnection = PersistenceConnectionImpl.INSTANCE;
-        persistenceConnection.start("./config/junittest.properties");
-        persistenceConnection = null;
+        persistenceConnection.start(FAILDB_PROPERTIES_FILE);
+        persistenceConnection.closeConnection();
     }
 */
 }

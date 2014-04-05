@@ -99,9 +99,8 @@ public class UserDAOImpl implements UserDAO {
 
                 //insert the user row with username, password, and id from userinfo table insert
                 int userId = -1;
-                PreparedStatement prepared = connection.prepareStatement("INSERT INTO user (username, password, " +
-                                                         "joinedDate, isLoggedIn) VALUES (?,?,?,?)",
-                                                       Statement.RETURN_GENERATED_KEYS);
+                String query = "INSERT INTO user (username, password, joinedDate, isLoggedIn) VALUES (?,?,?,?)";
+                PreparedStatement prepared = connection.prepareStatement(query, Statement.RETURN_GENERATED_KEYS);
                 prepared.setString(1, username);
                 prepared.setString(2, password);
                 prepared.setTimestamp(3, new Timestamp(System.currentTimeMillis()));
@@ -113,8 +112,8 @@ public class UserDAOImpl implements UserDAO {
                 }
 
                 //Create an empty userinfo row and retrieve the auto increment row id
-                prepared = connection.prepareStatement("INSERT INTO userinfo (FK_userId) VALUES (?)",
-                        Statement.RETURN_GENERATED_KEYS);
+                query = "INSERT INTO userinfo (FK_userId) VALUES (?)";
+                prepared = connection.prepareStatement(query, Statement.RETURN_GENERATED_KEYS);
                 prepared.setInt(1, userId);
                 prepared.execute();
 
@@ -181,9 +180,8 @@ public class UserDAOImpl implements UserDAO {
             if (user != null && exists(user.getUserName())) {
                 //Update the User table
                 try {
-                    PreparedStatement prepared = connection.prepareStatement
-                            ("UPDATE user SET username = ?, password = ?, isLoggedIn = ? WHERE userId = ?");
-
+                    String query = "UPDATE user SET username = ?, password = ?, isLoggedIn = ? WHERE userId = ?";
+                    PreparedStatement prepared = connection.prepareStatement(query);
                     prepared.setString(1, user.getUserName());
                     prepared.setString(2, user.getPassword());
                     prepared.setBoolean(3, user.isLoggedIn());
@@ -195,10 +193,8 @@ public class UserDAOImpl implements UserDAO {
                         //Update the UserInfo table
                         UserInfo userinfo = user.getUserInfo();
                         if (userinfo != null) {
-
-                            prepared = connection.prepareStatement
-                                    ("UPDATE userinfo SET firstName = ?, lastName = ? WHERE FK_userId = ?");
-
+                            query = "UPDATE userinfo SET firstName = ?, lastName = ? WHERE FK_userId = ?";
+                            prepared = connection.prepareStatement(query);
                             prepared.setString(1, userinfo.getFirstName());
                             prepared.setString(2, userinfo.getLastName());
                             prepared.setInt(3, user.getUserID());
@@ -284,11 +280,10 @@ public class UserDAOImpl implements UserDAO {
 
         if (exists(username)) {
             try {
-                int userId = getUserId(username);
-
                 //Delete the row in the user table with userId
-                PreparedStatement prepared = connection.prepareStatement
-                        ("DELETE FROM user WHERE userId = ?");
+                int userId = getUserId(username);
+                String query = "DELETE FROM user WHERE userId = ?";
+                PreparedStatement prepared = connection.prepareStatement(query);
                 prepared.setInt(1, userId);
                 prepared.executeUpdate();
                 deleteSuccessful = true;
@@ -354,11 +349,10 @@ public class UserDAOImpl implements UserDAO {
 
         try {
             if (exists(username)) {
-                int userId = getUserId(username);
                 //Update the User login status
-                PreparedStatement prepared = connection.prepareStatement
-                        ("UPDATE user SET isLoggedIn = ? WHERE userId = ?");
-
+                int userId = getUserId(username);
+                String query = "UPDATE user SET isLoggedIn = ? WHERE userId = ?";
+                PreparedStatement prepared = connection.prepareStatement(query);
                 prepared.setBoolean(1, status);
                 prepared.setInt(2, userId);
                 int rows = prepared.executeUpdate();
