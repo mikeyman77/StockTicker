@@ -15,9 +15,9 @@ import org.apache.log4j.LogManager;
 import org.apache.log4j.PropertyConfigurator;
 
 /**
- * Defines the data access methods for User related data. This class retrieves
+ * <p>Defines the data access methods for User related data. This class retrieves
  * an instance of the PersistenceConnection object and will initiate the start
- * sequence if a connection is not currently available.
+ * sequence if a connection is not currently available.</p>
  *
  * @author Stuart Connall
  * @see UserDAO

@@ -5,7 +5,7 @@ import com.stockticker.User;
 import java.util.List;
 
 /**
- * Provides the interface for User related database actions
+ * <p>Provides the interface for User related database actions</p>
  *
  * @author -  Stuart Connall
  * @see UserDAOImpl
