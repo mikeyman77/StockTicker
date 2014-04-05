@@ -42,7 +42,8 @@ import com.stockticker.StockHistory;
 
 /**
  * History Screen for Stock Ticker Portfolio Manager
- * 90.308-061 Agile Software Dev. w/Java Project
+ * Provides StockHistory on a selected Stock between a specified date range.
+ * Displays the details in a JTable.
  * @author prwallace
  */
 public class HistoryCard {
@@ -70,11 +71,10 @@ public class HistoryCard {
     private GridBagConstraints m_constraints;
 
 
-
     /**
      * Constructs the HistoryCard object.
      *  
-     * @param operate   - Instance of OperateStockTicker
+     * @param operate   - Instance of OperateStockTicker class
      */
     public HistoryCard(OperateStockTicker operate) {
         m_operate = operate;
@@ -83,8 +83,8 @@ public class HistoryCard {
 
 
     /**
-     * Adds the Card JPanel as main panel for this ui screen.  Adds its child
-     * JPanel's, the JTable, and the JSpinners.
+     * Adds the Card JPanel as main panel for this UI screen and adds its child
+     * JPanel's to this Card.  Makes method calls to build its child components.
      */
     public final void setCard() {
         m_historyModel = new HistoryTableModel(m_header);
@@ -127,10 +127,12 @@ public class HistoryCard {
 
 
     /**
-     * Initializes and layout the start date spinner, its panel, and its labels.
+     * Creates/initializes a date spinner component that represents the start date
+     * for the StockHistory date range.  Creates a JPanel and layouts the spinner
+     * onto the panel.  Provides an editor to mask the Date format for the spinner.
      */
     private void setStartDateSpinner() {
-        m_startDateModel = new SpinnerDateModel();// may need to initial with a Calendar Instance, see CalendarSpinner
+        m_startDateModel = new SpinnerDateModel();
         m_startDateModel.setCalendarField(Calendar.DAY_OF_YEAR);
 
         m_startDateSpinner = new JSpinner(m_startDateModel);
@@ -180,6 +182,7 @@ public class HistoryCard {
         m_constraints.insets = new Insets(0, 0, 15, 10);
         m_startDatePanel.add(dateFormat, m_constraints);
 
+        // Add the spinner's panel to its parent panel
         m_constraints = new GridBagConstraints();
         m_constraints.gridx = 0;
         m_constraints.gridy = 0;
@@ -190,7 +193,9 @@ public class HistoryCard {
 
 
     /**
-     * Initializes and layout the end date spinner, its panel, and its labels.
+     * Creates/initializes a date spinner component that represents the end date
+     * for the StockHistory date range.  Creates a JPanel and layouts the spinner
+     * onto the panel.  Provides an editor to mask the Date format for the spinner.
      */
     private void setEndDateSpinner() {
         m_endDateModel = new SpinnerDateModel();
@@ -243,6 +248,7 @@ public class HistoryCard {
         m_constraints.insets = new Insets(0, 0, 15, 10);
         m_endDatePanel.add(dateFormat, m_constraints);
 
+        // Add the spinners panel to its parent panel
         m_constraints = new GridBagConstraints();
         m_constraints.gridx = 0;
         m_constraints.gridy = 1;
@@ -252,6 +258,7 @@ public class HistoryCard {
 
     /**
      * Gets/returns the Card panel
+     * 
      * @return  - the Card panel of this screen
      */
     public JPanel getCard() {
@@ -260,10 +267,10 @@ public class HistoryCard {
 
 
     /**
-     * Displays the StockHistory of the selected stock from the TickerCard screen.
-     * The history is displayed in a date range that is set by the user.
+     * Adds the List<StockHistory> into the tables model, which is then displayed
+     * in the table.
      * 
-     * @param history   - the StockHistory of a stock during a specific date range
+     * @param history   - List of StockHistory of a stock during a specific date range
      */
     public void displayHistory(List<StockHistory> history) {
         m_historyModel.addStocks(history);
@@ -271,9 +278,9 @@ public class HistoryCard {
 
 
     /**
-     * Gets/returns the start date of the date range set by the user.
+     * Gets/returns the start Date of the date range set by the user.
      * 
-     * @return  - the start date
+     * @return  - the start Date
      */
     public Date getStartDate() {
         return m_startDateModel.getDate();
@@ -281,9 +288,9 @@ public class HistoryCard {
 
 
     /**
-     * Gets/returns the end date of the date range set by user.
+     * Gets/returns the end Date of the date range set by user.
      * 
-     * @return  - the end date
+     * @return  - the end Date
      */
     public Date getEndDate() {
         return m_endDateModel.getDate();
@@ -296,8 +303,8 @@ public class HistoryCard {
      * @param title - Title of the table
      */
     public void setTableBorder(String title) {
-        m_tablePanel.setBorder(BorderFactory.createTitledBorder(BorderFactory.createEtchedBorder(), title, TitledBorder.ABOVE_TOP, TitledBorder.CENTER,
-                                        new Font("Sansserif", 0, 12), new Color(0, 0, 0)));
+        m_tablePanel.setBorder(BorderFactory.createTitledBorder(BorderFactory.createEtchedBorder(), title, TitledBorder.ABOVE_TOP,
+                                                            TitledBorder.CENTER, new Font("Sansserif", 0, 12), new Color(0, 0, 0)));
     }
 
 
@@ -314,16 +321,18 @@ public class HistoryCard {
 
 
     /**
-     * Model for the History JTable.  Handles adding, inserting, displaying, and
-     * deleting StockHistory in the table.
+     * Model for the History JTable.  inner class HistoryTableModel extends Abstract-
+     * TableModel.  Adds/displays/clear StockHistory entries to the table.
      */
     class HistoryTableModel extends AbstractTableModel {
         private List<StockHistory> m_stockHistory;
         private final String[] m_header;
 
 
-        /*
-         * Constructs the HistoryTableModel.
+        /**
+         * Constructs the HistoryTableModel object
+         * 
+         * @param header    - header for each column in table
          */
         public HistoryTableModel(String[] header) {
             this.m_header = header;
@@ -357,10 +366,14 @@ public class HistoryCard {
             return m_header.length;
         }
 
-
-        /*
-         * Gets each StockHistory record from the model's List<StockHistory> and 
-         * insert each field in the record into its appropriate places in the table. 
+        
+        /**
+         * Gets each StockHistory field from the StockHistory model and inserts
+         * each field into its appropriate place in the table.
+         * 
+         * @param rowIndex  - row location of this StockHistory entry
+         * @param columnIndex   - column location of this StockHistory entry
+         * @return  - the StockHistory field at the specified index
          */
         @Override
         public Object getValueAt(int rowIndex, int columnIndex) {
@@ -397,7 +410,7 @@ public class HistoryCard {
 
 
         /*
-         * Adds a StockHistory range to the table models List<StockHitory>
+         * Adds a range of StockHistory objects to the model
          */
         public void addStocks(List<StockHistory> history) {
             m_stockHistory = history;
@@ -414,7 +427,7 @@ public class HistoryCard {
 
 
         /*
-         * Deletes all rows in the table
+         * Deletes all StockHistory from the table and the model
          */
         public void deleteAllRows() {
             for(int i = this.getRowCount() - 1; i >= 0; i--) {

@@ -97,8 +97,8 @@ public class TickerCard extends JPanel {
 
 
     /**
-     * Creates the Card JPanel for this ui screen and adds the child JPanels for
-     * the JTable, Quote button, and Quote text field.  Also creates the model for
+     * Creates the Card JPanel for this UI screen and adds child JPanels for the
+     * JTable, Quote button, and Quote text field.  Also creates the model for
      * the JTable.
      */
     public final void setCard() {
@@ -244,20 +244,21 @@ public class TickerCard extends JPanel {
 
 
     /**
-     * Gets/returns this Card JPanel
+     * Gets/returns the Card panel
      * 
-     * @return  - Ticker card panel
+     * @return  - the Card panel of this screen
      */
     public JPanel getCard() {
         return m_tickerCard;
     }
 
 
+    
     /**
-     * Gets/returns the individual symbols listed in the table as a List<String>.
+     * Gets each symbol field from each StockQuote entry listed in the table.  
+     * Generate a List<String> of symbols and return this list.
      * 
-     * @param symbols   - stock symbol to retrieve from table
-     * @return  - the List<String> of symbols retrieved from table
+     * @return  - the List<String> of symbols
      */
     public List<String> getSymbolsInTable() {
         List<String> symbols = new ArrayList<>();
@@ -273,12 +274,12 @@ public class TickerCard extends JPanel {
 
 
     /**
-     * Gets/returns the symbols from the quote text field.  The user can manually 
-     * enter symbols into field, delimited by comma's or add symbols to it from
-     * the symbols list.  Removes white space and comma's delimiters and insures
-     * the entry is no longer than 5 characters in length.
-     * 
-     * @return  - returns a List<String> of stock symbols
+     * Gets each symbol listed in the quote text field.  This field contains a
+     * String of Stock symbols, delimited by comma's. The String is entered from
+     * the symbols JList or manually by user.  The String is parsed, validated,
+     * and added to a List<String>. The resultant list is returned.
+     *
+     * @return  - a List<String> of Stock symbols
      */
     public List<String> getSymbolsTextField() {
         List<String> list = new ArrayList<>();
@@ -296,8 +297,11 @@ public class TickerCard extends JPanel {
     }
 
 
+    
     /**
-     * Gets/returns the selected stock from the table
+     * Gets/returns the selected StockQuote from the table
+     * 
+     * @return  - the selected StockQuote
      */
     public StockQuote getSelectedStock() {
         return m_selectedStock;
@@ -313,10 +317,10 @@ public class TickerCard extends JPanel {
 
 
     /**
-     * Sets the quote text field with symbols from the argument List<String> .  The
-     * symbols are delimited by commas.  into the text field.
+     * Sets the quote text field with symbols from the argument List<String> and
+     * delimits the symbols by commas.
      * 
-     * @param symbolList    - List of stock quote symbols to be added to text field.
+     * @param symbolList    - List of Stock symbols
      */
     public void setSymbolsTextField(List<String> symbolList) {
         StringBuilder sb = new StringBuilder();
@@ -334,9 +338,9 @@ public class TickerCard extends JPanel {
 
 
     /**
-     * Adds the argument List<StockQuote> into the StockTableModel.  The StockTableModel
-     * inserts the data into the JTable and displays the JTable.
-     * list 
+     * Adds the List<StockQuote> into the tables model, which is then displayed
+     * in the table.
+     *
      * @param stocks    - list of stock symbols to be added to table
      */
     public void displayStockQuoteList(List<StockQuote> stocks) {
@@ -345,7 +349,7 @@ public class TickerCard extends JPanel {
 
 
     /**
-     *  Empties the table of all stock quotes
+     *  Clears the table of all StockQuote's
      */
     public void clearStockList() {
         m_selectedStock = null;
@@ -357,17 +361,18 @@ public class TickerCard extends JPanel {
 
 
     /**
-     * Model for the StockQuote JTable.  Handles adding, inserting, displaying, and
-     * deleting day in table.
+     * Model for the Ticker JTable.  inner class StockTableModel extends Abstract-
+     * TableModel.  Adds/displays/clear StockQuote entries to the table.
      */
     class StockTableModel extends AbstractTableModel {
         private List<StockQuote> m_stocks;
         private final String[] m_header;
 
 
-        /*
-         * Constructor for StockTableModel.  Initializes header String[] and List<StockQuote>
-         * fields.  Displays the JTable with header.
+        /**
+         * Constructs the TickerTable object
+         * 
+         * @param header    - header for each column in table 
          */
         public StockTableModel(String[] header) {
             this.m_header = header;
@@ -376,7 +381,10 @@ public class TickerCard extends JPanel {
 
 
         /**
-         * Gets/returns each column name from the header String[].
+         * Gets/return the header for each column in model
+         * 
+         * @param column    - index of column in model
+         * @return  - the header at the specified column index
          */
         @Override
         public String getColumnName(int column) {
@@ -384,8 +392,10 @@ public class TickerCard extends JPanel {
         }
 
 
-        /*
-         * Gets/returns the row count of JTable
+        /**
+         * Gets/returns the total row count in model
+         * 
+         * @return  - total row count in model
          */
         @Override
         public int getRowCount() {
@@ -393,20 +403,26 @@ public class TickerCard extends JPanel {
         }
 
 
-        /*
-         * Gets/returns the column count of JTable
+        /**
+         * Gets/returns the total number of columns in model
+         * 
+         * @return  - the total number of columns in model
          */
         @Override
         public int getColumnCount() {
             return m_header.length;
         }
 
-
-        /*
-         * Gets the individual StockQuote fields within the List<StockQuotes> and 
-         * inserts them into their appropriate places in the table.  Adds a plus or
-         * minus sign to the Tracked column; "+" for tracking "-" for not tracking.
+        
+        /**
+         * Gets each StockQuote field from the StockQuote model and inserts each
+         * field into its appropriate place in the table.  Adds a plus or minus
+         * sign in the Tracked column, to indicate the StockQuote is tracked or
+         * not tracked.
          * 
+         * @param rowIndex  - row location of this StockQuote entry 
+         * @param columnIndex   - column location of this StockHistory entry
+         * @return  - the StockQuote field at the specified index
          */
         @Override
         public Object getValueAt(int rowIndex, int columnIndex) {
@@ -446,15 +462,17 @@ public class TickerCard extends JPanel {
                     }
                     break;
                 default:
-                    System.err.println("Problems displaying Stock Quotes");
+                    System.err.println("Problems displaying Stock Quote's");
             }
 
             return value;
         }
 
 
-        /*
-         * Adds the list of StockQuote's to the table models List<StockQuote>
+        /**
+         * Adds the List<StockQuote> to the table model
+         * 
+         * @param stock - StockQuote to be added to model
          */
         public void addStocks(List<StockQuote> stock) {
             m_stocks = stock;
@@ -462,16 +480,19 @@ public class TickerCard extends JPanel {
         }
 
 
-        /*
+        /**
          * Gets/returns the StockQuote at the specified row
+         * 
+         * @param row- row location of StockQuote in model
+         * @return 
          */
         public StockQuote getStock(int row) {
             return m_stocks.get(row);
         }
 
 
-        /*
-         * Deletes all rows in the table
+        /**
+         * Deletes all rows in the model
          */
         public void deleteAllRows() {
             for(int i = this.getRowCount() - 1; i >= 0; i--) {

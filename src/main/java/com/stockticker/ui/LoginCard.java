@@ -31,7 +31,7 @@ import javax.swing.border.EtchedBorder;
 
 /**
  * Login screen for Stock Ticker Portfolio Manager
- * Provides fields to allow a user to log into the Stock Ticker Portfolio Manager
+ * Provides fields to allow a user to log into the Stock Ticker Portfolio Manager api
  * 
  * @author prwallace
  */
@@ -48,11 +48,10 @@ public class LoginCard extends JPanel {
     private final OperateStockTicker m_operate;
 
 
-    
     /**
-     * Constructor for the LoginCard class
+     * Constructs the LoginCard class
      * 
-     * @param operate   - Instance variable of the OperateStockTicker class
+     * @param operate   - Instance of OperateStockTicker
      */
     public LoginCard(OperateStockTicker operate) {
         m_constraints = new GridBagConstraints();
@@ -62,9 +61,9 @@ public class LoginCard extends JPanel {
 
 
    /**
-    * Adds the components and the components panel for this screen.  Lays out
-    * the components onto the component panel and adds the component panel to the
-    * Card panel.
+    * Creates the Card panel for this UI screen.  Creates/adds the child panels
+    * and their components.  Lays out the components onto their respective panels
+    * and adds those panels to the Card panel.
     */
     public final void setCard() {
         m_loginCard = new JPanel(new GridBagLayout());
@@ -80,6 +79,8 @@ public class LoginCard extends JPanel {
         m_passwordField.setEchoChar('*');
         m_passwordField.setText("");
 
+        // Listen for enter when password field has focus.  Clicks the left control
+        // button on the main screen.
         Action enterAction = new AbstractAction() {
             @Override
             public void actionPerformed(ActionEvent actionEvent) {
@@ -90,6 +91,7 @@ public class LoginCard extends JPanel {
         m_passwordField.getInputMap(JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT).put(KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, 0, false), ENTER_PRESSED);
         m_passwordField.getActionMap().put(ENTER_PRESSED, enterAction);
 
+        // Add component panel, layout the Login form components and add to their panels.
         JPanel compPanel = new JPanel(new GridBagLayout());
         compPanel.setPreferredSize(new Dimension(400, 150));
 
@@ -127,9 +129,9 @@ public class LoginCard extends JPanel {
 
 
     /**
-     * Gets/returns the card object of this JPanel.
+     * Gets/returns the Card panel
      * 
-     * @return          - The card object for this panel
+     * @return  - the Card panel of this screen
      */
     public JPanel getCard() {
         return m_loginCard;
@@ -137,8 +139,9 @@ public class LoginCard extends JPanel {
 
 
     /**
-     *
-     * @return
+     * Gets/returns the String entered into the username text field.
+     * 
+     * @return  - the first name of the user
      */
     public String getUsername() {
         return m_usernameField.getText();
@@ -146,9 +149,9 @@ public class LoginCard extends JPanel {
 
 
     /**
-     * Gets/returns the password entered into the password text field.
+     *  Gets/returns the String entered into the password text field.
      * 
-     * @return          - Returns the entered password from password field
+     * @return  - the entered password of the user
      */
     public String getPassword() {
         return String.valueOf(m_passwordField.getPassword());
@@ -156,11 +159,11 @@ public class LoginCard extends JPanel {
 
 
     /**
-     * Sets the focus into one of the two text fields when that text field isEmpty.
-     * If both text fields are empty, the focus will go to the first empty  field,
-     * starting from top to bottom.
+     * Sets the focus for either the username or password field, based on which 
+     * one is currently empty.  If both text fields are empty, the focus will go
+     * to the first empty field, starting from top to bottom.
      * 
-     * @param isEmpty         - boolean array that indicates an empty text field when true
+     * @param isEmpty   - boolean array that indicates an empty text field when true
      */
     public void setFocusInField(boolean[] isEmpty) {
         if(isEmpty[Field.USER.getValue()]) {
