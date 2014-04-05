@@ -22,7 +22,6 @@ public class PersistenceConnectionTest {
     private static final String FAILDB_PROPERTIES_FILE = "./config/test/faildb_test.properties";
     private static final String TEMPDB_PROPERTIES_FILE = "./config/test/tempdb_test.properties";
     private static final String PERMDB_PROPERTIES_FILE = "./config/test/permdb_test.properties";
-    private static final String PRODUCTION_PROERTIES_FILE = "./config/stockticker.properties";
 
     /**
      * Perform environment initialization before each test is run
@@ -59,7 +58,7 @@ public class PersistenceConnectionTest {
     @Test
     public void testStart() throws PersistenceServiceException {
         PersistenceConnection persistenceConnection = PersistenceConnectionImpl.INSTANCE;
-        persistenceConnection.start(PRODUCTION_PROERTIES_FILE);
+        persistenceConnection.start(PERMDB_PROPERTIES_FILE);
         assertNotNull("start establish connection", persistenceConnection.getConnection());
         persistenceConnection.closeConnection();
     }
@@ -85,22 +84,4 @@ public class PersistenceConnectionTest {
         persistenceConnection.start(NOSUCH_PROPERTIES_FILE);
         persistenceConnection.closeConnection();
     }
-
-    /**
-     * Tests if a PersistenceServiceException is thrown when establishing a database connection
-     *
-     * @throws PersistenceServiceException
-     */
-/*
-    @Test
-    public void testStartThrowsPersistenceServiceExceptionDatabaseConnectionFailed() throws PersistenceServiceException {
-
-        exception.expect(PersistenceServiceException.class);
-        exception.expectMessage(PersistenceServiceException.PSE201_DATABASE_CONNECTION_FAILED_MESSAGE);
-
-        PersistenceConnection persistenceConnection = PersistenceConnectionImpl.INSTANCE;
-        persistenceConnection.start(FAILDB_PROPERTIES_FILE);
-        persistenceConnection.closeConnection();
-    }
-*/
 }

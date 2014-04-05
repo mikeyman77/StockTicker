@@ -159,7 +159,7 @@ public enum PersistenceConnectionImpl implements PersistenceConnection {
             }
         } while (retryConnection);
 
-        //configure logg4j
+        //configure log4j
         PropertyConfigurator.configure("./config/log4j.properties");
         logger.info("The Persistence Connection is ready for service.");
     }
@@ -196,6 +196,7 @@ public enum PersistenceConnectionImpl implements PersistenceConnection {
         try {
             connection.close();
             connectionClosed = true;
+            connection = null;
             logger.info("Database connection successfully closed.");
         }
         catch (SQLException e) {

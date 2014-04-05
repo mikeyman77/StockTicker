@@ -24,8 +24,17 @@ import org.apache.log4j.PropertyConfigurator;
  */
 public class TrackedStocksDAOImpl implements TrackedStocksDAO {
 
-    private final Connection connection;
+    private static Connection connection;
     static final Logger logger = LogManager.getLogger(TrackedStocksDAOImpl.class.getName());
+
+    /**
+     * Reestablishes the database connection in the event the connection is lost and
+     * restarted.
+     */
+    public static void reestablishConnection() {
+        PersistenceConnection persistenceConnection = PersistenceConnectionImpl.INSTANCE;
+        connection = persistenceConnection.getConnection();
+    }
 
     /**
      * Constructs the Data Access Object for tracking stocks
@@ -41,7 +50,7 @@ public class TrackedStocksDAOImpl implements TrackedStocksDAO {
         if (!persistenceConnection.connectionEstablished()) {
             persistenceConnection.start();
         }
-        this.connection = persistenceConnection.getConnection();
+        connection = persistenceConnection.getConnection();
 
         //configure logg4j
         PropertyConfigurator.configure("./config/log4j.properties");
@@ -90,25 +99,28 @@ public class TrackedStocksDAOImpl implements TrackedStocksDAO {
     @Override
     public boolean add(int userId, int stockId) throws PersistenceServiceException {
         boolean stockAdded = false;
-        if (!exists(userId, stockId)
-            && isValidId(userId)
-            && isValidId(stockId)) {
 
-            try {
-                //if trackId returned, then stock is already being tracked
-                String query = "INSERT INTO tracked_stock (userId, stockId) VALUES (?,?)";
-                PreparedStatement prepared = connection.prepareStatement(query);
+        try {
+            String query = "SELECT DISTINCT userId FROM user WHERE userId=? AND (SELECT stockId FROM stock WHERE stockId=?)";
+            PreparedStatement prepared = connection.prepareStatement(query);
+            prepared.setInt(1, userId);
+            prepared.setInt(2, stockId);
+            ResultSet result = prepared.executeQuery();
+            if (result.next()) {
+                query = "INSERT INTO tracked_stock (userId, stockId) VALUES (?,?)";
+                prepared = connection.prepareStatement(query);
                 prepared.setInt(1, userId);
                 prepared.setInt(2, stockId);
-                prepared.execute();
+                if (prepared.executeUpdate() > 0) {
+                    stockAdded = true;
+                }
             }
-            catch (SQLException e) {
-                int errorCode = PersistenceServiceException.PSE202_SQL_EXCEPTION_OCCURRED;
-                String message = PersistenceServiceException.PSE202_SQL_EXCEPTION_OCCURRED_MESSAGE;
-                logger.error(message, e);
-                throw new PersistenceServiceException(message+" ["+errorCode+"]: "+e.getMessage(), e, errorCode);
-            }
-            stockAdded = true;
+        }
+        catch (SQLException e) {
+            int errorCode = PersistenceServiceException.PSE202_SQL_EXCEPTION_OCCURRED;
+            String message = PersistenceServiceException.PSE202_SQL_EXCEPTION_OCCURRED_MESSAGE;
+            logger.error(message, e);
+            throw new PersistenceServiceException(message+" ["+errorCode+"]: "+e.getMessage(), e, errorCode);
         }
 
         return stockAdded;

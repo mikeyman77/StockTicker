@@ -27,8 +27,17 @@ import org.apache.log4j.PropertyConfigurator;
  */
 public class UserDAOImpl implements UserDAO {
 
-    private final Connection connection;
+    private static Connection connection;
     static final Logger logger = LogManager.getLogger(UserDAOImpl.class.getName());
+
+    /**
+     * Reestablishes the database connection in the event the connection is lost and
+     * restarted.
+     */
+    public static void reestablishConnection() {
+        PersistenceConnection persistenceConnection = PersistenceConnectionImpl.INSTANCE;
+        connection = persistenceConnection.getConnection();
+    }
 
     /**
      * Constructs the UserDAO implementation instance. First it retrieves the PersistenceConnection
@@ -44,7 +53,7 @@ public class UserDAOImpl implements UserDAO {
         if (!persistenceConnection.connectionEstablished()) {
             persistenceConnection.start();
         }
-        this.connection = persistenceConnection.getConnection();
+        connection = persistenceConnection.getConnection();
 
         //configure log4j
         PropertyConfigurator.configure("./config/log4j.properties");
