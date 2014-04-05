@@ -33,7 +33,8 @@ import org.apache.log4j.PropertyConfigurator;
  * dbPswd     - the database password
  *
  * @author Stuart Connall
- * @see PersistenceConnection, PersistenceServiceException
+ * @see PersistenceConnection
+ * @see PersistenceServiceException
  * @version 1.0 02/27/2014
  */
 public enum PersistenceConnectionImpl implements PersistenceConnection {

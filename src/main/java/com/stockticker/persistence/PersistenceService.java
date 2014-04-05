@@ -8,7 +8,8 @@ import com.stockticker.UserInfo;
  * Provides public interface methods for the Persistence Service component.
  *
  * @author Stuart Connall
- * @see StockTickerPersistence, PersistenceServiceException
+ * @see StockTickerPersistence
+ * @see PersistenceServiceException
  * @version 1.0 03/11/2014
  */
 public interface PersistenceService {
