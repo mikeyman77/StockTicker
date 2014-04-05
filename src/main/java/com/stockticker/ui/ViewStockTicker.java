@@ -1260,10 +1260,10 @@ public class ViewStockTicker extends WindowAdapter implements IComponentsUI {
          * 
          * @param visible    - set visible m_symbolJList
          */
-        public void enableSymbolJList(boolean enable) {
-            m_symbolJList.setVisible(enable);
-            m_scrollPane.setVisible(enable);
-            m_symbolField.setVisible(enable);
+        public void enableSymbolJList(boolean visible) {
+            m_symbolJList.setVisible(visible);
+            m_scrollPane.setVisible(visible);
+            m_symbolField.setVisible(visible);
              m_symbolJList.ensureIndexIsVisible(0);
         }
 
