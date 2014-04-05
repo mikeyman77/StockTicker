@@ -81,7 +81,7 @@ public final class HomeCard extends JPanel {
 
     /**
      * Gets/returns this screens Card object
-     * @return 
+     * @return an instance of the HomeCard JPanel object
      */
     public JPanel getCard() {
         return m_homeCard;

@@ -5,7 +5,7 @@ import com.stockticker.User;
 import com.stockticker.UserInfo;
 
 /**
- * Provides public interface methods for the Persistence Service component.
+ * <p>Provides public interface methods for the Persistence Service component.</p>
  *
  * @author Stuart Connall
  * @see StockTickerPersistence

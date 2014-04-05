@@ -10,8 +10,8 @@ import org.apache.log4j.LogManager;
 import org.apache.log4j.PropertyConfigurator;
 
 /**
- * Provides services to query and update User and Stock data in the
- * database
+ * <p>Provides services to query and update User and Stock data in the
+ * database</p>
  *
  * @author Stuart Connall
  * @see PersistenceService

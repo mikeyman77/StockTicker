@@ -3,8 +3,8 @@ package com.stockticker.persistence;
 import java.util.List;
 
 /**
- * Interface that defines the Data Access methods that
- * enables users to track stocks of interest.
+ * <p>Interface that defines the Data Access methods that
+ * enables users to track stocks of interest.</p>
  *
  * @author Stuart Connall
  * @see TrackedStocksDAOImpl

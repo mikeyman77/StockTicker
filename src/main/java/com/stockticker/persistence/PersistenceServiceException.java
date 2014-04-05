@@ -1,7 +1,7 @@
 package com.stockticker.persistence;
 
 /**
- * Exception handler for the Persistence Service.
+ * <p>Exception handler for the Persistence Service.</p>
  *
  * @author Stuart Connall
  * @see Exception

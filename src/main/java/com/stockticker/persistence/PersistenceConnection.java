@@ -3,8 +3,8 @@ package com.stockticker.persistence;
 import java.sql.Connection;
 
 /**
- * Defines the public interface for creating and accessing a JDBC
- * database connection.
+ * <p>Defines the public interface for creating and accessing a JDBC
+ * database connection.</p>
  *
  * @author Stuart Connall
  * @see PersistenceConnectionImpl
