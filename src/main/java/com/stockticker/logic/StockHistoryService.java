@@ -21,6 +21,7 @@ public interface StockHistoryService {
      * @param startDate start date for the history (YYYY-MM-DD)
      * @param endDate end date for the history (YYYY-MM-DD)
      * @return a URL object to get stock history data
+     * @throws com.stockticker.logic.BusinessLogicException
      */
     public URL getURL(String symbol, Date startDate, Date endDate) 
             throws BusinessLogicException;
@@ -30,6 +31,7 @@ public interface StockHistoryService {
      * 
      * @param url URL to retrieve the stock history data from
      * @return a list of StockHistory objects
+     * @throws com.stockticker.logic.BusinessLogicException
      */
     public List<StockHistory> getStockHistory(URL url) 
             throws BusinessLogicException;

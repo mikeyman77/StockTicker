@@ -30,6 +30,7 @@ public enum YahooStockQuoteService implements StockQuoteService {
      *
      * @param symbols a list of stock symbols
      * @return URL
+     * @throws com.stockticker.logic.BusinessLogicException
      */
     @Override
     public URL getURL(List<String> symbols) throws BusinessLogicException {
@@ -84,6 +85,7 @@ public enum YahooStockQuoteService implements StockQuoteService {
      *
      * @param url URL used to get the stock quote data
      * @return a list of StockQuote objects
+     * @throws com.stockticker.logic.BusinessLogicException
      */
     @Override
     public List<StockQuote> getStockQuotes(URL url) {

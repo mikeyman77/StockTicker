@@ -29,6 +29,8 @@ public enum BusinessLogicService {
     
     /**
      * Initializes the service.
+     *
+     * @throws com.stockticker.logic.BusinessLogicException
      */
     public void start() throws BusinessLogicException {
         if (!initialized) {
@@ -58,6 +60,7 @@ public enum BusinessLogicService {
      * Gets the current User Authorization service.
      * 
      * @return AuthorizationService
+     * @throws com.stockticker.logic.BusinessLogicException
      */
     public AuthorizationService getUserAuth() {
         if (!initialized && !userAuthIntialized) {
@@ -70,6 +73,7 @@ public enum BusinessLogicService {
      * Gets the current Stock Ticker service.
      * 
      * @return StockTickerService
+     * @throws com.stockticker.logic.BusinessLogicException
      */
     public StockTickerService getStockTicker() {
         if (!initialized && !stockTickerIntialized) {
@@ -82,6 +86,7 @@ public enum BusinessLogicService {
      * Gets the current Persistence service.
      * 
      * @return PersistenceService
+     * @throws com.stockticker.logic.BusinessLogicException
      */
     PersistenceService getPersistence() {
         if (!persistenceInitialized) {

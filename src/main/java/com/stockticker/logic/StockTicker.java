@@ -41,6 +41,7 @@ public enum StockTicker implements StockTickerService {
      *
      * @param symbols a list of stock symbols
      * @return a list of StockQuote objects
+     * @throws com.stockticker.logic.BusinessLogicException
      */
     @Override
     public List<StockQuote> getStockQuotes(List<String> symbols) 
@@ -58,6 +59,7 @@ public enum StockTicker implements StockTickerService {
      * @param startDate stock history start date
      * @param endDate stock history end date
      * @return a list of StockHistory objects
+     * @throws com.stockticker.logic.BusinessLogicException
      */
     @Override
     public List<StockHistory> getStockHistory(String symbol, Date startDate, Date endDate) 
@@ -71,6 +73,7 @@ public enum StockTicker implements StockTickerService {
      *
      * @param username the username of the user
      * @return a list of tracked stocks
+     * @throws com.stockticker.logic.BusinessLogicException
      */
     @Override
     public List<String> getTrackedStocks(String username) 
@@ -95,6 +98,7 @@ public enum StockTicker implements StockTickerService {
      * @param symbol the stock symbol
      * @param tracked true to track stock and false to not track the stock
      * @return true if the operation was successful
+     * @throws com.stockticker.logic.BusinessLogicException
      */
     @Override
     public boolean trackStock(String username, String symbol, boolean tracked) 
@@ -117,6 +121,7 @@ public enum StockTicker implements StockTickerService {
      * @param username the username of the user
      * @param symbol the stock symbol
      * @return true if the stock is tracked
+     * @throws com.stockticker.logic.BusinessLogicException
      */
     @Override
     public boolean isStockTracked(String username, String symbol) 
