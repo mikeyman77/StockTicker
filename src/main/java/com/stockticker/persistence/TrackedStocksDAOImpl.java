@@ -205,15 +205,16 @@ public class TrackedStocksDAOImpl implements TrackedStocksDAO {
      */
     @Override
     public boolean delete(int userId, int stockId) throws PersistenceServiceException {
-        boolean deleteSuccessful = true;
+        boolean deleteSuccessful = false;
         try {
             //Update the User table
             String query = "DELETE FROM tracked_stock WHERE userId = ? AND stockId = ?";
             PreparedStatement prepared = connection.prepareStatement(query);
             prepared.setInt(1, userId);
             prepared.setInt(2, stockId);
-            if (prepared.executeUpdate() == 0)
-                deleteSuccessful = false;
+            if (prepared.executeUpdate() > 0) {
+                deleteSuccessful = true;
+            }
         }
         catch (SQLException e) {
             int errorCode = PersistenceServiceException.PSE202_SQL_EXCEPTION_OCCURRED;

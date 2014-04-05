@@ -187,7 +187,7 @@ public class UserDAOImpl implements UserDAO {
         boolean updateSuccessful = false;
 
         //Check if row exists, if not return false
-            if (user != null && exists(user.getUserName())) {
+            if (user != null) {
                 //Update the User table
                 try {
                     String query = "UPDATE user SET username = ?, password = ?, isLoggedIn = ? WHERE userId = ?";
@@ -238,28 +238,28 @@ public class UserDAOImpl implements UserDAO {
     public User get(String username) throws PersistenceServiceException {
         User user = null;
 
-        if (exists(username)) {
             try {
-                int userId = getUserId(username);
+                //int userId = getUserId(username);
                 //Retrieve the user row
                 Statement statement = connection.createStatement();
-                ResultSet result = statement.executeQuery("SELECT * FROM user WHERE userId="+userId);
+                ResultSet result = statement.executeQuery("SELECT * FROM user WHERE username='"+username+"'");
                 if (result.next()) {
                     user = new User();
-                    user.setUserID(result.getInt(1));
+                    int userId = result.getInt(1);
+                    user.setUserID(userId);
                     user.setUserName(result.getString(2));
                     user.setPassword(result.getString(3));
                     user.setLoggedIn(result.getBoolean(5));
-                }
 
-                //Retrieve the userinfo row
-                result = statement.executeQuery("SELECT * FROM userinfo WHERE FK_userId="+userId);
-                if (result.next()) {
-                    UserInfo userinfo = new UserInfo();
-                    userinfo.setFirstName(result.getString(3));
-                    userinfo.setLastName(result.getString(4));
-                    assert user != null;
-                    user.setUserInfo(userinfo);
+                    //Retrieve the userinfo row
+                    result = statement.executeQuery("SELECT * FROM userinfo WHERE FK_userId="+userId);
+                    if (result.next()) {
+                        UserInfo userinfo = new UserInfo();
+                        userinfo.setFirstName(result.getString(3));
+                        userinfo.setLastName(result.getString(4));
+                        assert user != null;
+                        user.setUserInfo(userinfo);
+                    }
                 }
             }
             catch (SQLException e) {
@@ -268,7 +268,6 @@ public class UserDAOImpl implements UserDAO {
                 logger.error(message, e);
                 throw new PersistenceServiceException(message+" ["+errorCode+"]: "+e.getMessage(), e, errorCode);
             }
-        }
 
         return user;
     }
@@ -288,22 +287,20 @@ public class UserDAOImpl implements UserDAO {
     public boolean delete(String username) throws PersistenceServiceException {
         boolean deleteSuccessful = false;
 
-        if (exists(username)) {
-            try {
-                //Delete the row in the user table with userId
-                int userId = getUserId(username);
-                String query = "DELETE FROM user WHERE userId = ?";
-                PreparedStatement prepared = connection.prepareStatement(query);
-                prepared.setInt(1, userId);
-                prepared.executeUpdate();
+        try {
+            //Delete the row in the user table with userId
+            String query = "DELETE FROM user WHERE username = ?";
+            PreparedStatement prepared = connection.prepareStatement(query);
+            prepared.setString(1, username);
+            if (prepared.executeUpdate() > 0) {
                 deleteSuccessful = true;
             }
-            catch (SQLException e) {
-                int errorCode = PersistenceServiceException.PSE202_SQL_EXCEPTION_OCCURRED;
-                String message = PersistenceServiceException.PSE202_SQL_EXCEPTION_OCCURRED_MESSAGE;
-                logger.error(message, e);
-                throw new PersistenceServiceException(message+" ["+errorCode+"]: "+e.getMessage(), e, errorCode);
-            }
+        }
+        catch (SQLException e) {
+            int errorCode = PersistenceServiceException.PSE202_SQL_EXCEPTION_OCCURRED;
+            String message = PersistenceServiceException.PSE202_SQL_EXCEPTION_OCCURRED_MESSAGE;
+            logger.error(message, e);
+            throw new PersistenceServiceException(message+" ["+errorCode+"]: "+e.getMessage(), e, errorCode);
         }
 
         return deleteSuccessful;
@@ -323,14 +320,11 @@ public class UserDAOImpl implements UserDAO {
         boolean isLoggedIn = false;
 
         try {
-            if (exists(username)) {
-                int userId = getUserId(username);
-                //Check if user is logged in
-                Statement statement = connection.createStatement();
-                ResultSet result = statement.executeQuery("SELECT isLoggedIn FROM user WHERE userId="+userId);
-                if (result.next()) {
-                    isLoggedIn = result.getBoolean(1);
-                }
+            //Check if user is logged in
+            Statement statement = connection.createStatement();
+            ResultSet result = statement.executeQuery("SELECT isLoggedIn FROM user WHERE username='"+username+"'");
+            if (result.next()) {
+                isLoggedIn = result.getBoolean(1);
             }
         }
         catch (SQLException e) {
@@ -358,16 +352,13 @@ public class UserDAOImpl implements UserDAO {
         boolean statusSet = false;
 
         try {
-            if (exists(username)) {
-                //Update the User login status
-                int userId = getUserId(username);
-                String query = "UPDATE user SET isLoggedIn = ? WHERE userId = ?";
-                PreparedStatement prepared = connection.prepareStatement(query);
-                prepared.setBoolean(1, status);
-                prepared.setInt(2, userId);
-                int rows = prepared.executeUpdate();
-                statusSet = (rows > 0);
-            }
+            //Update the User login status
+            String query = "UPDATE user SET isLoggedIn = ? WHERE username = ?";
+            PreparedStatement prepared = connection.prepareStatement(query);
+            prepared.setBoolean(1, status);
+            prepared.setString(2, username);
+            int rows = prepared.executeUpdate();
+            statusSet = (rows > 0);
         }
         catch (SQLException e) {
             int errorCode = PersistenceServiceException.PSE202_SQL_EXCEPTION_OCCURRED;
