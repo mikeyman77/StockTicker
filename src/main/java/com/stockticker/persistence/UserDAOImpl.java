@@ -103,22 +103,19 @@ public class UserDAOImpl implements UserDAO {
         User user = null;
 
         //check if the user already exists
-        if (!exists(username)) {
-            try {
-
-                //insert the user row with username, password, and id from userinfo table insert
-                int userId = -1;
-                String query = "INSERT INTO user (username, password, joinedDate, isLoggedIn) VALUES (?,?,?,?)";
-                PreparedStatement prepared = connection.prepareStatement(query, Statement.RETURN_GENERATED_KEYS);
-                prepared.setString(1, username);
-                prepared.setString(2, password);
-                prepared.setTimestamp(3, new Timestamp(System.currentTimeMillis()));
-                prepared.setBoolean(4, false);
-                prepared.execute();
-                ResultSet result = prepared.getGeneratedKeys();
-                if (result.next() ) {
-                    userId = result.getInt(1);
-                }
+        try {
+            //insert the user row with username, password, and id from userinfo table insert
+            int userId = -1;
+            String query = "INSERT INTO user (username, password, joinedDate, isLoggedIn) VALUES (?,?,?,?)";
+            PreparedStatement prepared = connection.prepareStatement(query, Statement.RETURN_GENERATED_KEYS);
+            prepared.setString(1, username);
+            prepared.setString(2, password);
+            prepared.setTimestamp(3, new Timestamp(System.currentTimeMillis()));
+            prepared.setBoolean(4, false);
+            prepared.execute();
+            ResultSet result = prepared.getGeneratedKeys();
+            if (result.next() ) {
+                userId = result.getInt(1);
 
                 //Create an empty userinfo row and retrieve the auto increment row id
                 query = "INSERT INTO userinfo (FK_userId) VALUES (?)";
@@ -131,7 +128,11 @@ public class UserDAOImpl implements UserDAO {
                 user.setUserID(userId);
                 user.setUserInfo(new UserInfo("", ""));
             }
-            catch (SQLException e) {
+        }
+        catch (SQLException e) {
+            //if an SQLException with SQLState 23505 occurs, it means an index violation
+            // occurred, so ignore it. A Null user will be returned by this method.
+            if (!e.getSQLState().equals("23505")) {
                 int errorCode = PersistenceServiceException.PSE202_SQL_EXCEPTION_OCCURRED;
                 String message = PersistenceServiceException.PSE202_SQL_EXCEPTION_OCCURRED_MESSAGE;
                 logger.error(message, e);

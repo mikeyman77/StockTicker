@@ -79,10 +79,6 @@
     <target name="debug" description="Compile all the code with debug options; produce classes" depends="init">
         <javac destdir="${classes.dir}" debug="true" fork="true" debuglevel="vars,lines,source" deprecation="on" includeantruntime="false">
             <src path="${src.dir}"/>
-            <classpath refid="project.classpath"/>
-            <compilerarg line="-Xlint:unchecked" />
-        </javac>
-        <javac destdir="${classes.dir}" fork="true" deprecation="on" includeantruntime="false">
             <src path="${src-test.dir}"/>
             <classpath refid="project.classpath"/>
             <compilerarg line="-Xlint:unchecked" />

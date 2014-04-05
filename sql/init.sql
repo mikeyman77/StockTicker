@@ -15,7 +15,7 @@ CREATE TABLE IF NOT EXISTS user (
 ) AUTO_INCREMENT=0 ;
 
 DROP INDEX IF EXISTS idx_user;
-CREATE UNIQUE INDEX IF NOT EXISTS idx_user ON user(userId);
+CREATE UNIQUE INDEX IF NOT EXISTS idx_user ON user(username);
 
 --
 -- Table structure for table userinfo
