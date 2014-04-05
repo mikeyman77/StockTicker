@@ -1,6 +1,8 @@
 package com.stockticker.persistence;
 
 import java.sql.Connection;
+
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -31,6 +33,17 @@ public class PersistenceConnectionTest {
     }
 
     /**
+     * Perform environment tear down
+     */
+    @After
+    public void tearDown() throws PersistenceServiceException {
+        PersistenceConnection persistenceConnection = PersistenceConnectionImpl.INSTANCE;
+        if (persistenceConnection.connectionEstablished()) {
+            persistenceConnection.closeConnection();
+        }
+    }
+
+    /**
      * Tests that a connection was established for inmemory database.
      */
     @Test
@@ -38,7 +51,6 @@ public class PersistenceConnectionTest {
         PersistenceConnection persistenceConnection = PersistenceConnectionImpl.INSTANCE;
         persistenceConnection.start(TEMPDB_PROPERTIES_FILE);
         assertTrue("connection established inMemory db", persistenceConnection.connectionEstablished());
-        persistenceConnection.closeConnection();
     }
 
     /**
@@ -49,7 +61,6 @@ public class PersistenceConnectionTest {
         PersistenceConnection persistenceConnection = PersistenceConnectionImpl.INSTANCE;
         persistenceConnection.start(PERMDB_PROPERTIES_FILE);
         assertTrue("connection established permanent db", persistenceConnection.connectionEstablished());
-        persistenceConnection.closeConnection();
     }
 
     /**
@@ -60,7 +71,6 @@ public class PersistenceConnectionTest {
         PersistenceConnection persistenceConnection = PersistenceConnectionImpl.INSTANCE;
         persistenceConnection.start(PERMDB_PROPERTIES_FILE);
         assertNotNull("start establish connection", persistenceConnection.getConnection());
-        persistenceConnection.closeConnection();
     }
 
     /**
@@ -82,6 +92,5 @@ public class PersistenceConnectionTest {
 
         PersistenceConnection persistenceConnection = PersistenceConnectionImpl.INSTANCE;
         persistenceConnection.start(NOSUCH_PROPERTIES_FILE);
-        persistenceConnection.closeConnection();
     }
 }

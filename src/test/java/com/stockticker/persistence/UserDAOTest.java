@@ -45,6 +45,14 @@ public class UserDAOTest {
      */
     @After
     public void tearDown() throws PersistenceServiceException {
+        //check to see if the PersistenceConnection service is active. This check is
+        // required because of the Exception tests in this class disable the JDBC
+        // connection in order to force an SQLException. If disabled, restart it.
+        PersistenceConnection persistenceConnection = PersistenceConnectionImpl.INSTANCE;
+        if (!persistenceConnection.connectionEstablished()) {
+            persistenceConnection.start();
+            UserDAOImpl.reestablishConnection();
+        }
         userDAO.delete(CONNALL);
     }
 
@@ -105,21 +113,18 @@ public class UserDAOTest {
      *
      * @throws PersistenceServiceException
      */
-/*  The exception is difficult to test here because you can pretty much put
-      anything in a varchar and the fact that parameter markers is being used
-      doesn't screw up the SQL statement like it would when using a standard
-      jdbc Statement object.
-*/ /*
-    @Rule
-    public ExpectedException exception2 = ExpectedException.none();
     @Test
-    public void testCreateUserThrowsPersistenceServiceException() {
+    public void testCreateUserThrowsPersistenceServiceException() throws PersistenceServiceException {
 
-        exception2.expect(PersistenceServiceException.class);
-        exception2.expectMessage("An SQL Exception occurred in the Persistence Service");
-        userDAO.create("noname", "'");
+        exception.expect(PersistenceServiceException.class);
+        exception.expectMessage("An SQL Exception occurred in the Persistence Service");
+
+        PersistenceConnection persistenceConnection = PersistenceConnectionImpl.INSTANCE;
+        if (persistenceConnection.connectionEstablished()) {
+            persistenceConnection.closeConnection();
+            userDAO.create("noname", "'");
+        }
     }
-*/
 
     /**
      * Tests that the exists method returns true
