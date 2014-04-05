@@ -20,6 +20,7 @@ public interface StockQuoteService {
      *
      * @param symbols a list of stock symbols
      * @return URL
+     * @throws com.stockticker.logic.BusinessLogicException
      */
     public URL getURL(List<String> symbols) throws BusinessLogicException;
     
@@ -29,6 +30,7 @@ public interface StockQuoteService {
      *
      * @param url URL used to get the stock quote data
      * @return a list of StockQuote objects
+     * @throws com.stockticker.logic.BusinessLogicException
      */
     public List<StockQuote> getStockQuotes(URL url) throws BusinessLogicException;
     
