@@ -20,7 +20,9 @@ import org.apache.log4j.PropertyConfigurator;
  * sequence if a connection is not currently available.
  *
  * @author Stuart Connall
- * @see UserDAO, PersistenceConnection, PersistenceServiceException
+ * @see UserDAO
+ * @see PersistenceConnection
+ * @see PersistenceServiceException
  * @version 1.0 2/17/14.
  */
 public class UserDAOImpl implements UserDAO {

@@ -17,7 +17,9 @@ import org.apache.log4j.PropertyConfigurator;
  * sequence if a connection is not currently available.
  *
  * @author Stuart Connall
- * @see TrackedStocksDAO, PersistenceConnection, PersistenceServiceException
+ * @see TrackedStocksDAO
+ * @see PersistenceConnection
+ * @see PersistenceServiceException
  * @version 1.0 02/27/2014
  */
 public class TrackedStocksDAOImpl implements TrackedStocksDAO {

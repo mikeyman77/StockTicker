@@ -7,7 +7,8 @@ import java.sql.Connection;
  * database connection.
  *
  * @author Stuart Connall
- * @see PersistenceConnectionImpl, PersistenceServiceException
+ * @see PersistenceConnectionImpl
+ * @see PersistenceServiceException
  * @version 1.0 3/12/14.
  */
 public interface PersistenceConnection {
