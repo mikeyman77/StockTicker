@@ -51,6 +51,15 @@ public class TrackedStocksDAOTest {
      */
     @After
     public void tearDown() throws PersistenceServiceException {
+        //check to see if the PersistenceConnection service is active. This check is
+        // required because of the Exception tests in this class disable the JDBC
+        // connection in order to force an SQLException. If disabled, restart it.
+        PersistenceConnection persistenceConnection = PersistenceConnectionImpl.INSTANCE;
+        if (!persistenceConnection.connectionEstablished()) {
+            persistenceConnection.start();
+            UserDAOImpl.reestablishConnection();
+            TrackedStocksDAOImpl.reestablishConnection();
+        }
         userDAO.delete(CONNALL);
         trackedDAO.deleteAll(userId);
     }
@@ -88,6 +97,7 @@ public class TrackedStocksDAOTest {
 
         exception.expect(PersistenceServiceException.class);
         exception.expectMessage("An SQL Exception occurred in the Persistence Service");
+
         trackedDAO.getStockId("'");
     }
 
@@ -109,6 +119,24 @@ public class TrackedStocksDAOTest {
     }
 
     /**
+     * Tests if a PersistenceServiceException is thrown when adding a tracked stock
+     *
+     * @throws PersistenceServiceException
+     */
+    @Test
+    public void testAddThrowsPersistenceServiceException() throws PersistenceServiceException {
+
+        exception.expect(PersistenceServiceException.class);
+        exception.expectMessage("An SQL Exception occurred in the Persistence Service");
+
+        PersistenceConnection persistenceConnection = PersistenceConnectionImpl.INSTANCE;
+        if (persistenceConnection.connectionEstablished()) {
+            persistenceConnection.closeConnection();
+            trackedDAO.add(userId, -1);
+        }
+    }
+
+    /**
      * Tests the exists method to determine if the userId/stockId pair exists in
      * the tracked stocks table
      */
@@ -124,6 +152,24 @@ public class TrackedStocksDAOTest {
     @Test
     public void testExistsFalse() throws PersistenceServiceException {
         assertFalse("tracked stock exists fails", (trackedDAO.exists(userId, -1)));
+    }
+
+    /**
+     * Tests if a PersistenceServiceException is thrown when checking if a tracked stock exists
+     *
+     * @throws PersistenceServiceException
+     */
+    @Test
+    public void testExistsThrowsPersistenceServiceException() throws PersistenceServiceException {
+
+        exception.expect(PersistenceServiceException.class);
+        exception.expectMessage("An SQL Exception occurred in the Persistence Service");
+
+        PersistenceConnection persistenceConnection = PersistenceConnectionImpl.INSTANCE;
+        if (persistenceConnection.connectionEstablished()) {
+            persistenceConnection.closeConnection();
+            trackedDAO.exists(userId, -1);
+        }
     }
 
     /**
@@ -144,6 +190,24 @@ public class TrackedStocksDAOTest {
     }
 
     /**
+     * Tests if a PersistenceServiceException is thrown when getting a tracked stock
+     *
+     * @throws PersistenceServiceException
+     */
+    @Test
+    public void testGetThrowsPersistenceServiceException() throws PersistenceServiceException {
+
+        exception.expect(PersistenceServiceException.class);
+        exception.expectMessage("An SQL Exception occurred in the Persistence Service");
+
+        PersistenceConnection persistenceConnection = PersistenceConnectionImpl.INSTANCE;
+        if (persistenceConnection.connectionEstablished()) {
+            persistenceConnection.closeConnection();
+            trackedDAO.get(userId);
+        }
+    }
+
+    /**
      * Tests the delete method returns true
      */
     @Test
@@ -160,6 +224,24 @@ public class TrackedStocksDAOTest {
     }
 
     /**
+     * Tests if a PersistenceServiceException is thrown when deleting a tracked stock
+     *
+     * @throws PersistenceServiceException
+     */
+    @Test
+    public void testDeleteThrowsPersistenceServiceException() throws PersistenceServiceException {
+
+        exception.expect(PersistenceServiceException.class);
+        exception.expectMessage("An SQL Exception occurred in the Persistence Service");
+
+        PersistenceConnection persistenceConnection = PersistenceConnectionImpl.INSTANCE;
+        if (persistenceConnection.connectionEstablished()) {
+            persistenceConnection.closeConnection();
+            trackedDAO.delete(userId, -1);
+        }
+    }
+
+    /**
      * Tests the deleteAll method returns true
      */
     @Test
@@ -173,6 +255,24 @@ public class TrackedStocksDAOTest {
     @Test
     public void testDeleteAllFalse() throws PersistenceServiceException {
         assertFalse("delete all tracked stocks false", (trackedDAO.deleteAll(-1)));
+    }
+
+    /**
+     * Tests if a PersistenceServiceException is thrown when deleting all tracked stock
+     *
+     * @throws PersistenceServiceException
+     */
+    @Test
+    public void testDeleteAllThrowsPersistenceServiceException() throws PersistenceServiceException {
+
+        exception.expect(PersistenceServiceException.class);
+        exception.expectMessage("An SQL Exception occurred in the Persistence Service");
+
+        PersistenceConnection persistenceConnection = PersistenceConnectionImpl.INSTANCE;
+        if (persistenceConnection.connectionEstablished()) {
+            persistenceConnection.closeConnection();
+            trackedDAO.deleteAll(-1);
+        }
     }
 
 }
