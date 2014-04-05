@@ -183,7 +183,12 @@ public class UserDAOTest {
 
         exception.expect(PersistenceServiceException.class);
         exception.expectMessage("An SQL Exception occurred in the Persistence Service");
-        userDAO.update(new User("'", PASSWORD));
+
+        PersistenceConnection persistenceConnection = PersistenceConnectionImpl.INSTANCE;
+        if (persistenceConnection.connectionEstablished()) {
+            persistenceConnection.closeConnection();
+            userDAO.update(new User("'", PASSWORD));
+        }
     }
 
     /**
@@ -212,7 +217,12 @@ public class UserDAOTest {
 
         exception.expect(PersistenceServiceException.class);
         exception.expectMessage("An SQL Exception occurred in the Persistence Service");
-        userDAO.get("'");
+
+        PersistenceConnection persistenceConnection = PersistenceConnectionImpl.INSTANCE;
+        if (persistenceConnection.connectionEstablished()) {
+            persistenceConnection.closeConnection();
+            userDAO.get("'");
+        }
     }
 
     /**
@@ -241,7 +251,12 @@ public class UserDAOTest {
 
         exception.expect(PersistenceServiceException.class);
         exception.expectMessage("An SQL Exception occurred in the Persistence Service");
-        userDAO.delete("'");
+
+        PersistenceConnection persistenceConnection = PersistenceConnectionImpl.INSTANCE;
+        if (persistenceConnection.connectionEstablished()) {
+            persistenceConnection.closeConnection();
+            userDAO.delete("'");
+        }
     }
     /**
      * Tests that the isLoggedIn method returns true
@@ -271,7 +286,12 @@ public class UserDAOTest {
 
         exception.expect(PersistenceServiceException.class);
         exception.expectMessage("An SQL Exception occurred in the Persistence Service");
-        userDAO.isLoggedIn("'");
+
+        PersistenceConnection persistenceConnection = PersistenceConnectionImpl.INSTANCE;
+        if (persistenceConnection.connectionEstablished()) {
+            persistenceConnection.closeConnection();
+            userDAO.isLoggedIn("'");
+        }
     }
 
     /**
@@ -300,7 +320,12 @@ public class UserDAOTest {
 
         exception.expect(PersistenceServiceException.class);
         exception.expectMessage("An SQL Exception occurred in the Persistence Service");
-        userDAO.setLoginStatus("'", true);
+
+        PersistenceConnection persistenceConnection = PersistenceConnectionImpl.INSTANCE;
+        if (persistenceConnection.connectionEstablished()) {
+            persistenceConnection.closeConnection();
+            userDAO.setLoginStatus("'", true);
+        }
     }
 
     /**
