@@ -20,7 +20,7 @@ import org.apache.log4j.PropertyConfigurator;
  * sequence if a connection is not currently available.
  *
  * @author Stuart Connall
- * @see UserDAO, PersistenceConnection
+ * @see UserDAO, PersistenceConnection, PersistenceServiceException
  * @version 1.0 2/17/14.
  */
 public class UserDAOImpl implements UserDAO {
@@ -34,8 +34,8 @@ public class UserDAOImpl implements UserDAO {
      * the log4j logger is setup for usage.
      *
      * @throws PersistenceServiceException is thrown when a failure occurs in the PersistenceConnection
-     * service such as failure to access the properties file or some sort of error during creation or
-     * accessing of the database.
+     *         service such as failure to access the properties file or some sort of error during creation or
+     *         accessing of the database.
      */
     public UserDAOImpl() throws PersistenceServiceException {
         PersistenceConnection persistenceConnection = PersistenceConnectionImpl.INSTANCE;

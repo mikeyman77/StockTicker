@@ -8,7 +8,7 @@ import java.util.List;
  * Provides the interface for User related database actions
  *
  * @author -  Stuart Connall
- * @see UserDAOImpl
+ * @see UserDAOImpl, PersistenceServiceException
  * @version - 1.0 02/25/2014
  */
 public interface UserDAO {

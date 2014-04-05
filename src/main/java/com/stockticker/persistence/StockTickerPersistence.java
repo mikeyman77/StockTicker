@@ -14,7 +14,7 @@ import org.apache.log4j.PropertyConfigurator;
  * database
  *
  * @author Stuart Connall
- * @see PersistenceService
+ * @see PersistenceService, PersistenceServiceException
  * @version 1.0 3/01/2014
  */
 public enum StockTickerPersistence implements PersistenceService {
@@ -28,7 +28,8 @@ public enum StockTickerPersistence implements PersistenceService {
     /**
      * Performs necessary initialization.
      *
-     * @throws PersistenceServiceException
+     * @throws PersistenceServiceException when either the UserDAO or TrackedStockDAO
+     *         instances fail to initialize most likely due to database related issues.
      */
     public void start() throws PersistenceServiceException {
         //configure log4j
@@ -46,7 +47,8 @@ public enum StockTickerPersistence implements PersistenceService {
      *
      * @param username name of user
      * @return list of stock symbols
-     * @throws PersistenceServiceException
+     * @throws PersistenceServiceException is thrown when a database related error
+     *         occurs in the Persistence Service component.
      */
     @Override
     public List<String> getTrackedStocks(String username) throws PersistenceServiceException {
@@ -61,7 +63,8 @@ public enum StockTickerPersistence implements PersistenceService {
      * @param stock    stock symbol to track
      * @param track    true to track, false to un-track
      * @return true or false
-     * @throws PersistenceServiceException
+     * @throws PersistenceServiceException is thrown when a database related error
+     *         occurs in the Persistence Service component.
      */
     @Override
     public boolean trackStock(String username, String stock, boolean track) throws PersistenceServiceException {
@@ -92,7 +95,8 @@ public enum StockTickerPersistence implements PersistenceService {
      * @param username name of user
      * @param stock    stock symbol to check
      * @return         true if tracked, false otherwise
-     * @throws PersistenceServiceException
+     * @throws PersistenceServiceException is thrown when a database related error
+     *         occurs in the Persistence Service component.
      */
     @Override
     public boolean isStockTracked(String username, String stock) throws PersistenceServiceException {
@@ -106,7 +110,8 @@ public enum StockTickerPersistence implements PersistenceService {
      *
      * @param username the name of the user
      * @return true if exists, false otherwise
-     * @throws PersistenceServiceException
+     * @throws PersistenceServiceException is thrown when a database related error
+     *         occurs in the Persistence Service component.
      */
     @Override
     public boolean userExists(String username) throws PersistenceServiceException {
@@ -119,7 +124,8 @@ public enum StockTickerPersistence implements PersistenceService {
      * @param username the name of the user
      * @param password the user's password
      * @return a User object if doesn't exist, null otherwise
-     * @throws PersistenceServiceException
+     * @throws PersistenceServiceException is thrown when a database related error
+     *         occurs in the Persistence Service component.
      */
     @Override
     public User createUser(String username, String password) throws PersistenceServiceException {
@@ -133,7 +139,8 @@ public enum StockTickerPersistence implements PersistenceService {
      *
      * @param user a User object instance
      * @return true if updated, false otherwise
-     * @throws PersistenceServiceException
+     * @throws PersistenceServiceException is thrown when a database related error
+     *         occurs in the Persistence Service component.
      */
     @Override
     public boolean updateUser(User user) throws PersistenceServiceException {
@@ -145,7 +152,8 @@ public enum StockTickerPersistence implements PersistenceService {
      *
      * @param username the name of the user
      * @return a User object if exists, null otherwise
-     * @throws PersistenceServiceException
+     * @throws PersistenceServiceException is thrown when a database related error
+     *         occurs in the Persistence Service component.
      */
     @Override
     public User getUser(String username) throws PersistenceServiceException {
@@ -157,7 +165,8 @@ public enum StockTickerPersistence implements PersistenceService {
      *
      * @param username the name of the user
      * @return true if successful, false otherwise
-     * @throws PersistenceServiceException
+     * @throws PersistenceServiceException is thrown when a database related error
+     *         occurs in the Persistence Service component.
      */
     @Override
     public boolean deleteUser(String username) throws PersistenceServiceException {
@@ -169,7 +178,8 @@ public enum StockTickerPersistence implements PersistenceService {
      *
      * @param username the name of the user
      * @return true if logged in, false otherwise
-     * @throws PersistenceServiceException
+     * @throws PersistenceServiceException is thrown when a database related error
+     *         occurs in the Persistence Service component.
      */
     @Override
     public boolean isLoggedIn(String username) throws PersistenceServiceException {
@@ -182,7 +192,8 @@ public enum StockTickerPersistence implements PersistenceService {
      * @param username the name of the user
      * @param status the login status to set (true or false)
      * @return true if successful, false otherwise
-     * @throws PersistenceServiceException
+     * @throws PersistenceServiceException is thrown when a database related error
+     *         occurs in the Persistence Service component.
      */
     @Override
     public boolean setLoginStatus(String username, boolean status) throws PersistenceServiceException {
@@ -193,7 +204,8 @@ public enum StockTickerPersistence implements PersistenceService {
      * Returns a list of all logged in users
      *
      * @return list of logged in users or an empty List
-     * @throws PersistenceServiceException
+     * @throws PersistenceServiceException is thrown when a database related error
+     *         occurs in the Persistence Service component.
      */
     @Override
     public List<String> getLoggedInUsers() throws PersistenceServiceException {
@@ -205,7 +217,8 @@ public enum StockTickerPersistence implements PersistenceService {
      *
      * @param username the name of the user
      * @return a UserInfo object or null
-     * @throws PersistenceServiceException
+     * @throws PersistenceServiceException is thrown when a database related error
+     *         occurs in the Persistence Service component.
      */
     @Override
     public UserInfo getUserInfo(String username) throws PersistenceServiceException {
