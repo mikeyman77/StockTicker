@@ -7,7 +7,7 @@ import java.sql.Connection;
  * database connection.
  *
  * @author Stuart Connall
- * @see PersistenceConnectionImpl
+ * @see PersistenceConnectionImpl, PersistenceServiceException
  * @version 1.0 3/12/14.
  */
 public interface PersistenceConnection {
@@ -17,21 +17,29 @@ public interface PersistenceConnection {
      * passes an alternate properties file to the initialize routine.
      *
      * @param  propertiesFileOverride an alternate properties file to use
-     * @throws PersistenceServiceException
+     * @throws PersistenceServiceException occurs when a failure occurs
+     *         during PersistenceConnection initialization. Failures
+     *         can be due to the service not locating the application
+     *         properties file or a failure creating or connecting to
+     *         the database.
      */
     public void start(String propertiesFileOverride) throws PersistenceServiceException;
 
     /**
      * Invokes the PersistenceConnection to perform initialization.
      *
-     * @throws PersistenceServiceException
+     * @throws PersistenceServiceException occurs when a failure occurs
+     *         during PersistenceConnection initialization. Failures
+     *         can be due to the service not locating the application
+     *         properties file or a failure creating or connecting to
+     *         the database.
      */
     public void start() throws PersistenceServiceException;
 
     /**
      * Returns the active JDBC Connection. If the connection is
      * null, it means that the database connection has yet to be
-     * establised. The PersistenceConnection's start method must
+     * established. The PersistenceConnection's start method must
      * be invoked first.
      *
      * @return a JDBC Connection, otherwise null

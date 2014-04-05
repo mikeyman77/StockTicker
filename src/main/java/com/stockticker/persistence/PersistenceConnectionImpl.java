@@ -33,7 +33,7 @@ import org.apache.log4j.PropertyConfigurator;
  * dbPswd     - the database password
  *
  * @author Stuart Connall
- * @see PersistenceConnection
+ * @see PersistenceConnection, PersistenceServiceException
  * @version 1.0 02/27/2014
  */
 public enum PersistenceConnectionImpl implements PersistenceConnection {
@@ -80,8 +80,11 @@ public enum PersistenceConnectionImpl implements PersistenceConnection {
      * Invokes the start method with a properties file override.
      *
      * @param propertiesFileOverride an alternate properties file to use
-     * @throws PersistenceServiceException provides message and error code
-     *              for specific error situations
+     * @throws PersistenceServiceException occurs when a failure occurs
+     *         during PersistenceConnection initialization. Failures
+     *         can be due to the service not locating the application
+     *         properties file or a failure creating or connecting to
+     *         the database.
      */
     public void start(String propertiesFileOverride) throws PersistenceServiceException {
         this.propertiesFile = propertiesFileOverride;
@@ -100,8 +103,11 @@ public enum PersistenceConnectionImpl implements PersistenceConnection {
      * To setup the database as in memory, i.e., the database doesn't not persist after the application
      *   closes, then set dbInMemory=1 in stockticker.properties. The default is 0, to persist the database.
      *
-     * @throws PersistenceServiceException provides message and error code
-     *              for specific error situations
+     * @throws PersistenceServiceException occurs when a failure occurs
+     *         during PersistenceConnection initialization. Failures
+     *         can be due to the service not locating the application
+     *         properties file or a failure creating or connecting to
+     *         the database.
      */
     public void start() throws PersistenceServiceException {
 

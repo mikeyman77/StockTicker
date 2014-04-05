@@ -7,7 +7,7 @@ import java.util.List;
  * enables users to track stocks of interest.
  *
  * @author Stuart Connall
- * @see TrackedStocksDAOImpl
+ * @see TrackedStocksDAOImpl, PersistenceServiceException
  * @version 1.0 02/27/2014
  */
 public interface TrackedStocksDAO {
