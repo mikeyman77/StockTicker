@@ -39,6 +39,7 @@ public class IComponentsUITest {
         assertEquals("Equal to Ticker ", "Ticker", UI.TICKER.getName());
         assertEquals("Equal to Profile ", "Profile", UI.PROFILE.getName());
         assertEquals("Equal to Update ", "Update", UI.UPDATE.getName());
+        assertEquals("Equal to Delete ", "Delete", UI.DELETE.getName());
         assertEquals("Equal to Default ", "Default", UI.DEFAULT.getName()); 
     }
 
@@ -64,6 +65,7 @@ public class IComponentsUITest {
         assertEquals("Equal to TICKER ", UI.getType("Ticker"), UI.TICKER);
         assertEquals("Equal to PROFILE ", UI.getType("Profile"), UI.PROFILE);
         assertEquals("Equal to UPDATE ", UI.getType("Update"), UI.UPDATE);
+        assertEquals("Equal to DELETE ", UI.getType("Delete"), UI.DELETE);
         assertEquals("Equal to DEFAULT ", UI.getType("Default"), UI.DEFAULT);
     }
 

@@ -24,7 +24,7 @@ public interface IComponentsUI {
     public enum UI {
         CLOSE("Close"), USER_REG("Registration"), QUOTE("Quote"), HOME("Home"), LOGIN("Login"), LOGOUT("Logout"),
         SUBMIT("Submit"), TRACK("Track"), UNTRACK("Untrack"), REFRESH("Refresh"), HISTORY("History"), TICKER("Ticker"),
-        PROFILE("Profile"), UPDATE("Update"), DEFAULT("Default");
+        PROFILE("Profile"), UPDATE("Update"), DELETE("Delete"), DEFAULT("Default");
 
         private final String btnName;
 

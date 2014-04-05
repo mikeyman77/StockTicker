@@ -114,6 +114,7 @@ public class ViewStockTicker extends WindowAdapter implements IComponentsUI {
     public boolean m_isMultSelect = false;
     public boolean m_historySelect = false;
     public boolean m_profileSelect = false;
+    public boolean m_deleteSelect = false;
     public boolean[] m_isInvalidInput = new boolean[5];
 
     private String m_username = "";
@@ -633,6 +634,7 @@ public class ViewStockTicker extends WindowAdapter implements IComponentsUI {
                     m_regSelect = true;
                     m_regCard.clearTextFields();
                     m_leftControlBtn.grabFocus();
+                    m_regCard.enableProfileForm("", "", "", true);
                     cardLayout.show(m_cardPanel, UI.USER_REG.getName());
                     m_rightControlBtn.transferFocus();
                     this.resetLeftButton(UI.SUBMIT.getName());
@@ -659,14 +661,14 @@ public class ViewStockTicker extends WindowAdapter implements IComponentsUI {
 
                     // User is in registration screen
                     if(m_regSelect) {
-                        if((m_firstname = m_regCard.getfirstName()).isEmpty() || m_regCard.getfirstName().startsWith(SPACE)) {
+                        if((m_firstname = m_regCard.getfirstName(true)).isEmpty() || m_regCard.getfirstName(true).startsWith(SPACE)) {
                             m_message.append("Firstname field is blank\n");      
                             m_firstname = "";
                             m_isInvalidInput[Field.FIRST_NM.getValue()] = true; 
                             isEmpty = true;
                         }
 
-                        if((m_lastname = m_regCard.getLastName()).isEmpty() || m_regCard.getLastName().startsWith(SPACE)) {
+                        if((m_lastname = m_regCard.getLastName(true)).isEmpty() || m_regCard.getLastName(true).startsWith(SPACE)) {
                             m_message.append("Lastname field is blank\n");
                             m_lastname = "";
                             m_isInvalidInput[Field.LAST_NM.getValue()] = true;
@@ -754,14 +756,14 @@ public class ViewStockTicker extends WindowAdapter implements IComponentsUI {
                         String firstname = "";
                         String lastname = "";
 
-                        if((firstname = m_regCard.getfirstName()).isEmpty() || m_regCard.getfirstName().startsWith(SPACE)) {
+                        if((firstname = m_regCard.getfirstName(false)).isEmpty() || m_regCard.getfirstName(false).startsWith(SPACE)) {
                             m_message.append("Firstname field is blank\n");      
                             firstname = "";
                             m_isInvalidInput[Field.FIRST_NM.getValue()] = true; 
                             isEmpty = true;
                         }
 
-                        if((lastname = m_regCard.getLastName()).isEmpty() || m_regCard.getLastName().startsWith(SPACE)) {
+                        if((lastname = m_regCard.getLastName(false)).isEmpty() || m_regCard.getLastName(false).startsWith(SPACE)) {
                             m_message.append("Lastname field is blank\n");
                             lastname = "";
                             m_isInvalidInput[Field.LAST_NM.getValue()] = true;
@@ -865,6 +867,22 @@ public class ViewStockTicker extends WindowAdapter implements IComponentsUI {
                     m_leftControlBtn.grabFocus();
                     break;
 
+                case DELETE:
+                    this.resetFlags();
+                    m_deleteSelect = true;
+                    m_message = new StringBuilder();
+
+                    if(m_userAuth.unRegister(m_username)) {
+                        m_message.append(m_username).append(" is no longer a registered user");
+                        this.showDialog(m_message.toString(), JOptionPane.INFORMATION_MESSAGE);
+                        this.resetLeftButton(UI.LOGOUT.getName());
+                        m_leftControlBtn.doClick();
+                    }
+                    else {
+                        m_message.append("Warning: Unable to unregister ").append(m_username).append(" at this time\nPlease try again");
+                        this.showDialog(m_message.toString(), JOptionPane.WARNING_MESSAGE);
+                    }
+
                 // Close current screen, open screen 1 layout below this one.  
                 case  CLOSE:
                     m_closeSelect = true;
@@ -898,26 +916,27 @@ public class ViewStockTicker extends WindowAdapter implements IComponentsUI {
 
                 // Logs out this user from db and business logic
                 case LOGOUT:
-                    if(m_userAuth.logOut(m_username)) {
-                        m_isLoggedIn = false;       
-                        this.enableSymbolJList(false);
-                        m_tickerCard.clearStockList();
-                        m_quoteCard.clearQuote();
-                        m_historyCard.clearHistory();
-                        m_symbolList.clear();
-                        m_stockQuoteList.clear();
-                        m_nameLbl.setText("");
-                        m_symbolField.setText("");
-                    }
-                    else {
-                        m_message = new StringBuilder("Warning: Unable to log user out, please try again");
-                        this.showDialog(m_message.toString(), JOptionPane.WARNING_MESSAGE);
-                    }
+                        if(m_deleteSelect || m_userAuth.logOut(m_username)) {
+                            m_isLoggedIn = false;       
+                            this.enableSymbolJList(false);
+                            m_tickerCard.clearStockList();
+                            m_quoteCard.clearQuote();
+                            m_historyCard.clearHistory();
+                            m_symbolList.clear();
+                            m_stockQuoteList.clear();
+                            m_nameLbl.setText("");
+                            m_symbolField.setText("");
+                        }
+                        else {
+                            m_message = new StringBuilder("Warning: Unable to log user out, please try again");
+                            this.showDialog(m_message.toString(), JOptionPane.WARNING_MESSAGE);
+                        }
 
                     this.resetLeftButton(UI.USER_REG.getName());
                     this.resetRightButton(UI.LOGIN.getName(), true);
                     this.enableHistoryButton(false);
                     this.enableButtons(false);
+                    m_regCard.enableProfileForm("", "", "", false);
                     cardLayout.show(m_cardPanel, UI.HOME.getName());
                     m_leftControlBtn.requestFocusInWindow();
                     this.resetFlags();
@@ -1026,6 +1045,7 @@ public class ViewStockTicker extends WindowAdapter implements IComponentsUI {
             m_closeSelect = false;
             m_historySelect = false;
             m_profileSelect = false;
+            m_deleteSelect = false;
         }
 
 
