@@ -54,4 +54,11 @@ public interface PersistenceConnection {
      */
     public boolean connectionEstablished();
 
+    /**
+     * Closes the database connection
+     *
+     * @return true if connection successfully closed, false otherwise
+     */
+    public boolean closeConnection();
+
 }

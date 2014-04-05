@@ -19,8 +19,8 @@ public class PropertiesFileReaderTest {
 
     private final PropertiesFileReader properties;
     private static final String PROP_FILE = "./config/stockticker.properties";
-    private static final String EMPTY_PROP_FILE = "./config/empty.properties";
-    private static final String DUMMY_PROP_FILE = "./config/junittest.properties";
+    private static final String EMPTY_PROP_FILE = "./config/test/empty.properties";
+    private static final String DUMMY_PROP_FILE = "./config/test/junittest.properties";
 
     /**
      * Constructs PropertiesFileReader using stockticker.properties file

@@ -183,6 +183,25 @@ public enum PersistenceConnectionImpl implements PersistenceConnection {
         return (this.connection != null);
     }
 
+    /**
+     * Closes the JDBC connection.
+     *
+     * @return true if connection successfully closed, false otherwise
+     * @throws SQLException
+     */
+    public boolean closeConnection() {
+        boolean connectionClosed = false;
+        try {
+            connection.close();
+            connectionClosed = true;
+            logger.info("Database connection successfully closed.");
+        }
+        catch (SQLException e) {
+            logger.error("An exception occurred closing the database connection", e);
+        }
+        return connectionClosed;
+    }
+
     /*
      * Loads the database properties from the project properties file.
      *

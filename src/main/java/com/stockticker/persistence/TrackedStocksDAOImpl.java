@@ -96,7 +96,8 @@ public class TrackedStocksDAOImpl implements TrackedStocksDAO {
 
             try {
                 //if trackId returned, then stock is already being tracked
-                PreparedStatement prepared = connection.prepareStatement("INSERT INTO tracked_stock (userId, stockId) VALUES (?,?)");
+                String query = "INSERT INTO tracked_stock (userId, stockId) VALUES (?,?)";
+                PreparedStatement prepared = connection.prepareStatement(query);
                 prepared.setInt(1, userId);
                 prepared.setInt(2, stockId);
                 prepared.execute();
@@ -195,9 +196,8 @@ public class TrackedStocksDAOImpl implements TrackedStocksDAO {
         boolean deleteSuccessful = true;
         try {
             //Update the User table
-            PreparedStatement prepared = connection.prepareStatement
-                    ("DELETE FROM tracked_stock WHERE userId = ? AND stockId = ?");
-
+            String query = "DELETE FROM tracked_stock WHERE userId = ? AND stockId = ?";
+            PreparedStatement prepared = connection.prepareStatement(query);
             prepared.setInt(1, userId);
             prepared.setInt(2, stockId);
             if (prepared.executeUpdate() == 0)
@@ -228,9 +228,8 @@ public class TrackedStocksDAOImpl implements TrackedStocksDAO {
         boolean deleteSuccessful = true;
         try {
             //Update the User table
-            PreparedStatement prepared = connection.prepareStatement
-                    ("DELETE FROM tracked_stock WHERE userId = ?");
-
+            String query = "DELETE FROM tracked_stock WHERE userId = ?";
+            PreparedStatement prepared = connection.prepareStatement(query);
             prepared.setInt(1, userId);
             if (prepared.executeUpdate() == 0)
                 deleteSuccessful = false;
