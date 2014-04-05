@@ -1,0 +1,4 @@
+com.stockticker
+com.stockticker.logic
+com.stockticker.persistence
+com.stockticker.ui
