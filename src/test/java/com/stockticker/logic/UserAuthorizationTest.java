@@ -258,6 +258,15 @@ public class UserAuthorizationTest {
     }
     
     /**
+     * Test of updateUserInfo method when user is not registered.
+     */
+    @Test
+    public void testFailedUpdateUserInfoNotRegistered() throws Exception {
+        boolean result = userAuth.updateUserInfo(anotherUser.getUserName(), testUserInfo);
+        assertFalse("Update user info test with non registered user", result);
+    }
+    
+    /**
      * Test of changePassword method under normal circumstances.
      */
     @Test
@@ -285,5 +294,14 @@ public class UserAuthorizationTest {
         persistence.setLoginStatus(testUser.getUserName(), false);
         boolean result = userAuth.changePassword(testUser.getUserName(), testUser.getPassword(), newPassword);
         assertFalse("Failed change password (logged out user)", result);
+    }
+    
+    /**
+     * Test of changePassword method when user is not registered.
+     */
+    @Test
+    public void testFailedNonRegisteredUserChangePassword() throws Exception {
+        boolean result = userAuth.changePassword(anotherUser.getUserName(), anotherUser.getPassword(), newPassword);
+        assertFalse("Failed change password (non registered user)", result);
     }
 }
