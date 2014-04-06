@@ -12,6 +12,9 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
+import org.apache.log4j.Logger;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.PropertyConfigurator;
 
 /**
  * This class gets Yahoo stock quotes from the web.
@@ -24,6 +27,13 @@ public enum YahooStockQuoteService implements StockQuoteService {
      * Instance of Yahoo stock quote service.
      */
     INSTANCE;
+    
+    private static final Logger logger = 
+            LogManager.getLogger(YahooStockQuoteService.class.getName());
+    
+    private YahooStockQuoteService() {
+        PropertyConfigurator.configure("./config/log4j.properties");
+    }
     
     /**
      * This method returns a URL based on the list of stock symbols provided.
@@ -73,6 +83,7 @@ public enum YahooStockQuoteService implements StockQuoteService {
             queryUrl = new URL(yahooQueryUrl + yahooQueryStr);
         }
         catch (MalformedURLException ex) {
+            logger.error("Unable to generate URL", ex);
             throw new BusinessLogicException("Error: Could not generate URL, check logs", ex);
         }
         
@@ -107,6 +118,7 @@ public enum YahooStockQuoteService implements StockQuoteService {
             rootNode = mapper.readTree(inputStream);
         }
         catch (IOException ex) {
+            logger.error("Unable to get stock quotes", ex);
             throw new BusinessLogicException("Error: Could not get stock quotes, check logs", ex);
         }
         

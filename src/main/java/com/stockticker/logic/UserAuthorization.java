@@ -5,6 +5,9 @@ import com.stockticker.UserInfo;
 import com.stockticker.persistence.PersistenceService;
 import com.stockticker.persistence.PersistenceServiceException;
 import org.jasypt.util.password.BasicPasswordEncryptor;
+import org.apache.log4j.Logger;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.PropertyConfigurator;
 
 /**
  * This class provides user authorization functionality.
@@ -18,9 +21,16 @@ public enum UserAuthorization implements AuthorizationService {
      */
     INSTANCE;
     
+    private static final Logger logger = 
+            LogManager.getLogger(UserAuthorization.class.getName());
+    
     private BusinessLogicService bls;
     private PersistenceService persistence;
     private BasicPasswordEncryptor passwordEncryptor;
+
+    private UserAuthorization() {
+        PropertyConfigurator.configure("./config/log4j.properties");
+    }
     
     // This method is only called by the Business Logic Service
     void start() {
@@ -62,6 +72,7 @@ public enum UserAuthorization implements AuthorizationService {
             }
         }
         catch (PersistenceServiceException e) {
+            logger.error("Unable to log in user", e);
             throw new BusinessLogicException("Error: Unable to log in user, check logs", e);
         }
         
@@ -88,6 +99,7 @@ public enum UserAuthorization implements AuthorizationService {
             }
         }
         catch (PersistenceServiceException e) {
+            logger.error("Unable to log out user", e);
             throw new BusinessLogicException("Error: Unable to log out user, check logs", e);
         }
         
@@ -109,6 +121,7 @@ public enum UserAuthorization implements AuthorizationService {
             isLoggedIn = persistence.isLoggedIn(username);
         }
         catch (PersistenceServiceException e) {
+            logger.error("Unable to get logged in status for user", e);
             throw new BusinessLogicException("Error: Unable to get the login status for user, check logs", e);
         }
         return isLoggedIn;
@@ -140,6 +153,7 @@ public enum UserAuthorization implements AuthorizationService {
             }
         }
         catch (PersistenceServiceException e) {
+            logger.error("Unable to register user", e);
             throw new BusinessLogicException("Error: Unable to register user, check logs", e);
         }
 
@@ -161,6 +175,7 @@ public enum UserAuthorization implements AuthorizationService {
             successful = persistence.deleteUser(username);
         }
         catch (PersistenceServiceException e) {
+            logger.error("Unable to unregister user", e);
             throw new BusinessLogicException("Error: Unable to unregister user, check logs", e);
         }
         
@@ -182,6 +197,7 @@ public enum UserAuthorization implements AuthorizationService {
             successful = persistence.userExists(username);
         }
         catch (PersistenceServiceException e) {
+            logger.error("Unable to get registration status for user", e);
             throw new BusinessLogicException("Error: Unable to registeration status for user, check logs", e);
         }
         
@@ -203,6 +219,7 @@ public enum UserAuthorization implements AuthorizationService {
             userInfo = persistence.getUserInfo(username);
         }
         catch (PersistenceServiceException e) {
+            logger.error("Unable to get user information for user", e);
             throw new BusinessLogicException("Error: Unable to get user info for user, check logs", e);
         }
         
@@ -238,6 +255,7 @@ public enum UserAuthorization implements AuthorizationService {
             }
         }
         catch (PersistenceServiceException e) {
+            logger.error("Unable to change password for user", e);
             throw new BusinessLogicException("Error: Unable to change password for user, check logs", e);
         }
         
@@ -268,6 +286,7 @@ public enum UserAuthorization implements AuthorizationService {
             }
         }
         catch (PersistenceServiceException e) {
+            logger.error("Unable to update user information for user", e);
             throw new BusinessLogicException("Error: Unable to update user info for user, check logs", e);
         }
         
