@@ -55,6 +55,7 @@ public class TickerCard extends JPanel {
     private static final long serialVersionUID = 1L;
     private static final String[] m_header = { "SYMBOL", "TIME", "PRICE", "CHG", "CHG%", "LOW", "HIGH", "VOLUME", "Tracked" };
     private static final String ENTER_PRESSED = "ENTER_RELEASED";
+    private static final String DELETE_PRESSED = "DELETE_RELEASE";
 
     private static final int FIRST_ROW = 0;
     private static final int CLICK_COUNT = 2;
@@ -67,7 +68,7 @@ public class TickerCard extends JPanel {
     private GridBagConstraints m_constraints;
 
     private StockTableModel m_model;
-    private JTable m_table;
+    public JTable m_table;
     private JScrollPane m_scrollPane;
     private JTextField m_quoteField;
 
@@ -78,7 +79,6 @@ public class TickerCard extends JPanel {
     private List<String> m_symbolList;
     private String m_splitChars = "[\",]+";
     private int m_quoteIndex;
-
 
 
     /**
@@ -126,9 +126,9 @@ public class TickerCard extends JPanel {
         m_table = new JTable(m_model);
         m_table.setPreferredScrollableViewportSize(new Dimension(630, 240));
         m_table.setFillsViewportHeight(true);
+        
         m_table.putClientProperty("terminateEditOnFocusLost", Boolean.TRUE);
         m_table.setFont(m_table.getFont().deriveFont(Font.PLAIN, 11));
-
         TableColumn column = m_table.getColumnModel().getColumn(8);
         DefaultTableCellRenderer cellRenderer = new DefaultTableCellRenderer();
         cellRenderer.setHorizontalAlignment(SwingConstants.CENTER);
@@ -142,6 +142,7 @@ public class TickerCard extends JPanel {
         m_table.setRowSelectionAllowed(true);
         final ListSelectionModel rowSelection = m_table.getSelectionModel();
         rowSelection.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+
 
         // Mouse listener for the table.  Allows user to select a stock quote from
         // the table to track and get more details on the indivudual Stock
@@ -176,12 +177,33 @@ public class TickerCard extends JPanel {
                             m_cardLayout = (CardLayout) m_cardPanel.getLayout();
                             m_cardLayout.show(m_cardPanel, UI.QUOTE.getName());
                         }
-                    } 
-                }
+                    }
 
-                setQuoteFieldFocus();
+                    setQuoteFieldFocus();
+                }
             }
         });
+
+
+        // Removes the mouse selected row from the table when the delete key is pressed
+        AbstractAction enterAction = new AbstractAction() {
+            @Override
+            public void actionPerformed(ActionEvent actionEvent) {
+                String temp;
+                int index = m_table.getSelectedRow();
+
+                temp = m_model.getStock(index).getSymbol();
+                if(m_operate.getTrackingStatus(temp)) {
+                    m_operate.untrackStock(temp);
+                }
+                
+                m_model.deleteRow(index);
+               setQuoteFieldFocus();
+            }
+        };
+
+        m_table.getInputMap(JTable.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT).put(KeyStroke.getKeyStroke(KeyEvent.VK_DELETE, 0, false), DELETE_PRESSED);
+        m_table.getActionMap().put(DELETE_PRESSED, enterAction);        
     }                
 
 
@@ -222,6 +244,7 @@ public class TickerCard extends JPanel {
         m_quoteField.getInputMap(JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT).put(KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, 0, false), ENTER_PRESSED);
         m_quoteField.getActionMap().put(ENTER_PRESSED, enterAction);
 
+        
 
         // Layout quote button and quote text field onto their JPanels
         m_constraints = new GridBagConstraints();
@@ -312,6 +335,7 @@ public class TickerCard extends JPanel {
      * Sets the focus in the quote text field
      */
     public void setQuoteFieldFocus() {
+        m_table.clearSelection();
         m_quoteField.grabFocus();
     }
 
@@ -492,12 +516,25 @@ public class TickerCard extends JPanel {
 
 
         /**
+         * Deletes the row at the argument index from the model and table
+         * 
+         * @param row   - row index to be removed from model
+         */
+        public void deleteRow(int row) {
+            m_stocks.remove(row);
+            fireTableDataChanged();
+        }
+
+
+        /**
          * Deletes all rows in the model
          */
         public void deleteAllRows() {
             for(int i = this.getRowCount() - 1; i >= 0; i--) {
-                m_stocks.remove(i);
+                m_stocks.remove(i);    
             }
+
+            fireTableDataChanged();
         }
     }
 }

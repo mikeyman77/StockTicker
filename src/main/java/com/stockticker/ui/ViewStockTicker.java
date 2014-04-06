@@ -87,12 +87,12 @@ public class ViewStockTicker extends WindowAdapter implements IComponentsUI {
     private JList<Object> m_symbolJList;
     private JScrollPane m_scrollPane;
 
-    public JButton m_leftControlBtn;
-    public JButton m_rightControlBtn;
-    public JButton m_historyBtn;
-    public JButton m_logoutBtn;
-    public JButton m_profileBtn;
-    public JLabel m_nameLbl;
+    private JButton m_leftControlBtn;
+    private JButton m_rightControlBtn;
+    private JButton m_historyBtn;
+    private JButton m_logoutBtn;
+    private JButton m_profileBtn;
+    private JLabel m_nameLbl;
     private JTextField m_symbolField;
 
     private final Toolkit toolKit = Toolkit.getDefaultToolkit();
@@ -109,13 +109,13 @@ public class ViewStockTicker extends WindowAdapter implements IComponentsUI {
 
     private boolean m_logInSelect = false;
     private boolean m_regSelect = false;
-    public boolean m_closeSelect = false;
-    public boolean m_isLoggedIn = false;
-    public boolean m_isMultSelect = false;
-    public boolean m_historySelect = false;
-    public boolean m_profileSelect = false;
-    public boolean m_deleteSelect = false;
-    public boolean[] m_isInvalidInput = new boolean[5];
+    private boolean m_closeSelect = false;
+    private boolean m_isLoggedIn = false;
+    private boolean m_isMultSelect = false;
+    private boolean m_historySelect = false;
+    private boolean m_profileSelect = false;
+    private boolean m_deleteSelect = false;
+    private boolean[] m_isInvalidInput = new boolean[5];
 
     private String m_username = "";
     private String m_password = "";
@@ -746,7 +746,7 @@ public class ViewStockTicker extends WindowAdapter implements IComponentsUI {
                             this.showDialog(m_message.toString(), JOptionPane.WARNING_MESSAGE);
                             m_loginCard.setFocusInField(m_isInvalidInput);
                         }
-                    } // User is in Quote screen
+                    } // User is in History screen
                     else if(m_historySelect) {
                         m_startDate = m_historyCard.getStartDate();
                         m_endDate = m_historyCard.getEndDate();
@@ -908,8 +908,8 @@ public class ViewStockTicker extends WindowAdapter implements IComponentsUI {
                         this.enableSymbolJList(true);
                         this.enableHistoryButton(false);
                         m_historyCard.clearHistory();
+                         m_tickerCard.setQuoteFieldFocus();
                         cardLayout.show(m_cardPanel, UI.TICKER.getName());
-                        m_tickerCard.setQuoteFieldFocus();
                     }
                     this.resetFlags();
                     break;
@@ -1226,16 +1226,19 @@ public class ViewStockTicker extends WindowAdapter implements IComponentsUI {
                     }
                 }
             }
-            catch(IllegalArgumentException ex) {
-                m_message = new StringBuilder("Warning: Start date is after the end date\nPlease check date range and re-submit querry");
+            catch(IllegalArgumentException e) {
+                m_message.append(e.getMessage());
+                //this.showDialog(m_username, ZERO);
                 fault = true;
             }
             catch(BusinessLogicException ex) {
-                this.showError(ex.getMessage());
+                m_message.append(ex.getMessage());
+                //this.showError(ex.getMessage());
+                fault = true;
             }
             finally {
                 if(fault) {
-                    this.showDialog(m_message.toString(), JOptionPane.WARNING_MESSAGE);
+                    this.showError(m_message.toString());
                     m_historyCard.clearHistory();
                 }
             }
@@ -1299,6 +1302,17 @@ public class ViewStockTicker extends WindowAdapter implements IComponentsUI {
             m_nameLbl.setVisible(visible);
         }
 
+
+        /**
+         * Calls business logic to un-track the Stock associated with the argument
+         * Stock symbol.
+         * 
+         * @param symbol    - symbol of Stock to cancel tracking on.
+         * @return  - true tracking stopped, false unable to stop tracking
+         */
+        public boolean untrackStock(String symbol) {
+            return m_stockService.trackStock(m_username, symbol, false);
+        }
 
         
         /**
