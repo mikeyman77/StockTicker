@@ -13,6 +13,9 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import org.apache.log4j.Logger;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.PropertyConfigurator;
 
 /**
  * This class provides stock history service from Yahoo.
@@ -26,6 +29,12 @@ public enum YahooStockHistoryService implements StockHistoryService {
      */
     INSTANCE;
     
+    private static final Logger logger = 
+            LogManager.getLogger(YahooStockHistoryService.class.getName());
+
+    private YahooStockHistoryService() {
+        PropertyConfigurator.configure("./config/log4j.properties");
+    }
     
     /**
      * This method gets the URL for a stock history query.
@@ -46,14 +55,17 @@ public enum YahooStockHistoryService implements StockHistoryService {
         String yahooQueryStr;
         
         if (symbol == null || startDate == null ||  endDate == null ) {
+            logger.error("Invalid symbol, startDate, endDate");
             throw new BusinessLogicException("Error: You did not specify a symbol, start date or end date!");
         }
         
         if (symbol.isEmpty() || !SymbolMap.isValidSymbol(symbol)) {
+            logger.error("Symbol is not valid");
             throw new BusinessLogicException("Error: The symbol you specified is invalid!");
         }
         
         if (startDate.after(endDate)) {
+            logger.error("Start date is after the end date");
             throw new BusinessLogicException("Error: The start date is after the end date!");
         }
         
@@ -70,6 +82,7 @@ public enum YahooStockHistoryService implements StockHistoryService {
             queryUrl = new URL(yahooQueryUrl + yahooQueryStr);
         }
         catch (MalformedURLException ex) {
+            logger.error("Unable to generate URL", ex);
             throw new BusinessLogicException("Error: Could not generate URL, check logs", ex);
         }
         
@@ -101,6 +114,7 @@ public enum YahooStockHistoryService implements StockHistoryService {
             rootNode = mapper.readTree(url.openConnection().getInputStream());
         }
         catch (IOException ex) {
+            logger.error("Unable to get stock history", ex);
             throw new BusinessLogicException("Error: Could not get stock history, check logs", ex);
         }
         

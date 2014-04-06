@@ -7,6 +7,9 @@ import com.stockticker.persistence.PersistenceServiceException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import org.apache.log4j.Logger;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.PropertyConfigurator;
 
 /**
  * This class provides the basic functionality of getting stock quotes, tracking,
@@ -21,10 +24,17 @@ public enum StockTicker implements StockTickerService {
      */
     INSTANCE;
     
+    private static final Logger logger = 
+            LogManager.getLogger(StockTicker.class.getName());
+    
     private BusinessLogicService bls;
     private PersistenceService persistence;
     private StockQuoteService ysqs;
     private StockHistoryService yshs;
+
+    private StockTicker() {
+        PropertyConfigurator.configure("./config/log4j.properties");
+    }
     
     // This method is only called by the Business Logic Service
     void start() {
@@ -94,6 +104,7 @@ public enum StockTicker implements StockTickerService {
             trackedStocksList = persistence.getTrackedStocks(username);
         }
         catch (PersistenceServiceException ex) {
+            logger.error("Failed to get tracked stocks", ex);
             throw new BusinessLogicException("Error: Could not get tracked stocks, check logs", ex);
         }
         
@@ -118,6 +129,7 @@ public enum StockTicker implements StockTickerService {
             successful = persistence.trackStock(username, symbol, tracked);
         }
         catch (PersistenceServiceException ex) {
+            logger.error("Failed to track/untrack stock", ex);
             throw new BusinessLogicException("Error: Could not tracked/untrack stock, check logs", ex);
         }
         
@@ -142,6 +154,7 @@ public enum StockTicker implements StockTickerService {
             successful = persistence.isStockTracked(username, symbol);
         }
         catch (PersistenceServiceException ex) {
+            logger.error("Failed to get tracked status of stock", ex);
             throw new BusinessLogicException("Error: Could not get if stock is tracked, check logs", ex);
         }
         

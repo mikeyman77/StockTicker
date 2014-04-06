@@ -4,6 +4,9 @@ package com.stockticker.logic;
 import com.stockticker.persistence.PersistenceService;
 import com.stockticker.persistence.PersistenceServiceException;
 import com.stockticker.persistence.StockTickerPersistence;
+import org.apache.log4j.Logger;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.PropertyConfigurator;
 
 /**
  * This class provides the functionality to initialize and get the services for 
@@ -18,6 +21,9 @@ public enum BusinessLogicService {
      */
     INSTANCE;
     
+    private static final Logger logger = 
+            LogManager.getLogger(BusinessLogicService.class.getName());
+    
     private boolean initialized;
     private boolean persistenceInitialized;
     private boolean userAuthIntialized;
@@ -26,6 +32,10 @@ public enum BusinessLogicService {
     private UserAuthorization userAuth;
     private StockTicker stockTicker;
     private PersistenceService persistence;
+
+    private BusinessLogicService() {
+        PropertyConfigurator.configure("./config/log4j.properties");
+    }
     
     /**
      * Initializes the service.
@@ -42,6 +52,7 @@ public enum BusinessLogicService {
             }
             
             if (persistenceInitialized && userAuthIntialized && stockTickerIntialized) {
+                logger.info("Business logic service has been started");
                 initialized =  true;
             }
         }
@@ -54,6 +65,7 @@ public enum BusinessLogicService {
             initPersistence(false);
             
             if (!persistenceInitialized && !userAuthIntialized && !stockTickerIntialized) {
+                logger.info("Business logic service has been stopped");
                 initialized =  false;
             }
         }
@@ -76,6 +88,7 @@ public enum BusinessLogicService {
      */
     public AuthorizationService getUserAuth() {
         if (!initialized && !userAuthIntialized) {
+            logger.error("The business logic service has not been started and initialized");
             throw new BusinessLogicException("The business logic service has not been initialized!");
         }
         return userAuth;
@@ -89,6 +102,7 @@ public enum BusinessLogicService {
      */
     public StockTickerService getStockTicker() {
         if (!initialized && !stockTickerIntialized) {
+            logger.error("The business logic service has not been started and initialized");
             throw new BusinessLogicException("The business logic service has not been initialized!");
         }
         return stockTicker;
@@ -102,6 +116,7 @@ public enum BusinessLogicService {
      */
     PersistenceService getPersistence() {
         if (!persistenceInitialized) {
+            logger.error("The business logic service has not been started and initialized");
             throw new BusinessLogicException("The business logic service has not been initialized!");
         }
         return persistence;
@@ -115,7 +130,8 @@ public enum BusinessLogicService {
                 persistence.start();
             }
             catch (PersistenceServiceException ex) {
-                throw new BusinessLogicException("Persistence service could not start.", ex);
+                logger.error("Persistence service could not start", ex);
+                throw new BusinessLogicException("Persistence service could not start", ex);
             }
             
             persistenceInitialized = true;
