@@ -30,6 +30,14 @@ public enum UserAuthorization implements AuthorizationService {
         passwordEncryptor = new BasicPasswordEncryptor();
     }
     
+    // This method is only called by the Business Logic Service
+    void stop() {
+        bls = null;
+        persistence = null;
+        
+        passwordEncryptor = null;
+    }
+    
     /**
      * This method logs in a specific user to the system.
      *

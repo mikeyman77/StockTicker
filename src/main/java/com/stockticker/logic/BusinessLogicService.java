@@ -34,15 +34,27 @@ public enum BusinessLogicService {
      */
     public void start() throws BusinessLogicException {
         if (!initialized) {
-            initPersistence();
+            initPersistence(true);
             
             if (persistenceInitialized) {
-                initUserAuth();
-                initStockTicker();
+                initUserAuth(true);
+                initStockTicker(true);
             }
             
             if (persistenceInitialized && userAuthIntialized && stockTickerIntialized) {
                 initialized =  true;
+            }
+        }
+    }
+    
+    public void stop() throws BusinessLogicException {
+        if (initialized) {
+            initUserAuth(false);
+            initStockTicker(false);
+            initPersistence(false);
+            
+            if (!persistenceInitialized && !userAuthIntialized && !stockTickerIntialized) {
+                initialized =  false;
             }
         }
     }
@@ -95,26 +107,48 @@ public enum BusinessLogicService {
         return persistence;
     }
     
-    private void initPersistence() throws BusinessLogicException {
-        persistence = StockTickerPersistence.INSTANCE;
-        try {
-            persistence.start();
+    private void initPersistence(boolean start) throws BusinessLogicException {
+        if (start) {
+            persistence = StockTickerPersistence.INSTANCE;
+            
+            try {
+                persistence.start();
+            }
+            catch (PersistenceServiceException ex) {
+                throw new BusinessLogicException("Persistence service could not start.", ex);
+            }
+            
+            persistenceInitialized = true;
         }
-        catch (PersistenceServiceException ex) {
-            throw new BusinessLogicException("Persistence service could not start.", ex);
+        else {
+            persistence = null;
+            persistenceInitialized = false;
         }
-        persistenceInitialized = true;
     }
     
-    private void initUserAuth() {
-        userAuth = UserAuthorization.INSTANCE;
-        userAuth.start();
-        userAuthIntialized = true;
+    private void initUserAuth(boolean start) {
+        if (start) {
+            userAuth = UserAuthorization.INSTANCE;
+            userAuth.start();
+            userAuthIntialized = true;
+        }
+        else {
+            userAuth.stop();
+            userAuth = null;
+            userAuthIntialized = false;
+        } 
     }
     
-    private void initStockTicker() {
-        stockTicker = StockTicker.INSTANCE;
-        stockTicker.start();
-        stockTickerIntialized = true;
+    private void initStockTicker(boolean start) {
+        if (start) {
+            stockTicker = StockTicker.INSTANCE;
+            stockTicker.start();
+            stockTickerIntialized = true;
+        }
+        else {
+            stockTicker.stop();
+            stockTicker = null;
+            stockTickerIntialized = false;
+        }
     }
 }

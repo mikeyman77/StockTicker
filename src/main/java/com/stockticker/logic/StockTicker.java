@@ -35,6 +35,15 @@ public enum StockTicker implements StockTickerService {
         yshs = YahooStockHistoryService.INSTANCE;
     }
     
+    // This method is only called by the Business Logic Service
+    void stop() {
+        bls = null;
+        persistence = null;
+        
+        ysqs = null;
+        yshs = null;
+    }
+    
     /**
      * This method returns a list of stock quotes based on the stock symbols
      * provided.
